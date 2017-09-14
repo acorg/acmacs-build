@@ -1,0 +1,140 @@
+#! /bin/bash
+
+# ----------------------------------------------------------------------
+
+SOURCE_DIR=$HOME/AD
+TARGET_DIR=$HOME/AD
+
+NPROC=$(if [ "$(uname -s)" = "Darwin" ]; then /usr/sbin/sysctl -n hw.logicalcpu; else /usr/bin/nproc; fi)
+DEV=""
+GIT_URI="https://github.com/acorg"
+TT="T=R"
+
+# ----------------------------------------------------------------------
+
+main()
+{
+    trap fail ERR
+    build_dir
+    make_dirs
+    prepare_makefile_includes
+    install_requirements
+    install_acorg_package acmacs-base
+}
+
+# ----------------------------------------------------------------------
+
+make_dirs()
+{
+    trap fail ERR
+    mkdir -p "$SOURCE_DIR/sources" "$TARGET_DIR" "$BUILD_ROOT"/sources
+    for d in bin lib include include/acmacs-base py data; do
+        if [ ! -d "$TARGET_DIR/$d" ]; then
+            mkdir "$TARGET_DIR/$d"
+        fi
+    done
+}
+
+# ----------------------------------------------------------------------
+
+install_acorg_package()
+{
+    trap fail ERR
+    echo Updating "$1"
+    local PACKAGE_DIR="$SOURCE_DIR/sources/$1"
+
+    if [[ -d "$PACKAGE_DIR" ]]; then
+        ( cd "$PACKAGE_DIR" && git pull )
+    else
+        git clone "$GIT_URI/$1.git" "$PACKAGE_DIR"
+    fi
+
+    make -C "$PACKAGE_DIR" clean
+    make -C "$PACKAGE_DIR" -j$NPROC $TT install
+    make -C "$PACKAGE_DIR" -j$NPROC $TT test
+}
+
+# ----------------------------------------------------------------------
+
+install_requirements()
+{
+    trap fail ERR
+}
+
+# ----------------------------------------------------------------------
+
+parse_args()
+{
+    local var
+    local OPTIND
+    local optchar
+    while getopts ":h-:" optchar "$@"; do
+        case "${optchar}" in
+            -)
+                case "${OPTARG}" in
+                    source)
+                        SOURCE_DIR="${!OPTIND}"
+                        OPTIND=$(( $OPTIND + 1 ))
+                        ;;
+                    source=*)
+                        SOURCE_DIR=${OPTARG#*=}
+                        ;;
+                    target)
+                        TARGET_DIR="${!OPTIND}"
+                        OPTIND=$(( $OPTIND + 1 ))
+                        ;;
+                    target=*)
+                        TARGET_DIR=${OPTARG#*=}
+                        ;;
+                    dev)
+                        DEV="yes"
+                        TT="T=D"
+                        GIT_URI="git@github.com:acorg"
+                        ;;
+                    *)
+                        if [ "$OPTERR" = 1 ] && [ "${optspec:0:1}" != ":" ]; then
+                            echo "Unknown option --${OPTARG}" >&2
+                        fi
+                        ;;
+                esac
+                ;;
+            h)
+                echo "usage: $0 [--source[=]<dir>] [--target[=]<dir>] [--dev]" >&2
+                exit 2
+                ;;
+            *)
+                if [ "$OPTERR" != 1 ] || [ "${optspec:0:1}" = ":" ]; then
+                    echo "Non-option argument: '-${OPTARG}'" >&2
+                fi
+                ;;
+        esac
+    done
+}
+
+# ----------------------------------------------------------------------
+
+build_dir()
+{
+    if [[ "$USER" == "eu" && -f /r/ramdisk-id ]]; then
+        BUILD_ROOT=/r/AD
+    else
+        BUILD_ROOT="$SOURCE_DIR"
+    fi
+}
+
+# ----------------------------------------------------------------------
+
+fail()
+{
+    echo ERROR: "$@" >&2
+    exit 2
+}
+
+trap fail ERR
+parse_args "$@"
+main
+
+## ----------------------------------------------------------------------
+## Local Variables:
+## eval: (if (fboundp 'eu-rename-buffer) (eu-rename-buffer))
+## End:
