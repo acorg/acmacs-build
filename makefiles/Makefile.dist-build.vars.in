@@ -1,0 +1,14 @@
+# -*- Makefile -*-
+# Eugene Skepner 2017
+# ======================================================================
+
+PROJECT_NAME=$(notdir $(shell pwd))
+BUILD = $(PROJECT_BUILD_ROOT)/build
+DIST = $(abspath $(PROJECT_BUILD_ROOT)/dist)
+
+AD_INCLUDE=$(ACMACSD_ROOT)/include
+AD_LIB=$(ACMACSD_ROOT)/lib
+AD_SHARE=$(ACMACSD_ROOT)/share
+AD_BIN=$(ACMACSD_ROOT)/bin
+AD_PY=$(ACMACSD_ROOT)/py
+AD_DATA=$(ACMACSD_ROOT)/data

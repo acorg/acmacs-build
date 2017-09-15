@@ -16,6 +16,8 @@ ACORG_ONLY=""
 main()
 {
     trap fail ERR
+    export ACMACSD_ROOT="${TARGET_DIR}"
+    echo ACMACSD_ROOT="${ACMACSD_ROOT}"
     build_dir
     make_dirs
     prepare_makefile_includes
@@ -30,10 +32,10 @@ main()
 make_dirs()
 {
     trap fail ERR
-    mkdir -p "$SOURCE_DIR/sources" "$TARGET_DIR" "$BUILD_ROOT"/sources
+    mkdir -p "${SOURCE_DIR}/sources" "${TARGET_DIR}" "${BUILD_ROOT}/sources"
     for d in bin lib include py data share/makefiles; do
-        if [[ ! -d "$TARGET_DIR/$d" ]]; then
-            mkdir "$TARGET_DIR/$d"
+        if [[ ! -d "${TARGET_DIR}/${d}" ]]; then
+            mkdir "${TARGET_DIR}/${d}"
         fi
     done
 }
@@ -66,11 +68,12 @@ prepare_makefile_includes()
         fail "cmake 3.6 or later required"
     fi
 
-    # g++
     find_gcc_$(uname)
-    # python
 
-    fail xx
+    # python
+    # sass
+
+    install_makefiles
 }
 
 # ----------------------------------------------------------------------
@@ -127,6 +130,17 @@ endif
 
 PROFILE = # -pg
 EOF
+}
+
+# ----------------------------------------------------------------------
+
+install_makefiles()
+{
+    trap fail ERR
+    if [[ ! -f "${TARGET_DIR}/share/makefiles/Makefile.dist-build.vars" ]]; then
+        cp $(dirname $0)/../makefiles/Makefile.dist-build.vars.in "${TARGET_DIR}/share/makefiles/Makefile.dist-build.vars"
+        printf "\nPROJECT_BUILD_ROOT = ${BUILD_ROOT}/build/\$(PROJECT_NAME)" >>"${TARGET_DIR}/share/makefiles/Makefile.dist-build.vars"
+    fi
 }
 
 # ----------------------------------------------------------------------
