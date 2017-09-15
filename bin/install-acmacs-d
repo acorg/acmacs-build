@@ -29,7 +29,7 @@ make_dirs()
     trap fail ERR
     mkdir -p "$SOURCE_DIR/sources" "$TARGET_DIR" "$BUILD_ROOT"/sources
     for d in bin lib include include/acmacs-base py data; do
-        if [ ! -d "$TARGET_DIR/$d" ]; then
+        if [[ ! -d "$TARGET_DIR/$d" ]]; then
             mkdir "$TARGET_DIR/$d"
         fi
     done
@@ -41,17 +41,30 @@ install_acorg_package()
 {
     trap fail ERR
     echo Updating "$1"
-    local PACKAGE_DIR="$SOURCE_DIR/sources/$1"
+    local PACKAGE_DIR="${SOURCE_DIR}/sources/$1"
 
-    if [[ -d "$PACKAGE_DIR" ]]; then
-        ( cd "$PACKAGE_DIR" && git pull )
+    if [[ -d "${PACKAGE_DIR}" ]]; then
+        ( cd "${PACKAGE_DIR}" && git pull )
     else
-        git clone "$GIT_URI/$1.git" "$PACKAGE_DIR"
+        git clone "${GIT_URI}/$1.git" "${PACKAGE_DIR}"
     fi
 
-    make -C "$PACKAGE_DIR" clean
-    make -C "$PACKAGE_DIR" -j$NPROC $TT install
-    make -C "$PACKAGE_DIR" -j$NPROC $TT test
+    make -C "${PACKAGE_DIR}" clean
+    make -C "${PACKAGE_DIR}" -j$NPROC $TT install
+    make -C "${PACKAGE_DIR}" -j$NPROC $TT test
+}
+
+# ----------------------------------------------------------------------
+
+prepare_makefile_includes()
+{
+    # cmake (for mongo cxx)
+    if [[ "$(cmake --version 2>/dev/null | grep version | cut -d ' ' -f 3)" < "3.6" ]]; then
+        fail "cmake 3.6 or later required"
+    fi
+
+    # g++
+    # python
 }
 
 # ----------------------------------------------------------------------
@@ -59,13 +72,114 @@ install_acorg_package()
 install_requirements()
 {
     trap fail ERR
+    install_pybind11
+    install_rapidjson
+    install_boost
+    install_websocketpp
+    install_mongo_c_driver
+    install_mongo_cxx_driver
+}
+
+# ----------------------------------------------------------------------
+
+clone_or_pull()
+{
+    trap fail ERR
+    local PACKAGE_DIR="$1"
+    shift
+    local CLONE_ARGS="$@"
+    if [[ -d "${PACKAGE_DIR}" ]]; then
+        ( cd "${PACKAGE_DIR}" && git pull )
+    else
+        git clone ${CLONE_ARGS} "${PACKAGE_DIR}"
+    fi
+}
+
+# ----------------------------------------------------------------------
+
+install_pybind11()
+{
+    trap fail ERR
+    local PACKAGE_DIR="${BUILD_ROOT}/sources/pybind11"
+    clone_or_pull "${PACKAGE_DIR}" "https://github.com/pybind/pybind11.git"
+    ln -sf "${PACKAGE_DIR}/include/"* "${TARGET_DIR}/include"
+}
+
+# ----------------------------------------------------------------------
+
+install_rapidjson()
+{
+    trap fail ERR
+    local PACKAGE_DIR="${BUILD_ROOT}/sources/rapidjson"
+    clone_or_pull "${PACKAGE_DIR}" "https://github.com/Tencent/rapidjson.git"
+    ln -sf "${PACKAGE_DIR}/include/"* "${TARGET_DIR}/include"
+}
+
+# ----------------------------------------------------------------------
+
+install_boost()
+{
+    trap fail ERR
+}
+
+# ----------------------------------------------------------------------
+
+install_websocketpp()
+{
+    trap fail ERR
+    local PACKAGE_DIR="${BUILD_ROOT}/sources/websocketpp"
+    clone_or_pull "${PACKAGE_DIR}" "https://github.com/zaphoyd/websocketpp.git"
+    ln -sf "${PACKAGE_DIR}/websocketpp" "${TARGET_DIR}/include"
+}
+
+# ----------------------------------------------------------------------
+
+# http://mongoc.org/libmongoc/current/installing.html
+install_mongo_c_driver()
+{
+    trap fail ERR
+    local VERSION=1.6.3
+    local PACKAGE_DIR="${BUILD_ROOT}/sources/mongo-c-driver-${VERSION}"
+    if [[ ! -d "${PACKAGE_DIR}" ]]; then
+        cd "${BUILD_ROOT}/sources"
+        /usr/bin/curl -L -s https://github.com/mongodb/mongo-c-driver/releases/download/${VERSION}/mongo-c-driver-${VERSION}.tar.gz | tar xzf -
+        cd "${PACKAGE_DIR}"
+        ./configure --disable-automatic-init-and-cleanup --prefix="${TARGET_DIR}"
+        make -j$NPROC
+        make install
+    fi
+}
+
+# ----------------------------------------------------------------------
+
+# https://mongodb.github.io/mongo-cxx-driver/mongocxx-v3/installation/
+install_mongo_cxx_driver()
+{
+    trap fail ERR
+    local PACKAGE_DIR="${BUILD_ROOT}/sources/mongo-cxx-driver"
+    clone_or_pull "${PACKAGE_DIR}" "https://github.com/mongodb/mongo-cxx-driver.git" --branch releases/stable --depth 1
+    export PKG_CONFIG_PATH="${TARGET_DIR}"/lib/pkgconfig
+    cd "${PACKAGE_DIR}/build"
+    cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="${TARGET_DIR}" ..
+    # -DBSONCXX_POLY_USE_BOOST=1
+    # Only for MNMLSTC polyfill (default on Linux and macos
+    # make EP_mnmlstc_core
+    make -j$NPROC
+    make install
+    if [ "$(uname)" == "Darwin" ]; then
+        cd "${TARGET_DIR}/lib"
+        rm -f *.a
+        for library in libbsoncxx._noabi.dylib libmongocxx._noabi.dylib; do
+            /usr/bin/install_name_tool -id "${TARGET_DIR}/lib/$library" "$library"
+        done
+        /usr/bin/install_name_tool -change "@rpath/libbsoncxx._noabi.dylib" "${TARGET_DIR}/lib/libbsoncxx._noabi.dylib" "libmongocxx._noabi.dylib"
+    fi
 }
 
 # ----------------------------------------------------------------------
 
 parse_args()
 {
-    local var
     local OPTIND
     local optchar
     while getopts ":h-:" optchar "$@"; do
