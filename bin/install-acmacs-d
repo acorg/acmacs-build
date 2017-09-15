@@ -120,6 +120,60 @@ install_rapidjson()
 install_boost()
 {
     trap fail ERR
+    local PACKAGE_DIR="${BUILD_ROOT}/sources/boost"
+    local SUBMODULES=(algorithm any array asio assert bind concept_check config container core date_time detail "function" function_types functional fusion integer io iterator lexical_cast locale math move mpl numeric optional predef preprocessor program_options range regex smart_ptr spirit static_assert system tokenizer throw_exception type_index type_traits typeof tti utility variant)
+    local INCLUDE="${TARGET_DIR}/include/boost"
+
+    clone_or_pull "${PACKAGE_DIR}" "https://github.com/boostorg/boost.git"
+    cd "${PACKAGE_DIR}"
+    for sub in "${SUBMODULES[@]}"; do
+        git submodule update --init "libs/${sub}"
+    done
+
+    ln -sf "${PACKAGE_DIR}/boost" "${INCLUDE}"
+
+    # if [[ ! -d "${INCLUDE}" ]]; then
+    #     mkdir "${INCLUDE}"
+    # fi
+    # cd "${INCLUDE}"
+    # for sub in "${SUBMODULES[@]}"; do
+    #     # "cp -as" can be perhaps used instead of the below but it is not available on macOS
+    #     for srcdir in $(find "${TARGET_DIR}/libs/${sub}" -name boost -type d | grep include/boost); do # ${TARGET_DIR}/libs/$sub may contain sub-projects
+    #         for dirname in $(cd "${srcdir}"; find . -type d -not -name .); do
+    #             if [[ ! -d "${dirname}" ]]; then
+    #                 mkdir "${dirname}"
+    #             fi
+    #         done
+    #         for filename in $(cd "${srcdir}"; find . -type f | cut -c 3-); do
+    #             ln -sf "${srcdir}/${filename}" "${filename}"
+    #         done
+    #     done
+    # done
+
+
+    cd "${PACKAGE_DIR}"
+    git submodule update --init tools/build
+    git submodule update --init tools/inspect
+    ./bootstrap.sh --with-libraries=date_time,program_options
+    ./b2 cxxflags="-std=c++14 -DBOOST_NO_CXX11_SCOPED_ENUMS"
+    for filename in $(cd "${PACKAGE_DIR}/stage/lib"; find . -type f | cut -c 3-); do
+        ln -sf "${PACKAGE_DIR}/stage/lib/${filename}" "${TARGET_DIR}/lib/${filename}"
+    done
+
+    if [ "$(uname)" == "Linux" ]; then
+        cd "${TARGET_DIR}/lib"
+        rm -f *.a
+        for libf in libboost*.so.*; do
+            ln -sf "${libf}" "${libf%%.*}.so"
+        done
+    elif [ "$(uname)" == "Darwin" ]; then
+        cd "${TARGET_DIR}/lib"
+        rm -f *.a
+        for library in libboost_*.dylib; do
+            /usr/bin/install_name_tool -id "${TARGET_DIR}/lib/${library}" "${library}"
+            /usr/bin/install_name_tool -change libboost_system.dylib "${TARGET_DIR}/lib/libboost_system.dylib" "${library}"
+        done
+    fi
 }
 
 # ----------------------------------------------------------------------
