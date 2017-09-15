@@ -1,0 +1,30 @@
+# -*- Makefile -*-
+# Eugene Skepner 2017
+# ======================================================================
+
+$(BUILD)/%.o: cc/%.cc | $(BUILD)
+	@echo $(CXX_NAME) $(OPTIMIZATION) $<
+	@$(CXX) $(CXXFLAGS) -c -o $@ $<
+
+clean:
+	rm -rf $(DIST) $(BUILD) dist build
+
+$(DIST):
+	mkdir -p $(DIST)
+	ln -sf $(DIST) dist
+
+$(BUILD):
+	mkdir -p $(BUILD)
+	ln -sf $(BUILD) build
+
+check-acmacsd-root:
+ifndef ACMACSD_ROOT
+	$(error ACMACSD_ROOT is not set)
+endif
+
+.PHONY: check-acmacsd-root
+
+# ======================================================================
+### Local Variables:
+### eval: (if (fboundp 'eu-rename-buffer) (eu-rename-buffer))
+### End:

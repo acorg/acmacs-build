@@ -1,0 +1,15 @@
+# -*- Makefile -*-
+# Eugene Skepner 2017
+# ======================================================================
+
+ifndef RTAGS_TARGET
+RTAGS_TARGET = all
+endif
+
+rtags:
+	make -nkB $(RTAGS_TARGET) | /usr/local/bin/rc --compile - || true
+
+# ======================================================================
+### Local Variables:
+### eval: (if (fboundp 'eu-rename-buffer) (eu-rename-buffer))
+### End:

@@ -137,9 +137,17 @@ EOF
 install_makefiles()
 {
     trap fail ERR
-    if [[ ! -f "${TARGET_DIR}/share/makefiles/Makefile.dist-build.vars" ]]; then
-        cp $(dirname $0)/../makefiles/Makefile.dist-build.vars.in "${TARGET_DIR}/share/makefiles/Makefile.dist-build.vars"
-        printf "\nPROJECT_BUILD_ROOT = ${BUILD_ROOT}/build/\$(PROJECT_NAME)" >>"${TARGET_DIR}/share/makefiles/Makefile.dist-build.vars"
+    local MAKEFILES_SRC=$(dirname $0)/../makefiles
+    local MAKEFILES_DEST="${TARGET_DIR}/share/makefiles"
+    if [[ ! -f "${MAKEFILES_DEST}/Makefile.dist-build.vars" ]]; then
+        cp "${MAKEFILES_SRC}/Makefile.dist-build.vars.in" "${MAKEFILES_DEST}/Makefile.dist-build.vars"
+        printf "\nPROJECT_BUILD_ROOT = ${BUILD_ROOT}/build/\$(PROJECT_NAME)" >>"${MAKEFILES_DEST}/Makefile.dist-build.vars"
+    fi
+    if [[ ! -f "${MAKEFILES_DEST}/Makefile.dist-build.rules" ]]; then
+        cp "${MAKEFILES_SRC}/Makefile.dist-build.rules.in" "${MAKEFILES_DEST}/Makefile.dist-build.rules"
+    fi
+    if [[ ! -f "${MAKEFILES_DEST}/Makefile.rtags" ]]; then
+        cp "${MAKEFILES_SRC}/Makefile.rtags.in" "${MAKEFILES_DEST}/Makefile.rtags"
     fi
 }
 
