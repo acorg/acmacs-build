@@ -9,6 +9,7 @@ NPROC=$(if [ "$(uname -s)" = "Darwin" ]; then /usr/sbin/sysctl -n hw.logicalcpu;
 DEV=""
 GIT_URI="https://github.com/acorg"
 TT="T=R"
+ACORG_ONLY=""
 
 # ----------------------------------------------------------------------
 
@@ -18,7 +19,9 @@ main()
     build_dir
     make_dirs
     prepare_makefile_includes
-    install_requirements
+    if [[ -z "${ACORG_ONLY}" ]]; then
+        install_requirements
+    fi
     install_acorg_package acmacs-base
 }
 
@@ -28,7 +31,7 @@ make_dirs()
 {
     trap fail ERR
     mkdir -p "$SOURCE_DIR/sources" "$TARGET_DIR" "$BUILD_ROOT"/sources
-    for d in bin lib include include/acmacs-base py data; do
+    for d in bin lib include py data share/makefiles; do
         if [[ ! -d "$TARGET_DIR/$d" ]]; then
             mkdir "$TARGET_DIR/$d"
         fi
@@ -64,7 +67,66 @@ prepare_makefile_includes()
     fi
 
     # g++
+    find_gcc_$(uname)
     # python
+
+    fail xx
+}
+
+# ----------------------------------------------------------------------
+
+find_gcc_Darwin()
+{
+    trap fail ERR
+    if [[ "$(/usr/local/opt/llvm/bin/clang++ --version | grep version | cut -d ' ' -f 3)" > "5.0" ]]; then
+        echo llvm 5.0+
+        makefile_gxx "/usr/local/opt/llvm/bin/clang++" "c++17" "-Wno-weak-vtables -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-padded" "clang++-5  " ""
+    else
+        fail "llvm 5.0+ required on macOS, use \"brew install llvm\" to install it"
+    fi
+}
+
+find_gcc_Linux()
+{
+    trap fail ERR
+    if [[ "$(g++-7 --version | grep version | cut -d ' ' -f 3)" > "7.2" ]]; then
+        echo gcc 7.2
+        makefile_gxx "g++-7" "c++1z" "-Wall -Wextra" "g++-7      " "-lstdc++fs"
+    else
+        fail "g++ 7.2+ required on Linux"
+    fi
+}
+
+makefile_gxx()
+{
+    local CXX="$1"
+    local STD="$2"
+    local WARNINGS="$3"
+    local CXX_NAME="$4"
+    local FS_LIB="$5"
+
+    cat >"${TARGET_DIR}/share/makefiles/Makefile.g++" <<EOF
+CXX = ${CXX}
+STD = ${STD}
+WARNINGS = ${WARNINGS}
+CXX_NAME = "${CXX_NAME}"
+FS_LIB = "${FS_LIB}"
+
+T=D
+
+ifeq (\$(T),D)
+  OPTIMIZATION =
+else ifeq (\$(T),R)
+  # -fvisibility=hidden and -flto make resulting lib smaller (pybind11) but linking is much slower
+  OPTIMIZATION = -O3
+else ifeq (\$(MAKECMDGOALS),clean)
+  # pass
+else
+  \$(error Please provide either T=D (debug) or T=R (release))
+endif
+
+PROFILE = # -pg
+EOF
 }
 
 # ----------------------------------------------------------------------
@@ -259,6 +321,9 @@ parse_args()
                         TT="T=D"
                         GIT_URI="git@github.com:acorg"
                         ;;
+                    acorg-only)
+                        ACORG_ONLY="yes"
+                        ;;
                     *)
                         if [ "$OPTERR" = 1 ] && [ "${optspec:0:1}" != ":" ]; then
                             echo "Unknown option --${OPTARG}" >&2
@@ -267,7 +332,7 @@ parse_args()
                 esac
                 ;;
             h)
-                echo "usage: $0 [--source[=]<dir>] [--target[=]<dir>] [--dev]" >&2
+                echo "usage: $0 [--source[=]<dir>] [--target[=]<dir>] [--dev] [--acorg-only]" >&2
                 exit 2
                 ;;
             *)

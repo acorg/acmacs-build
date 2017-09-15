@@ -12,7 +12,7 @@ Scripts to build Acmacs-D.
 
 - C++
 
-  Acmacs-D is written in C++17. Either llvm 5.0 or gcc 7.1 required.
+  Acmacs-D is written in C++17. Either llvm 5.0 or gcc 7.2 required.
 
   * macOS
 
@@ -24,7 +24,7 @@ Scripts to build Acmacs-D.
 
   * Ubuntu Linux
 
-    gcc 7.1 can be installed using `get-apt install gcc-7`
+    gcc 7.2 can be installed using `get-apt install gcc-7`
 
 - Python
 
