@@ -2,9 +2,10 @@
 # Eugene Skepner 2017
 # ======================================================================
 
+# abspath below is to show full file path by __FILE__ macro used in logging
 $(BUILD)/%.o: cc/%.cc | $(BUILD) install-headers
 	@echo $(CXX_NAME) $(OPTIMIZATION) $<
-	@$(CXX) $(CXXFLAGS) -c -o $@ $<
+	@$(CXX) $(CXXFLAGS) -c -o $@ $(abspath $<)
 
 clean:
 	rm -rf $(DIST) $(BUILD) dist build
