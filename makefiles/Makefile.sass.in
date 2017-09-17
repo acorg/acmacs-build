@@ -1,0 +1,25 @@
+# -*- Makefile -*-
+# Eugene Skepner 2017
+# ======================================================================
+
+SASSC = sassc
+
+# ----------------------------------------------------------------------
+
+check-sassc:
+ifeq ($(MAKE_CLIENT),1)
+	@$(SASSC) -v >/dev/null 2>&1 || ( echo "ERROR: Please install SASSC:" $(SASSC_INSTALL) >&2 && false )
+endif
+
+# $(1) - target
+# $(2) - source
+define sass
+	@echo "SASS       " $(notdir $@)
+	@$(SASSC) --style compressed -I sass $(abspath $<) $(basename $@)
+	@gzip -9f $(basename $@)
+endef
+
+# ======================================================================
+### Local Variables:
+### eval: (if (fboundp 'eu-rename-buffer) (eu-rename-buffer))
+### End:

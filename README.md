@@ -38,13 +38,21 @@ Scripts to build Acmacs-D.
 
     `apt-get install python3`
 
+- [sassc](https://github.com/sass/sassc)
+
+  Required by acmacs-api client
+
+  * macOS: `brew install sassc`
+  * Ubuntu Linux: install manually
+
 - xz
 
 - CMake 3.2 or later
 
-- curl
+- curl and libcurl
 
-  Usually installed by default.
+  * macOS: installed by default.
+  * Ubuntu Linux: apt-get install libcurl4-openssl-dev
 
 # Installation
 

@@ -83,7 +83,7 @@ prepare_makefile_includes()
     find_gcc_$(uname)
 
     # python
-    # sass
+    # sassc
     # -L/usr/local/opt/openssl/lib $(shell pkg-config --libs libssl)
     # $(shell pkg-config --libs liblzma)
     # $(shell pkg-config --libs libcrypto)
@@ -158,12 +158,11 @@ install_makefiles()
         cp "${MAKEFILES_SRC}/Makefile.dist-build.vars.in" "${MAKEFILES_DEST}/Makefile.dist-build.vars"
         printf "\nPROJECT_BUILD_ROOT = ${BUILD_ROOT}/build/\$(PROJECT_NAME)" >>"${MAKEFILES_DEST}/Makefile.dist-build.vars"
     fi
-    if [[ ! -f "${MAKEFILES_DEST}/Makefile.dist-build.rules" ]]; then
-        cp "${MAKEFILES_SRC}/Makefile.dist-build.rules.in" "${MAKEFILES_DEST}/Makefile.dist-build.rules"
-    fi
-    if [[ ! -f "${MAKEFILES_DEST}/Makefile.rtags" ]]; then
-        cp "${MAKEFILES_SRC}/Makefile.rtags.in" "${MAKEFILES_DEST}/Makefile.rtags"
-    fi
+    for nn in dist-build.rules rtags cheerp sass; do
+        if [[ ! -f "${MAKEFILES_DEST}/Makefile.${nn}" ]]; then
+            cp "${MAKEFILES_SRC}/Makefile.${nn}.in" "${MAKEFILES_DEST}/Makefile.${nn}"
+        fi
+    done
 }
 
 # ----------------------------------------------------------------------

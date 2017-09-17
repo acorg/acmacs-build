@@ -1,0 +1,33 @@
+# -*- Makefile -*-
+# Eugene Skepner 2017
+# ======================================================================
+
+OPTIMIZATION = -O3
+CHEERP = /opt/cheerp/bin/clang++ -target cheerp
+CHEERP_COMPILE_FLAGS = -std=c++1z -MMD $(INCLUDES) -g $(OPTIMIZATION) $(WEVERYTHING) -Wno-unknown-pragmas
+# --cheerp-preexecute
+CHEERP_LINK_FLAGS = $(OPTIMIZATION)
+INCLUDES = -I. -Iinclude -I$(ACMACSD_ROOT)/include
+
+check-cheerp:
+ifeq ($(MAKE_CLIENT),1)
+	@$(CHEERP) -v >/dev/null 2>&1 || ( echo "ERROR: Please install cheerp (http://leaningtech.com/cheerp/download/)" >&2 && false )
+endif
+
+$(BUILD)/%.bc: %.cc | $(BUILD)
+	@echo "CHEERP     " $<
+	@$(CHEERP) $(CHEERP_COMPILE_FLAGS) -c -o $@ $(abspath $<)
+
+# $(1) - target
+# $(2) - sources
+define cheerp_link
+	@echo CHEERP-link $(notdir $(1)) # $(2)
+	@$(CHEERP) $(CHEERP_LINK_FLAGS) -o $(basename $(1)) $^ # -cheerp-sourcemap=$(basename $(1)).map
+	@gzip -9f $(basename $(1))
+	@if [ -f $(basename $(1)).map ]; then gzip -9f $(basename $(1)).map; fi
+endef
+
+# ======================================================================
+### Local Variables:
+### eval: (if (fboundp 'eu-rename-buffer) (eu-rename-buffer))
+### End:
