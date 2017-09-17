@@ -7,6 +7,13 @@ $(BUILD)/%.o: cc/%.cc | $(BUILD) install-headers
 	@echo $(CXX_NAME) $(OPTIMIZATION) $<
 	@$(CXX) $(CXXFLAGS) -c -o $@ $(abspath $<)
 
+# ----------------------------------------------------------------------
+
+install-headers: check-acmacsd-root
+	$(call install_headers,$(PROJECT_NAME))
+
+# ----------------------------------------------------------------------
+
 clean:
 	rm -rf $(DIST) $(BUILD) dist build
 
