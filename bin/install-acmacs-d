@@ -84,6 +84,9 @@ prepare_makefile_includes()
 
     # python
     # sass
+    # -L/usr/local/opt/openssl/lib $(shell pkg-config --libs libssl)
+    # $(shell pkg-config --libs liblzma)
+    # $(shell pkg-config --libs libcrypto)
 
     install_makefiles
 }
