@@ -76,8 +76,8 @@ install_acorg_package()
 prepare_makefile_includes()
 {
     # cmake (for mongo cxx)
-    if [[ "$(cmake --version 2>/dev/null | grep version | cut -d ' ' -f 3)" < "3.6" ]]; then
-        fail "cmake 3.6 or later required"
+    if [[ "$(cmake --version 2>/dev/null | grep version | cut -d ' ' -f 3)" < "3.2" ]]; then
+        fail "cmake 3.2 or later required"
     fi
 
     find_gcc_$(uname)
