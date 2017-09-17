@@ -66,9 +66,9 @@ install_acorg_package()
         git clone "${GIT_URI}/$1.git" "${PACKAGE_DIR}"
     fi
 
-    make -C "${PACKAGE_DIR}" clean
-    make -C "${PACKAGE_DIR}" -j$NPROC $TT install
-    make -C "${PACKAGE_DIR}" -j$NPROC $TT test
+    make -C "${PACKAGE_DIR}" -w clean
+    make -C "${PACKAGE_DIR}" -w -j$NPROC $TT install
+    make -C "${PACKAGE_DIR}" -w -j$NPROC $TT test
 }
 
 # ----------------------------------------------------------------------
