@@ -12,3 +12,12 @@ AD_SHARE=$(ACMACSD_ROOT)/share
 AD_BIN=$(ACMACSD_ROOT)/bin
 AD_PY=$(ACMACSD_ROOT)/py
 AD_DATA=$(ACMACSD_ROOT)/data
+
+# ----------------------------------------------------------------------
+
+SASSC = sassc
+
+# ======================================================================
+### Local Variables:
+### eval: (if (fboundp 'eu-rename-buffer) (eu-rename-buffer))
+### End:

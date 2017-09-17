@@ -24,6 +24,37 @@ endif
 
 .PHONY: check-acmacsd-root
 
+# ----------------------------------------------------------------------
+
+check-sassc:
+ifeq ($(MAKE_CLIENT),1)
+	@$(SASSC) -v >/dev/null 2>&1 || ( echo "ERROR: Please install SASSC:" $(SASSC_INSTALL) >&2 && false )
+endif
+
+# $(1) - target
+# $(2) - source
+define sass
+	@echo "SASS       " $(notdir $@)
+	@$(SASSC) --style compressed -I sass $(abspath $<) $(basename $@)
+	@gzip -9f $(basename $@)
+endef
+
+# ----------------------------------------------------------------------
+
+# $(1) - source lib
+define install_lib
+	ln -sf $(1) $(AD_LIB)
+	if [ $$(uname) = "Darwin" ]; then /usr/bin/install_name_tool -id $(AD_LIB)/$(notdir $(1)) $(AD_LIB)/$(notdir $(1)); fi
+endef
+
+# ----------------------------------------------------------------------
+
+# $(1) - package name
+define install_headers
+	if [ ! -d $(AD_INCLUDE)/$(1) ]; then mkdir $(AD_INCLUDE)/$(1); fi
+	ln -sf $(abspath cc)/*.hh $(AD_INCLUDE)/$(1)
+endef
+
 # ======================================================================
 ### Local Variables:
 ### eval: (if (fboundp 'eu-rename-buffer) (eu-rename-buffer))
