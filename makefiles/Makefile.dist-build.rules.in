@@ -2,7 +2,7 @@
 # Eugene Skepner 2017
 # ======================================================================
 
-$(BUILD)/%.o: cc/%.cc | $(BUILD)
+$(BUILD)/%.o: cc/%.cc | $(BUILD) install-headers
 	@echo $(CXX_NAME) $(OPTIMIZATION) $<
 	@$(CXX) $(CXXFLAGS) -c -o $@ $<
 
