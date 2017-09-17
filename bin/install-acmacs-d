@@ -83,7 +83,7 @@ find_gcc_Darwin()
     trap fail ERR
     if [[ "$(/usr/local/opt/llvm/bin/clang++ --version | grep version | cut -d ' ' -f 3)" > "5.0" ]]; then
         echo llvm 5.0+
-        makefile_gxx "/usr/local/opt/llvm/bin/clang++" "c++17" "-Wno-weak-vtables -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-padded" "clang++-5  " ""
+        makefile_gxx "/usr/local/opt/llvm/bin/clang++" "c++17" "-Wno-weak-vtables -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-padded" "clang++-5  " "-L/usr/local/opt/llvm/lib -lc++experimental"
     else
         fail "llvm 5.0+ required on macOS, use \"brew install llvm\" to install it"
     fi
@@ -113,7 +113,7 @@ CXX = ${CXX}
 STD = ${STD}
 WARNINGS = ${WARNINGS}
 CXX_NAME = "${CXX_NAME}"
-FS_LIB = "${FS_LIB}"
+FS_LIB = ${FS_LIB}
 
 T=D
 
