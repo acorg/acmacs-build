@@ -107,7 +107,7 @@ find_gcc_Darwin()
 find_gcc_Linux()
 {
     trap fail ERR
-    if [[ "$(g++-7 --version | grep version | cut -d ' ' -f 3)" > "7.2" ]]; then
+    if [[ "$(g++-7 --version | head -n 1 | cut -d ' ' -f 3)" > "7.2" ]]; then
         echo gcc 7.2
         makefile_gxx "g++-7" "c++1z" "-Wall -Wextra" "g++-7      " "-lstdc++fs"
     else
