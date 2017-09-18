@@ -276,10 +276,12 @@ install_boost()
         done
     fi
 
-    if [[ ! -d "${TARGET_DIR}/include/boost/io" ]]; then
-        # if compiled with g++7 io includes required, but they perhaps was not linked (2017-09-17)
-        ln -sf "${PACKAGE_DIR}/libs/io/include/boost/"* "${TARGET_DIR}/include/boost/"
-    fi
+    for pp in algorithm io; do
+        if [[ ! -d "${TARGET_DIR}/include/boost/${pp}" ]]; then
+            # if compiled with g++7 this package includes required, but they perhaps was not linked (2017-09-17)
+            ln -sf "${PACKAGE_DIR}/libs/${pp}/include/boost/"* "${TARGET_DIR}/include/boost/"
+        fi
+    done
 }
 
 # ----------------------------------------------------------------------
