@@ -17,6 +17,7 @@ main()
 {
     trap fail ERR
     export ACMACSD_ROOT="${TARGET_DIR}"
+    export LD_LIBRARY_PATH="${ACMACSD_ROOT}/lib"
     echo ACMACSD_ROOT="${ACMACSD_ROOT}"
     build_dir
     make_dirs
@@ -24,6 +25,7 @@ main()
     if [[ -z "${ACORG_ONLY}" ]]; then
         install_requirements
     fi
+    install_build_bin
     install_acorg_package acmacs-base
     install_acorg_package locationdb
     install_acorg_package acmacs-chart
@@ -276,13 +278,13 @@ install_boost()
         done
     fi
 
-    for pp in algorithm io utility; do
-        # if compiled with g++7 this package includes required, but they perhaps was not linked (2017-09-17)
-        if [[ ! -L "${TARGET_DIR}/include/boost/${pp}" ]]; then
-            rm -rf "${TARGET_DIR}/include/boost/${pp}"
-            ln -sf "${PACKAGE_DIR}/libs/${pp}/include/boost/"* "${TARGET_DIR}/include/boost/"
-        fi
-    done
+    # for pp in algorithm io utility; do
+    #     # if compiled with g++7 this package includes required, but they perhaps was not linked (2017-09-17)
+    #     if [[ ! -L "${TARGET_DIR}/include/boost/${pp}" ]]; then
+    #         rm -rf "${TARGET_DIR}/include/boost/${pp}"
+    #         ln -sf "${PACKAGE_DIR}/libs/${pp}/include/boost/"* "${TARGET_DIR}/include/boost/"
+    #     fi
+    # done
 }
 
 # ----------------------------------------------------------------------
@@ -337,6 +339,15 @@ install_mongo_cxx_driver()
         done
         /usr/bin/install_name_tool -change "@rpath/libbsoncxx._noabi.dylib" "${TARGET_DIR}/lib/libbsoncxx._noabi.dylib" "libmongocxx._noabi.dylib"
     fi
+}
+
+# ----------------------------------------------------------------------
+
+install_build_bin()
+{
+    for prog in rtags-all; do
+        ln -sf "$(dirname $0)/${prog}" "${TARGET_DIR}/bin"
+    done
 }
 
 # ----------------------------------------------------------------------
