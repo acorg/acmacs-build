@@ -220,6 +220,29 @@ install_rapidjson()
 
 # ----------------------------------------------------------------------
 
+link_recursive()
+{
+    local src="$1"
+    local dest="$2"
+    # echo link_recursive "${src}" "${dest}"
+    local cwd=$(pwd)
+    for source in "${src}"/*; do
+        local target="${dest}/$(basename ${source})"
+        if [[ -d "${source}" ]]; then
+            #echo dir "${source}"
+            if [[ ! -e "${target}" ]]; then
+                mkdir "${target}"
+            fi
+            link_recursive "${source}" "${target}"
+        else
+            ln -sf "${source}" "${target}" || exit 2
+        fi
+    done
+    cd "$cwd"
+}
+
+# ----------------------------------------------------------------------
+
 install_boost()
 {
     trap fail ERR
@@ -233,7 +256,17 @@ install_boost()
         git submodule update --init "libs/${sub}"
     done
 
-    ln -sf "${PACKAGE_DIR}/boost" "${INCLUDE}"
+    if [[ "$(uname)" == "Linux" ]]; then
+        if [[ ! -d "${INCLUDE}" ]]; then mkdir "${INCLUDE}"; fi
+        link_recursive "${PACKAGE_DIR}/boost" "${INCLUDE}"
+        for sub in "${SUBMODULES[@]}"; do
+            if [[ -d "${PACKAGE_DIR}/libs/${sub}/include/boost" ]]; then
+                link_recursive "${PACKAGE_DIR}/libs/${sub}/include/boost" "${INCLUDE}"
+            fi
+        done
+    else
+        ln -sf "${PACKAGE_DIR}/boost" "${INCLUDE}"
+    fi
 
     # if [[ ! -d "${INCLUDE}" ]]; then
     #     mkdir "${INCLUDE}"
@@ -257,7 +290,7 @@ install_boost()
     cd "${PACKAGE_DIR}"
     git submodule update --init tools/build
     git submodule update --init tools/inspect
-    ./bootstrap.sh --with-libraries=date_time,program_options
+    ./bootstrap.sh --with-libraries=date_time,program_options,system
     ./b2 cxxflags="-std=c++14 -DBOOST_NO_CXX11_SCOPED_ENUMS"
     for filename in $(cd "${PACKAGE_DIR}/stage/lib"; find . -type f | cut -c 3-); do
         ln -sf "${PACKAGE_DIR}/stage/lib/${filename}" "${TARGET_DIR}/lib/${filename}"
