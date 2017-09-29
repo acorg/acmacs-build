@@ -26,19 +26,24 @@ main()
         install_requirements
     fi
     install_build_bin
-    install_acorg_package acmacs-base
-    install_acorg_package locationdb
-    install_acorg_package acmacs-chart
-    install_acorg_package hidb
-    install_acorg_package seqdb
-    install_acorg_package acmacs-draw
-    install_acorg_package acmacs-map-draw
-    install_acorg_package acmacs-tree-maker
-    install_acorg_package signature-page
-    install_acorg_package ssm-report
-    install_acorg_package acmacs-whocc
-    install_acorg_package acmacs-webserver
-    install_acorg_package acmacs-api
+    local PACKAGES_FILE=$(python3 -c "import os; print(os.path.dirname(os.path.realpath(\"$0\")) + '/../packages')")
+    for package in $(cat "${PACKAGES_FILE}"); do
+        install_acorg_package "${package}"
+    done
+
+    # install_acorg_package acmacs-base
+    # install_acorg_package locationdb
+    # install_acorg_package acmacs-chart
+    # install_acorg_package hidb
+    # install_acorg_package seqdb
+    # install_acorg_package acmacs-draw
+    # install_acorg_package acmacs-map-draw
+    # install_acorg_package acmacs-tree-maker
+    # install_acorg_package signature-page
+    # install_acorg_package ssm-report
+    # install_acorg_package acmacs-whocc
+    # install_acorg_package acmacs-webserver
+    # install_acorg_package acmacs-api
 }
 
 # ----------------------------------------------------------------------

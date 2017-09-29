@@ -1,0 +1,8 @@
+#! /bin/bash
+
+NPROC=$(if [ "$(uname -s)" = "Darwin" ]; then /usr/sbin/sysctl -n hw.logicalcpu; else /usr/bin/nproc; fi)
+PACKAGES_FILE=$(python3 -c "import os; print(os.path.dirname(os.path.realpath(\"$0\")) + '/../packages')")
+
+for package in $(cat "${PACKAGES_FILE}"); do
+    ( cd "${ACMACSD_ROOT}/sources/${package}" && make "$@" clean && make -j${NPROC} "$@" install ) || exit 1
+done
