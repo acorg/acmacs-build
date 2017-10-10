@@ -16,6 +16,7 @@ ACORG_ONLY=""
 main()
 {
     trap fail ERR
+    local ARGV0=$(python3 -c "import os; print(os.path.realpath(\"$0\"))")
     export ACMACSD_ROOT="${TARGET_DIR}"
     export LD_LIBRARY_PATH="${ACMACSD_ROOT}/lib"
     echo ACMACSD_ROOT="${ACMACSD_ROOT}"
@@ -26,7 +27,7 @@ main()
         install_requirements
     fi
     install_build_bin
-    local PACKAGES_FILE=$(python3 -c "import os; print(os.path.dirname(os.path.realpath(\"$0\")) + '/../packages')")
+    local PACKAGES_FILE="$(dirname ${ARGV0})/../packages"
     for package in $(cat "${PACKAGES_FILE}"); do
         install_acorg_package "${package}"
     done
