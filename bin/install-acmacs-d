@@ -297,8 +297,12 @@ install_boost()
     git submodule update --init tools/inspect
     ./bootstrap.sh --with-libraries=date_time,program_options,system
     ./b2 cxxflags="-std=c++14 -DBOOST_NO_CXX11_SCOPED_ENUMS"
-    for filename in $(cd "${PACKAGE_DIR}/stage/lib"; find . -type f | cut -c 3-); do
-        ln -sf "${PACKAGE_DIR}/stage/lib/${filename}" "${TARGET_DIR}/lib/${filename}"
+
+    for filename in "${PACKAGE_DIR}/stage/lib/"*; do
+        if [[ -f "${filename}" ]]; then
+            local fn="$(basename ${filename})"
+            ln -sf "${PACKAGE_DIR}/stage/lib/${fn}" "${TARGET_DIR}/lib/${fn}"
+        fi
     done
 
     if [ "$(uname)" == "Linux" ]; then
