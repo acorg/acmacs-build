@@ -109,7 +109,7 @@ find_gcc_Darwin()
     trap fail ERR
     if [[ "$(/usr/local/opt/llvm/bin/clang++ --version | grep version | cut -d ' ' -f 3)" > "5.0" ]]; then
         echo llvm 5.0+
-        makefile_gxx "/usr/local/opt/llvm/bin/clang++" "c++17" "-Wno-weak-vtables -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-padded" "clang++-5  " "-L/usr/local/opt/llvm/lib -lc++experimental"
+        makefile_gxx "/usr/local/opt/llvm/bin/clang++" "c++17" "-Wno-weak-vtables -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-padded" "clang++-5  " "-L/usr/local/opt/llvm/lib -lc++experimental" "-L/usr/local/opt/llvm/lib -lc++"
     else
         fail "llvm 5.0+ required on macOS, use \"brew install llvm\" to install it"
     fi
@@ -120,7 +120,7 @@ find_gcc_Linux()
     trap fail ERR
     if [[ "$(g++-7 --version | head -n 1 | cut -d ' ' -f 3)" > "7.2" ]]; then
         echo gcc 7.2
-        makefile_gxx "g++-7" "c++1z" "-Wall -Wextra" "g++-7      " "-lstdc++fs"
+        makefile_gxx "g++-7" "c++1z" "-Wall -Wextra" "g++-7      " "-lstdc++fs" ""
     else
         fail "g++ 7.2+ required on Linux"
     fi
@@ -133,13 +133,16 @@ makefile_gxx()
     local WARNINGS="$3"
     local CXX_NAME="$4"
     local FS_LIB="$5"
+    local CXX_LIB="$5"
 
     cat >"${TARGET_DIR}/share/makefiles/Makefile.g++" <<EOF
+# -*- Makefile -*-
 CXX = ${CXX}
 STD = ${STD}
 WARNINGS = ${WARNINGS}
 CXX_NAME = "${CXX_NAME}"
 FS_LIB = ${FS_LIB}
+CXX_LIB = ${CXX_LIB}
 
 T=D
 
