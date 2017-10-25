@@ -425,6 +425,11 @@ parse_args()
                         TT="T=D"
                         GIT_URI="git@github.com:acorg"
                         ;;
+                    dev-release)
+                        DEV="yes"
+                        TT="T=R"
+                        GIT_URI="git@github.com:acorg"
+                        ;;
                     acorg-only)
                         ACORG_ONLY="yes"
                         ;;
