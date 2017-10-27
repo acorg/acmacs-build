@@ -45,6 +45,8 @@ Scripts to build Acmacs-D.
   * macOS: `brew install sassc`
   * Ubuntu Linux: install manually
 
+- cairo
+
 - xz
 
 - CMake 3.2 or later
