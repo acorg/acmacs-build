@@ -12,12 +12,13 @@ TT="T=R"
 ACORG_ONLY=""
 TAG="201710"
 
+ARGV0=$(python3 -c "import os; print(os.path.realpath(\"$0\"))")
+
 # ----------------------------------------------------------------------
 
 main()
 {
     trap fail ERR
-    local ARGV0=$(python3 -c "import os; print(os.path.realpath(\"$0\"))")
     export ACMACSD_ROOT="${TARGET_DIR}"
     export LD_LIBRARY_PATH="${ACMACSD_ROOT}/lib"
     echo ACMACSD_ROOT="${ACMACSD_ROOT}"
@@ -222,110 +223,115 @@ install_rapidjson()
 
 # ----------------------------------------------------------------------
 
-link_recursive()
-{
-    trap fail ERR
-    local src="$1"
-    local dest="$2"
-    # echo link_recursive "${src}" "${dest}"
-    local cwd=$(pwd)
-    for source in "${src}"/*; do
-        local target="${dest}/$(basename ${source})"
-        if [[ -d "${source}" ]]; then
-            #echo dir "${source}"
-            if [[ ! -e "${target}" ]]; then
-                mkdir "${target}"
-            fi
-            link_recursive "${source}" "${target}"
-        else
-            ln -sf "${source}" "${target}" || exit 2
-        fi
-    done
-    cd "$cwd"
-}
-
-# ----------------------------------------------------------------------
-
 install_boost()
 {
     trap fail ERR
-    local PACKAGE_DIR="${BUILD_ROOT}/sources/boost"
-    local SUBMODULES=(algorithm any array asio assert bind concept_check config container core date_time detail "function" function_types functional fusion integer io iterator lexical_cast locale math move mpl numeric optional predef preprocessor program_options range regex smart_ptr spirit static_assert system tokenizer throw_exception type_index type_traits typeof tti utility variant)
-    local INCLUDE="${TARGET_DIR}/include/boost"
-
-    clone_or_pull_requirements "${PACKAGE_DIR}" "https://github.com/boostorg/boost.git"
-    cd "${PACKAGE_DIR}"
-    for sub in "${SUBMODULES[@]}"; do
-        git submodule update --init "libs/${sub}"
-    done
-
-    if [[ "$(uname)" == "Linux" ]]; then
-        if [[ ! -d "${INCLUDE}" ]]; then mkdir "${INCLUDE}"; fi
-        link_recursive "${PACKAGE_DIR}/boost" "${INCLUDE}"
-        for sub in "${SUBMODULES[@]}"; do
-            if [[ -d "${PACKAGE_DIR}/libs/${sub}/include/boost" ]]; then
-                link_recursive "${PACKAGE_DIR}/libs/${sub}/include/boost" "${INCLUDE}"
-            fi
-        done
-    else
-        ln -sf "${PACKAGE_DIR}/boost" "${INCLUDE}"
-    fi
-
-    # if [[ ! -d "${INCLUDE}" ]]; then
-    #     mkdir "${INCLUDE}"
-    # fi
-    # cd "${INCLUDE}"
-    # for sub in "${SUBMODULES[@]}"; do
-    #     # "cp -as" can be perhaps used instead of the below but it is not available on macOS
-    #     for srcdir in $(find "${TARGET_DIR}/libs/${sub}" -name boost -type d | grep include/boost); do # ${TARGET_DIR}/libs/$sub may contain sub-projects
-    #         for dirname in $(cd "${srcdir}"; find . -type d -not -name .); do
-    #             if [[ ! -d "${dirname}" ]]; then
-    #                 mkdir "${dirname}"
-    #             fi
-    #         done
-    #         for filename in $(cd "${srcdir}"; find . -type f | cut -c 3-); do
-    #             ln -sf "${srcdir}/${filename}" "${filename}"
-    #         done
-    #     done
-    # done
-
-
-    cd "${PACKAGE_DIR}"
-    git submodule update --init tools/build
-    git submodule update --init tools/inspect
-    ./bootstrap.sh --with-libraries=date_time,program_options,system
-    ./b2 cxxflags="-std=c++14 -DBOOST_NO_CXX11_SCOPED_ENUMS"
-
-    for filename in "${PACKAGE_DIR}/stage/lib/"*; do
-        if [[ -f "${filename}" ]]; then
-            local fn="$(basename ${filename})"
-            ln -sf "${PACKAGE_DIR}/stage/lib/${fn}" "${TARGET_DIR}/lib/${fn}"
-        fi
-    done
-
-    if [ "$(uname)" == "Linux" ]; then
-        cd "${TARGET_DIR}/lib"
-        rm -f *.a
-        for libf in libboost*.so.*; do
-            ln -sf "${libf}" "${libf%%.*}.so"
-        done
-    elif [ "$(uname)" == "Darwin" ]; then
-        cd "${TARGET_DIR}/lib"
-        rm -f *.a
-        for library in libboost_*.dylib; do
-            /usr/bin/install_name_tool -id "${TARGET_DIR}/lib/${library}" "${library}"
-            /usr/bin/install_name_tool -change libboost_system.dylib "${TARGET_DIR}/lib/libboost_system.dylib" "${library}"
-        done
-    fi
-
-    # for pp in algorithm io utility; do
-    #     # if compiled with g++7 this package includes required, but they perhaps was not linked (2017-09-17)
-    #     if [[ ! -L "${TARGET_DIR}/include/boost/${pp}" ]]; then
-    #         rm -rf "${TARGET_DIR}/include/boost/${pp}"
-    #         ln -sf "${PACKAGE_DIR}/libs/${pp}/include/boost/"* "${TARGET_DIR}/include/boost/"
-    #     fi
-    # done
+    local PROG="$(dirname ${ARGV0})/install-boost"
+    "$PROG" "${TARGET_DIR}"
 }
+
+# install_boost()
+# {
+#     trap fail ERR
+#     local PACKAGE_DIR="${BUILD_ROOT}/sources/boost"
+#     local SUBMODULES=(algorithm any array asio assert bind concept_check config container core date_time detail "function" function_types functional fusion integer io iterator lexical_cast locale math move mpl numeric optional predef preprocessor program_options range regex smart_ptr spirit static_assert system tokenizer throw_exception type_index type_traits typeof tti utility variant)
+#     local INCLUDE="${TARGET_DIR}/include/boost"
+
+#     clone_or_pull_requirements "${PACKAGE_DIR}" "https://github.com/boostorg/boost.git"
+#     cd "${PACKAGE_DIR}"
+#     for sub in "${SUBMODULES[@]}"; do
+#         git submodule update --init "libs/${sub}"
+#     done
+
+#     if [[ "$(uname)" == "Linux" ]]; then
+#         if [[ ! -d "${INCLUDE}" ]]; then mkdir "${INCLUDE}"; fi
+#         link_recursive "${PACKAGE_DIR}/boost" "${INCLUDE}"
+#         for sub in "${SUBMODULES[@]}"; do
+#             if [[ -d "${PACKAGE_DIR}/libs/${sub}/include/boost" ]]; then
+#                 link_recursive "${PACKAGE_DIR}/libs/${sub}/include/boost" "${INCLUDE}"
+#             fi
+#         done
+#     else
+#         ln -sf "${PACKAGE_DIR}/boost" "${INCLUDE}"
+#     fi
+
+#     # if [[ ! -d "${INCLUDE}" ]]; then
+#     #     mkdir "${INCLUDE}"
+#     # fi
+#     # cd "${INCLUDE}"
+#     # for sub in "${SUBMODULES[@]}"; do
+#     #     # "cp -as" can be perhaps used instead of the below but it is not available on macOS
+#     #     for srcdir in $(find "${TARGET_DIR}/libs/${sub}" -name boost -type d | grep include/boost); do # ${TARGET_DIR}/libs/$sub may contain sub-projects
+#     #         for dirname in $(cd "${srcdir}"; find . -type d -not -name .); do
+#     #             if [[ ! -d "${dirname}" ]]; then
+#     #                 mkdir "${dirname}"
+#     #             fi
+#     #         done
+#     #         for filename in $(cd "${srcdir}"; find . -type f | cut -c 3-); do
+#     #             ln -sf "${srcdir}/${filename}" "${filename}"
+#     #         done
+#     #     done
+#     # done
+
+
+#     cd "${PACKAGE_DIR}"
+#     git submodule update --init tools/build
+#     git submodule update --init tools/inspect
+#     ./bootstrap.sh --with-libraries=date_time,program_options,system
+#     ./b2 cxxflags="-std=c++14 -DBOOST_NO_CXX11_SCOPED_ENUMS"
+
+#     for filename in "${PACKAGE_DIR}/stage/lib/"*; do
+#         if [[ -f "${filename}" ]]; then
+#             local fn="$(basename ${filename})"
+#             ln -sf "${PACKAGE_DIR}/stage/lib/${fn}" "${TARGET_DIR}/lib/${fn}"
+#         fi
+#     done
+
+#     if [ "$(uname)" == "Linux" ]; then
+#         cd "${TARGET_DIR}/lib"
+#         rm -f *.a
+#         for libf in libboost*.so.*; do
+#             ln -sf "${libf}" "${libf%%.*}.so"
+#         done
+#     elif [ "$(uname)" == "Darwin" ]; then
+#         cd "${TARGET_DIR}/lib"
+#         rm -f *.a
+#         for library in libboost_*.dylib; do
+#             /usr/bin/install_name_tool -id "${TARGET_DIR}/lib/${library}" "${library}"
+#             /usr/bin/install_name_tool -change libboost_system.dylib "${TARGET_DIR}/lib/libboost_system.dylib" "${library}"
+#         done
+#     fi
+
+#     # for pp in algorithm io utility; do
+#     #     # if compiled with g++7 this package includes required, but they perhaps was not linked (2017-09-17)
+#     #     if [[ ! -L "${TARGET_DIR}/include/boost/${pp}" ]]; then
+#     #         rm -rf "${TARGET_DIR}/include/boost/${pp}"
+#     #         ln -sf "${PACKAGE_DIR}/libs/${pp}/include/boost/"* "${TARGET_DIR}/include/boost/"
+#     #     fi
+#     # done
+# }
+
+# link_recursive()
+# {
+#     trap fail ERR
+#     local src="$1"
+#     local dest="$2"
+#     # echo link_recursive "${src}" "${dest}"
+#     local cwd=$(pwd)
+#     for source in "${src}"/*; do
+#         local target="${dest}/$(basename ${source})"
+#         if [[ -d "${source}" ]]; then
+#             #echo dir "${source}"
+#             if [[ ! -e "${target}" ]]; then
+#                 mkdir "${target}"
+#             fi
+#             link_recursive "${source}" "${target}"
+#         else
+#             ln -sf "${source}" "${target}" || exit 2
+#         fi
+#     done
+#     cd "$cwd"
+# }
 
 # ----------------------------------------------------------------------
 
