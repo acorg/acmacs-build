@@ -10,6 +10,7 @@ DEV=""
 GIT_URI="https://github.com/acorg"
 TT="T=R"
 ACORG_ONLY=""
+TAG="201710"
 
 # ----------------------------------------------------------------------
 
@@ -23,28 +24,14 @@ main()
     build_dir
     make_dirs
     prepare_makefile_includes
+    local PACKAGES_FILE="$(dirname ${ARGV0})/../packages.${TAG}"
     if [[ -z "${ACORG_ONLY}" ]]; then
-        install_requirements
+        install_requirements "$PACKAGES_FILE"
     fi
     install_build_bin
-    local PACKAGES_FILE="$(dirname ${ARGV0})/../packages"
     for package in $(cat "${PACKAGES_FILE}"); do
         install_acorg_package "${package}"
     done
-
-    # install_acorg_package acmacs-base
-    # install_acorg_package locationdb
-    # install_acorg_package acmacs-chart
-    # install_acorg_package hidb
-    # install_acorg_package seqdb
-    # install_acorg_package acmacs-draw
-    # install_acorg_package acmacs-map-draw
-    # install_acorg_package acmacs-tree-maker
-    # install_acorg_package signature-page
-    # install_acorg_package ssm-report
-    # install_acorg_package acmacs-whocc
-    # install_acorg_package acmacs-webserver
-    # install_acorg_package acmacs-api
 }
 
 # ----------------------------------------------------------------------
@@ -73,8 +60,10 @@ install_acorg_package()
 
     if [[ -d "${PACKAGE_DIR}" ]]; then
         ( cd "${PACKAGE_DIR}" && git pull )
-    else
+    elif [[ "${TAG}" == "master" ]]; then
         git clone "${GIT_URI}/$1.git" "${PACKAGE_DIR}"
+    else
+        git clone "${GIT_URI}/$1.git" --branch "${TAG}" --depth 1 "${PACKAGE_DIR}"
     fi
 
     make -C "${PACKAGE_DIR}" -w clean
@@ -187,14 +176,18 @@ install_requirements()
     install_pybind11
     install_rapidjson
     install_boost
-    install_websocketpp
-    install_mongo_c_driver
-    install_mongo_cxx_driver
+    if /usr/bin/grep acmacs-webserver "$1" >/dev/null 2>&1; then
+        install_websocketpp
+    fi
+    if /usr/bin/grep acmacs-api "$1" >/dev/null 2>&1; then
+        install_mongo_c_driver
+        install_mongo_cxx_driver
+    fi
 }
 
 # ----------------------------------------------------------------------
 
-clone_or_pull()
+clone_or_pull_requirements()
 {
     trap fail ERR
     local PACKAGE_DIR="$1"
@@ -203,7 +196,7 @@ clone_or_pull()
     if [[ -d "${PACKAGE_DIR}" ]]; then
         ( cd "${PACKAGE_DIR}" && git pull )
     else
-        git clone ${CLONE_ARGS} "${PACKAGE_DIR}"
+        git clone ${CLONE_ARGS} --depth 1 "${PACKAGE_DIR}"
     fi
 }
 
@@ -213,7 +206,7 @@ install_pybind11()
 {
     trap fail ERR
     local PACKAGE_DIR="${BUILD_ROOT}/sources/pybind11"
-    clone_or_pull "${PACKAGE_DIR}" "https://github.com/pybind/pybind11.git"
+    clone_or_pull_requirements "${PACKAGE_DIR}" "https://github.com/pybind/pybind11.git"
     ln -sf "${PACKAGE_DIR}/include/"* "${TARGET_DIR}/include"
 }
 
@@ -223,7 +216,7 @@ install_rapidjson()
 {
     trap fail ERR
     local PACKAGE_DIR="${BUILD_ROOT}/sources/rapidjson"
-    clone_or_pull "${PACKAGE_DIR}" "https://github.com/Tencent/rapidjson.git"
+    clone_or_pull_requirements "${PACKAGE_DIR}" "https://github.com/Tencent/rapidjson.git"
     ln -sf "${PACKAGE_DIR}/include/"* "${TARGET_DIR}/include"
 }
 
@@ -259,7 +252,7 @@ install_boost()
     local SUBMODULES=(algorithm any array asio assert bind concept_check config container core date_time detail "function" function_types functional fusion integer io iterator lexical_cast locale math move mpl numeric optional predef preprocessor program_options range regex smart_ptr spirit static_assert system tokenizer throw_exception type_index type_traits typeof tti utility variant)
     local INCLUDE="${TARGET_DIR}/include/boost"
 
-    clone_or_pull "${PACKAGE_DIR}" "https://github.com/boostorg/boost.git"
+    clone_or_pull_requirements "${PACKAGE_DIR}" "https://github.com/boostorg/boost.git"
     cd "${PACKAGE_DIR}"
     for sub in "${SUBMODULES[@]}"; do
         git submodule update --init "libs/${sub}"
@@ -339,7 +332,7 @@ install_websocketpp()
 {
     trap fail ERR
     local PACKAGE_DIR="${BUILD_ROOT}/sources/websocketpp"
-    clone_or_pull "${PACKAGE_DIR}" "https://github.com/zaphoyd/websocketpp.git"
+    clone_or_pull_requirements "${PACKAGE_DIR}" "https://github.com/zaphoyd/websocketpp.git"
     ln -sf "${PACKAGE_DIR}/websocketpp" "${TARGET_DIR}/include"
 }
 
@@ -368,7 +361,7 @@ install_mongo_cxx_driver()
 {
     trap fail ERR
     local PACKAGE_DIR="${BUILD_ROOT}/sources/mongo-cxx-driver"
-    clone_or_pull "${PACKAGE_DIR}" "https://github.com/mongodb/mongo-cxx-driver.git" --branch releases/stable --depth 1
+    clone_or_pull_requirements "${PACKAGE_DIR}" "https://github.com/mongodb/mongo-cxx-driver.git" --branch releases/stable
     export PKG_CONFIG_PATH="${TARGET_DIR}"/lib/pkgconfig
     cd "${PACKAGE_DIR}/build"
     cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="${TARGET_DIR}" ..
@@ -394,6 +387,7 @@ install_build_bin()
     for prog in rtags-all; do
         ln -sf "$(dirname $0)/${prog}" "${TARGET_DIR}/bin"
     done
+    printf "${TAG}" >"${TARGET_DIR}/share/tag"
 }
 
 # ----------------------------------------------------------------------
@@ -424,14 +418,23 @@ parse_args()
                         DEV="yes"
                         TT="T=D"
                         GIT_URI="git@github.com:acorg"
+                        TAG="master"
                         ;;
                     dev-release)
                         DEV="yes"
                         TT="T=R"
                         GIT_URI="git@github.com:acorg"
+                        TAG="master"
                         ;;
                     acorg-only)
                         ACORG_ONLY="yes"
+                        ;;
+                    tag)
+                        TAG="${!OPTIND}"
+                        OPTIND=$(( $OPTIND + 1 ))
+                        ;;
+                    help)
+                        usage
                         ;;
                     *)
                         if [ "$OPTERR" = 1 ] && [ "${optspec:0:1}" != ":" ]; then
@@ -441,8 +444,7 @@ parse_args()
                 esac
                 ;;
             h)
-                echo "usage: $0 [--source[=]<dir>] [--target[=]<dir>] [--dev] [--acorg-only]" >&2
-                exit 2
+                usage
                 ;;
             *)
                 if [ "$OPTERR" != 1 ] || [ "${optspec:0:1}" = ":" ]; then
@@ -451,6 +453,14 @@ parse_args()
                 ;;
         esac
     done
+}
+
+# ----------------------------------------------------------------------
+
+usage()
+{
+    echo "usage: $0 [--source[=]<dir>] [--target[=]<dir>] [--dev|--dev-release] [--acorg-only] [--tag=201710]" >&2
+    exit 2
 }
 
 # ----------------------------------------------------------------------
