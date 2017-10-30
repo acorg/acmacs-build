@@ -27,7 +27,7 @@ main()
     prepare_makefile_includes
     local PACKAGES_FILE="$(dirname ${ARGV0})/../packages.${TAG}"
     if [[ -z "${ACORG_ONLY}" ]]; then
-        install_requirements "$PACKAGES_FILE"
+        install_requirements "${PACKAGES_FILE}"
     fi
     install_build_bin
     for package in $(cat "${PACKAGES_FILE}"); do
@@ -174,13 +174,14 @@ install_makefiles()
 install_requirements()
 {
     trap fail ERR
+
     install_pybind11
     install_rapidjson
     install_boost
-    if /usr/bin/grep acmacs-webserver "$1" >/dev/null 2>&1; then
+    if grep acmacs-webserver "$1" >/dev/null 2>&1; then
         install_websocketpp
     fi
-    if /usr/bin/grep acmacs-api "$1" >/dev/null 2>&1; then
+    if grep acmacs-api "$1" >/dev/null 2>&1; then
         install_mongo_c_driver
         install_mongo_cxx_driver
     fi
