@@ -224,6 +224,7 @@ install_rapidjson()
 
 link_recursive()
 {
+    trap fail ERR
     local src="$1"
     local dest="$2"
     # echo link_recursive "${src}" "${dest}"

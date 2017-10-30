@@ -1,0 +1,148 @@
+#! /bin/bash
+
+BOOST_URI="https://github.com/boostorg/boost.git"
+BOOST_SUBMODULES=(algorithm any array asio assert bind concept_check config container core date_time detail "function" function_types functional fusion integer io iterator lexical_cast locale math move mpl numeric optional predef preprocessor program_options range regex smart_ptr spirit static_assert system tokenizer throw_exception type_index type_traits typeof tti utility variant)
+
+# ----------------------------------------------------------------------
+
+main()
+{
+    trap fail ERR
+
+    local PACKAGE_DIR="${TARGET_DIR}/sources/boost"
+    local INCLUDE="${TARGET_DIR}/include/boost"
+
+    boost_update "${PACKAGE_DIR}"
+    boost_link_includes "${PACKAGE_DIR}" "${INCLUDE}"
+
+    cd "${PACKAGE_DIR}"
+    git submodule update --init tools/build
+    git submodule update --init tools/inspect
+    ./bootstrap.sh --with-libraries=date_time,program_options,system
+    ./b2 cxxflags="-std=c++14 -DBOOST_NO_CXX11_SCOPED_ENUMS"
+
+    for filename in "${PACKAGE_DIR}/stage/lib/"*; do
+        if [[ -f "${filename}" ]]; then
+            local fn="$(basename ${filename})"
+            ln -sf "${PACKAGE_DIR}/stage/lib/${fn}" "${TARGET_DIR}/lib/${fn}"
+        fi
+    done
+
+    if [ "$(uname)" == "Linux" ]; then
+        cd "${TARGET_DIR}/lib"
+        rm -f *.a
+        for libf in libboost*.so.*; do
+            ln -sf "${libf}" "${libf%%.*}.so"
+        done
+    elif [ "$(uname)" == "Darwin" ]; then
+        cd "${TARGET_DIR}/lib"
+        rm -f *.a
+        for library in libboost_*.dylib; do
+            /usr/bin/install_name_tool -id "${TARGET_DIR}/lib/${library}" "${library}"
+            /usr/bin/install_name_tool -change libboost_system.dylib "${TARGET_DIR}/lib/libboost_system.dylib" "${library}"
+        done
+    fi
+}
+
+# ----------------------------------------------------------------------
+
+boost_update()
+{
+    trap fail ERR
+    local PACKAGE_DIR="$1"
+
+    clone_or_pull_requirements "${PACKAGE_DIR}" "${BOOST_URI}"
+    cd "${PACKAGE_DIR}"
+    for sub in "${BOOST_SUBMODULES[@]}"; do
+        git submodule update --init "libs/${sub}"
+    done
+}
+
+# ----------------------------------------------------------------------
+
+boost_link_includes()
+{
+    trap fail ERR
+    local PACKAGE_DIR="$1"
+    local INCLUDE="$2"
+
+    if [[ "$(uname)" == "Linux" ]]; then
+        if [[ ! -d "${INCLUDE}" ]]; then mkdir "${INCLUDE}"; fi
+        link_recursive "${PACKAGE_DIR}/boost" "${INCLUDE}"
+        for sub in "${BOOST_SUBMODULES[@]}"; do
+            if [[ -d "${PACKAGE_DIR}/libs/${sub}/include/boost" ]]; then
+                link_recursive "${PACKAGE_DIR}/libs/${sub}/include/boost" "${INCLUDE}"
+            fi
+        done
+    else
+        ln -sf "${PACKAGE_DIR}/boost" "${INCLUDE}"
+    fi
+}
+
+# ----------------------------------------------------------------------
+
+link_recursive()
+{
+    trap fail ERR
+    local src="$1"
+    local dest="$2"
+    # echo link_recursive "${src}" "${dest}"
+    local cwd=$(pwd)
+    for source in "${src}"/*; do
+        local target="${dest}/$(basename ${source})"
+        if [[ -d "${source}" ]]; then
+            #echo dir "${source}"
+            if [[ ! -e "${target}" ]]; then
+                mkdir "${target}"
+            fi
+            link_recursive "${source}" "${target}"
+        else
+            ln -sf "${source}" "${target}" || exit 2
+        fi
+    done
+    cd "$cwd"
+}
+
+# ----------------------------------------------------------------------
+
+clone_or_pull_requirements()
+{
+    trap fail ERR
+    local PACKAGE_DIR="$1"
+    shift
+    local CLONE_ARGS="$@"
+    if [[ -d "${PACKAGE_DIR}" ]]; then
+        ( cd "${PACKAGE_DIR}" && git pull )
+    else
+        git clone ${CLONE_ARGS} --depth 1 "${PACKAGE_DIR}"
+    fi
+}
+
+# ----------------------------------------------------------------------
+
+usage()
+{
+    echo "usage: $0 <target-root>"
+    exit 2
+}
+
+# ----------------------------------------------------------------------
+
+fail()
+{
+    echo ERROR: "$@" >&2
+    exit 2
+}
+
+trap fail ERR
+
+if [[ $# -ne 1 ]]; then
+    usage
+fi
+TARGET_DIR="$1"
+main
+
+## ----------------------------------------------------------------------
+## Local Variables:
+## eval: (if (fboundp 'eu-rename-buffer) (eu-rename-buffer))
+## End:
