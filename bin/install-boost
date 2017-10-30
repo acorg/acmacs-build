@@ -1,6 +1,11 @@
 #! /bin/bash
 
-BOOST_URI="https://github.com/boostorg/boost.git"
+if [[ "$(uname)" == "Linux" ]]; then
+    BOOST_VERSION="1.65.1"
+    BOOST_URI="https://dl.bintray.com/boostorg/release"
+else
+    BOOST_URI="https://github.com/boostorg/boost.git"
+fi
 BOOST_SUBMODULES=(algorithm any array asio assert bind concept_check config container core date_time detail "function" function_types functional fusion integer io iterator lexical_cast locale math move mpl numeric optional predef preprocessor program_options range regex smart_ptr spirit static_assert system tokenizer throw_exception type_index type_traits typeof tti utility variant)
 
 # ----------------------------------------------------------------------
@@ -10,16 +15,78 @@ main()
     trap fail ERR
 
     local PACKAGE_DIR="${TARGET_DIR}/sources/boost"
-    local INCLUDE="${TARGET_DIR}/include/boost"
 
     boost_update "${PACKAGE_DIR}"
-    boost_link_includes "${PACKAGE_DIR}" "${INCLUDE}"
+    boost_build "${PACKAGE_DIR}"
+
+    if [ "$(uname)" != "Linux" ]; then
+        boost_link_libs "${PACKAGE_DIR}"
+        boost_link_includes "${PACKAGE_DIR}"
+    fi
+}
+
+# ----------------------------------------------------------------------
+
+boost_update()
+{
+    trap fail ERR
+    local PACKAGE_DIR="$1"
+
+    if [[ "$(uname)" == "Linux" ]]; then
+        cd "${TARGET_DIR}/sources"
+        local BOOST_DIR=boost_${BOOST_VERSION//./_}
+        echo BOOST_DIR=${BOOST_DIR}
+        if [[ ! -d ${BOOST_DIR} ]]; then
+            /usr/bin/curl -OL https://dl.bintray.com/boostorg/release/${BOOST_VERSION}/source/${BOOST_DIR}.tar.bz2
+            tar xjf ${BOOST_DIR}.tar.bz2
+            rm ${BOOST_DIR}.tar.bz2
+        fi
+        ln -sf ${BOOST_DIR} boost
+        cd -
+    else
+        clone_or_pull_requirements "${PACKAGE_DIR}" "${BOOST_URI}"
+        cd "${PACKAGE_DIR}"
+        for sub in "${BOOST_SUBMODULES[@]}"; do
+            git submodule update --init "libs/${sub}"
+        done
+
+        cd "${PACKAGE_DIR}"
+        git submodule update --init tools/build
+        git submodule update --init tools/inspect
+        cd -
+    fi
+}
+
+# ----------------------------------------------------------------------
+
+boost_build()
+{
+    trap fail ERR
+    local PACKAGE_DIR="$1"
+
+    if [[ "$(uname)" == "Linux" ]]; then
+        local PREFIX="--prefix=${TARGET_DIR}"
+        local INSTALL=install
+    else
+        local PREFIX=""
+        local INSTALL=""
+    fi
 
     cd "${PACKAGE_DIR}"
-    git submodule update --init tools/build
-    git submodule update --init tools/inspect
-    ./bootstrap.sh --with-libraries=date_time,program_options,system
-    ./b2 cxxflags="-std=c++14 -DBOOST_NO_CXX11_SCOPED_ENUMS"
+    ./bootstrap.sh --with-libraries=date_time,program_options,system ${PREFIX}
+    ./b2 cxxflags="-std=c++14 -DBOOST_NO_CXX11_SCOPED_ENUMS" link=shared runtime-link=shared variant=release $INSTALL
+    if [[ "$(uname)" == "Linux" ]]; then
+        ./b2 headers
+    fi
+    cd -
+}
+
+# ----------------------------------------------------------------------
+
+boost_link_libs()
+{
+    trap fail ERR
+    local PACKAGE_DIR="$1"
 
     for filename in "${PACKAGE_DIR}/stage/lib/"*; do
         if [[ -f "${filename}" ]]; then
@@ -34,6 +101,7 @@ main()
         for libf in libboost*.so.*; do
             ln -sf "${libf}" "${libf%%.*}.so"
         done
+        cd -
     elif [ "$(uname)" == "Darwin" ]; then
         cd "${TARGET_DIR}/lib"
         rm -f *.a
@@ -41,21 +109,8 @@ main()
             /usr/bin/install_name_tool -id "${TARGET_DIR}/lib/${library}" "${library}"
             /usr/bin/install_name_tool -change libboost_system.dylib "${TARGET_DIR}/lib/libboost_system.dylib" "${library}"
         done
+        cd -
     fi
-}
-
-# ----------------------------------------------------------------------
-
-boost_update()
-{
-    trap fail ERR
-    local PACKAGE_DIR="$1"
-
-    clone_or_pull_requirements "${PACKAGE_DIR}" "${BOOST_URI}"
-    cd "${PACKAGE_DIR}"
-    for sub in "${BOOST_SUBMODULES[@]}"; do
-        git submodule update --init "libs/${sub}"
-    done
 }
 
 # ----------------------------------------------------------------------
@@ -64,7 +119,7 @@ boost_link_includes()
 {
     trap fail ERR
     local PACKAGE_DIR="$1"
-    local INCLUDE="$2"
+    local INCLUDE="${TARGET_DIR}/include/boost"
 
     if [[ "$(uname)" == "Linux" ]]; then
         if [[ ! -d "${INCLUDE}" ]]; then mkdir "${INCLUDE}"; fi
