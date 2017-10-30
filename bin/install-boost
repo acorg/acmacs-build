@@ -35,7 +35,6 @@ boost_update()
     if [[ "$(uname)" == "Linux" ]]; then
         cd "${TARGET_DIR}/sources"
         local BOOST_DIR=boost_${BOOST_VERSION//./_}
-        echo BOOST_DIR=${BOOST_DIR}
         if [[ ! -d ${BOOST_DIR} ]]; then
             /usr/bin/curl -OL https://dl.bintray.com/boostorg/release/${BOOST_VERSION}/source/${BOOST_DIR}.tar.bz2
             tar xjf ${BOOST_DIR}.tar.bz2
