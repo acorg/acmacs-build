@@ -8,7 +8,6 @@ acmacs-map-draw
 acmacs-tree-maker
 signature-page
 ssm-report
-ssm-report-n
 acmacs-whocc
 acmacs-webserver
 acmacs-api
