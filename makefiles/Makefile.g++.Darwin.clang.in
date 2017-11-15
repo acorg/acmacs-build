@@ -1,0 +1,32 @@
+# -*- Makefile -*-
+CXX = $(CXX_ROOT)/bin/clang++
+STD = c++17
+WARNINGS = -Wno-weak-vtables -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-padded
+FS_LIB = -L$(CXX_ROOT)/lib -lc++experimental
+CXX_LIB = -L$(CXX_ROOT)/lib -lc++
+
+T=D
+
+ifeq ($(T),D)
+  OPTIMIZATION =
+else ifeq ($(T),R)
+  # -fvisibility=hidden and -flto make resulting lib smaller (pybind11) but linking is much slower
+  OPTIMIZATION = -O3
+else ifeq ($(MAKECMDGOALS),clean)
+  # pass
+else
+  $(error Please provide either T=D (debug) or T=R (release))
+endif
+
+PROFILE = # -pg
+
+# ----------------------------------------------------------------------
+
+# $(1) - name, $(2) - major, $(3) - minor
+# shared_lib_name = $(1).$(2).$(3).dylib
+shared_lib_name = $(1).$(2).dylib
+
+# $(1) - name, $(2) - major, $(3) - minor
+make_shared = $(CXX) -dynamiclib -current_version $(2).$(3) -compatibility_version $(2).0
+
+# ----------------------------------------------------------------------

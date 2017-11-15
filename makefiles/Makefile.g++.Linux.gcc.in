@@ -1,0 +1,31 @@
+# -*- Makefile -*-
+CXX = $(CXX_ROOT)/bin/g++-7
+STD = c++1z
+WARNINGS = -Wall -Wextra
+FS_LIB = -lc++fs
+CXX_LIB =
+
+T=D
+
+ifeq ($(T),D)
+  OPTIMIZATION =
+else ifeq ($(T),R)
+  # -fvisibility=hidden and -flto make resulting lib smaller (pybind11) but linking is much slower
+  OPTIMIZATION = -O3
+else ifeq ($(MAKECMDGOALS),clean)
+  # pass
+else
+  $(error Please provide either T=D (debug) or T=R (release))
+endif
+
+PROFILE = # -pg
+
+# ----------------------------------------------------------------------
+
+# $(1) - name, $(2) - major, $(3) - minor
+shared_lib_name = $(1).so.$(2)
+
+# $(1) - name, $(2) - major, $(3) - minor
+make_shared = $(CXX) -shared -Wl,-soname,$(1).so.$(2)
+
+# ----------------------------------------------------------------------

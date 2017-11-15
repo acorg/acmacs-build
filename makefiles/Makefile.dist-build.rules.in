@@ -32,6 +32,9 @@ endif
 
 .PHONY: check-acmacsd-root
 
+# avoid deleting intermediate files
+.SECONDARY:
+
 # ----------------------------------------------------------------------
 
 # $(1) - source lib

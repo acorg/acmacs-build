@@ -1,0 +1,100 @@
+#! /bin/bash
+
+# ----------------------------------------------------------------------
+
+main()
+{
+    trap fail ERR
+    if [[ ! -d "${MAKEFILES_DEST}" ]]; then
+        mkdir -p "${MAKEFILES_DEST}"
+    fi
+    makefile_gxx
+    makefiles
+}
+
+# ----------------------------------------------------------------------
+
+find_gcc_Darwin()
+{
+    trap fail ERR
+    if [[ "$(/usr/local/opt/llvm/bin/clang++ --version | grep version | cut -d ' ' -f 3)" > "5.0" ]]; then
+        echo llvm 5.0+
+        CXX_TYPE=clang
+        CXX_NAME=$(printf "%-16s" "clang++-$(/usr/local/opt/llvm/bin/clang++ --version | grep version | cut -d ' ' -f 3)")
+        CXX_ROOT="/usr/local/opt/llvm"
+        FS_LIB="-L/usr/local/opt/llvm/lib -lc++experimental"
+        CXX_LIB="-L/usr/local/opt/llvm/lib -lc++"
+    else
+        fail "llvm 5.0+ required on macOS, use \"brew install llvm\" to install it"
+    fi
+}
+
+# ----------------------------------------------------------------------
+
+find_gcc_Linux()
+{
+    trap fail ERR
+    if [[ "$(g++-7 --version | head -n 1 | cut -d ' ' -f 3)" > "7.2" ]]; then
+        echo gcc 7.2
+        CXX_TYPE=gcc
+        CXX="g++-7"
+        CXX_NAME="g++-7      "
+        STD="c++1z"
+        WARNINGS="-Wall -Wextra"
+        FS_LIB="-lstdc++fs"
+        CXX_LIB=""
+    else
+        fail "g++ 7.2+ required on Linux"
+    fi
+}
+
+# ----------------------------------------------------------------------
+
+makefile_gxx()
+{
+    trap fail ERR
+    find_gcc_$(uname)
+    DEST="${MAKEFILES_DEST}/Makefile.g++"
+    if [[ ! -f "${DEST}" ]]; then
+        cp "${MAKEFILES_SRC}/Makefile.g++.$(uname).${CXX_TYPE}.in" "${DEST}"
+        printf '\nCXX_TYPE = %s\nCXX_NAME = "%s"\nCXX_ROOT = %s\nFS_LIB   = %s\nCXX_LIB  = %s\n' "${CXX_TYPE}" "${CXX_NAME}" "${CXX_ROOT}" "${FS_LIB}" "${CXX_LIB}" >>"${DEST}"
+    fi
+}
+
+# ----------------------------------------------------------------------
+
+makefiles()
+{
+    trap fail ERR
+    if [[ ! -f "${MAKEFILES_DEST}/Makefile.dist-build.vars" ]]; then
+        cp "${MAKEFILES_SRC}/Makefile.dist-build.vars.in" "${MAKEFILES_DEST}/Makefile.dist-build.vars"
+        printf "\nPROJECT_BUILD_ROOT = ${BUILD_ROOT}/build/\$(PROJECT_NAME)" >>"${MAKEFILES_DEST}/Makefile.dist-build.vars"
+    fi
+    for nn in dist-build.rules rtags cheerp sass; do
+        if [[ ! -f "${MAKEFILES_DEST}/Makefile.${nn}" ]]; then
+            cp "${MAKEFILES_SRC}/Makefile.${nn}.in" "${MAKEFILES_DEST}/Makefile.${nn}"
+        fi
+    done
+}
+
+# ----------------------------------------------------------------------
+
+fail()
+{
+    echo ERROR: "$@" >&2
+    exit 2
+}
+
+trap fail ERR
+if [ $# -ne 3 ]; then
+    fail "Usage $0 <MAKEFILES_SRC> <MAKEFILES_DEST> <BUILD_ROOT>"
+fi
+MAKEFILES_SRC="$1"
+MAKEFILES_DEST="$2"
+BUILD_ROOT="$3"
+main
+
+## ----------------------------------------------------------------------
+## Local Variables:
+## eval: (if (fboundp 'eu-rename-buffer) (eu-rename-buffer))
+## End:
