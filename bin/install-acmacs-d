@@ -81,8 +81,6 @@ prepare_makefile_includes()
         fail "cmake 3.2 or later required"
     fi
 
-    find_gcc_$(uname)
-
     # python
     # sassc
     # -L/usr/local/opt/openssl/lib $(shell pkg-config --libs libssl)
@@ -90,93 +88,10 @@ prepare_makefile_includes()
     # $(shell pkg-config --libs libcrypto)
 
     local PROG="$(dirname ${ARGV0})/install-makefiles"
-    local MAKEFILES_SRC="$(dirname ${ARGV0}))/../makefiles"
+    local MAKEFILES_SRC="$(dirname ${ARGV0})/../makefiles"
     local MAKEFILES_DEST="${TARGET_DIR}/share/makefiles"
     "$PROG" "${MAKEFILES_SRC}" "${MAKEFILES_DEST}" "${BUILD_ROOT}"
-
-    # install_makefiles
 }
-
-# ----------------------------------------------------------------------
-
-# find_gcc_Darwin()
-# {
-#     trap fail ERR
-#     if [[ "$(/usr/local/opt/llvm/bin/clang++ --version | grep version | cut -d ' ' -f 3)" > "5.0" ]]; then
-#         echo llvm 5.0+
-#         makefile_gxx "/usr/local/opt/llvm/bin/clang++" "c++17" "-Wno-weak-vtables -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-padded" "clang++-5  " "-L/usr/local/opt/llvm/lib -lc++experimental" "-L/usr/local/opt/llvm/lib -lc++" "-dynamiclib" ".dylib"
-#     else
-#         fail "llvm 5.0+ required on macOS, use \"brew install llvm\" to install it"
-#     fi
-# }
-
-# find_gcc_Linux()
-# {
-#     trap fail ERR
-#     if [[ "$(g++-7 --version | head -n 1 | cut -d ' ' -f 3)" > "7.2" ]]; then
-#         echo gcc 7.2
-#         makefile_gxx "g++-7" "c++1z" "-Wall -Wextra" "g++-7      " "-lstdc++fs" "" "-shared" ".so"
-#     else
-#         fail "g++ 7.2+ required on Linux"
-#     fi
-# }
-
-# makefile_gxx()
-# {
-#     local CXX="$1"
-#     local STD="$2"
-#     local WARNINGS="$3"
-#     local CXX_NAME="$4"
-#     local FS_LIB="$5"
-#     local CXX_LIB="$5"
-#     local CXX_SHARED_SWITCHES="$6"
-#     local SHARED_SUFFIX="$7"
-
-#     cat >"${TARGET_DIR}/share/makefiles/Makefile.g++" <<EOF
-# # -*- Makefile -*-
-# CXX = ${CXX}
-# STD = ${STD}
-# WARNINGS = ${WARNINGS}
-# CXX_NAME = "${CXX_NAME}"
-# FS_LIB = ${FS_LIB}
-# CXX_LIB = ${CXX_LIB}
-# CXX_SHARED = $(CXX) ${CXX_SHARED_SWITCHES}
-# SHARED_SUFFIX = ${SHARED_SUFFIX}
-
-# T=D
-
-# ifeq (\$(T),D)
-#   OPTIMIZATION =
-# else ifeq (\$(T),R)
-#   # -fvisibility=hidden and -flto make resulting lib smaller (pybind11) but linking is much slower
-#   OPTIMIZATION = -O3
-# else ifeq (\$(MAKECMDGOALS),clean)
-#   # pass
-# else
-#   \$(error Please provide either T=D (debug) or T=R (release))
-# endif
-
-# PROFILE = # -pg
-# EOF
-# }
-
-# ----------------------------------------------------------------------
-
-# install_makefiles()
-# {
-#     trap fail ERR
-#     local MAKEFILES_SRC=$(dirname $0)/../makefiles
-#     local MAKEFILES_DEST="${TARGET_DIR}/share/makefiles"
-#     if [[ ! -f "${MAKEFILES_DEST}/Makefile.dist-build.vars" ]]; then
-#         cp "${MAKEFILES_SRC}/Makefile.dist-build.vars.in" "${MAKEFILES_DEST}/Makefile.dist-build.vars"
-#         printf "\nPROJECT_BUILD_ROOT = ${BUILD_ROOT}/build/\$(PROJECT_NAME)" >>"${MAKEFILES_DEST}/Makefile.dist-build.vars"
-#     fi
-#     for nn in dist-build.rules rtags cheerp sass; do
-#         if [[ ! -f "${MAKEFILES_DEST}/Makefile.${nn}" ]]; then
-#             cp "${MAKEFILES_SRC}/Makefile.${nn}.in" "${MAKEFILES_DEST}/Makefile.${nn}"
-#         fi
-#     done
-# }
 
 # ----------------------------------------------------------------------
 
