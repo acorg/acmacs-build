@@ -1,0 +1,11 @@
+#! /bin/bash
+AD_ROOT=$(/usr/bin/python -c "import os; print os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(\"$0\")))))")
+cd "${AD_ROOT}"/sources
+(find . -name "*.py"; find . -name "*.cc" -o -name "*.hh") | etags --output TAGS -
+cat >>TAGS <<EOF
+
+auto-revert,46
+Local Variables:
+eval: (auto-revert-mode)
+End:
+EOF

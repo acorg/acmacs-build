@@ -1,0 +1,17 @@
+#! /bin/bash
+AD_ROOT=$(/usr/bin/python -c "import os; print os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(\"$0\")))))")
+cd "${AD_ROOT}"/sources
+TF=${T:-/tmp}/ad-status.$$
+for d in *; do
+    if [[ -d "$d"/.git ]]; then
+        cd $d
+        git status -s >"${TF}"
+        if [[ -s "${TF}" ]]; then
+            echo '----------------------------------------------------------------------'
+            echo $d
+            cat "${TF}"
+        fi
+        rm -f "${TF}"
+        cd ..
+    fi
+done
