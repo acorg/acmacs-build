@@ -7,6 +7,7 @@ PYTHON_CONFIG = python$(PYTHON_VERSION)-config
 PYTHON_MODULE_SUFFIX = $(shell $(PYTHON_CONFIG) --extension-suffix)
 
 PYTHON_LDLIBS = $(shell $(PYTHON_CONFIG) --ldflags | sed -E 's/-Wl,-stack_size,[0-9]+//')
+PYTHON_INCLUDES = $(shell $(PYTHON_CONFIG) --includes)
 
 # ----------------------------------------------------------------------
 
