@@ -64,7 +64,7 @@ makefiles()
         cp "${MAKEFILES_SRC}/Makefile.dist-build.vars.in" "${MAKEFILES_DEST}/Makefile.dist-build.vars"
         printf "\nPROJECT_BUILD_ROOT = ${BUILD_ROOT}/build/\$(PROJECT_NAME)" >>"${MAKEFILES_DEST}/Makefile.dist-build.vars"
     fi
-    for nn in dist-build.rules rtags cheerp sass; do
+    for nn in dist-build.rules python rtags cheerp sass; do
         if [[ ! -f "${MAKEFILES_DEST}/Makefile.${nn}" ]]; then
             cp "${MAKEFILES_SRC}/Makefile.${nn}.in" "${MAKEFILES_DEST}/Makefile.${nn}"
         fi
