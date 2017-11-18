@@ -49,6 +49,11 @@ Scripts to build Acmacs-D.
 
 - xz
 
+- bzip2
+
+  * macOS: comes with the system (/usr/lib/libbz2.1.0.dylib)
+  * Ubuntu: comes with the system (e.g. /lib/x86_64-linux-gnu/libbz2.so.1.0)
+
 - CMake 3.2 or later
 
 - curl and libcurl
