@@ -62,11 +62,17 @@ makefiles()
     trap fail ERR
     if [[ ! -f "${MAKEFILES_DEST}/Makefile.dist-build.vars" ]]; then
         cp "${MAKEFILES_SRC}/Makefile.dist-build.vars.in" "${MAKEFILES_DEST}/Makefile.dist-build.vars"
+        if [ -f "${MAKEFILES_SRC}/Makefile.dist-build.vars.$(uname).in" ]; then
+            cat "${MAKEFILES_SRC}/Makefile.dist-build.vars.$(uname).in" >> "${MAKEFILES_DEST}/Makefile.dist-build.vars"
+        fi
         printf "\nPROJECT_BUILD_ROOT = ${BUILD_ROOT}/build/\$(PROJECT_NAME)" >>"${MAKEFILES_DEST}/Makefile.dist-build.vars"
     fi
     for nn in dist-build.rules python rtags cheerp sass; do
         if [[ ! -f "${MAKEFILES_DEST}/Makefile.${nn}" ]]; then
             cp "${MAKEFILES_SRC}/Makefile.${nn}.in" "${MAKEFILES_DEST}/Makefile.${nn}"
+            if [ -f "${MAKEFILES_SRC}/Makefile.${nn}.$(uname).in" ]; then
+                cat "${MAKEFILES_SRC}/Makefile.${nn}.$(uname).in" >> "${MAKEFILES_DEST}/Makefile.${nn}"
+            fi
         fi
     done
 }

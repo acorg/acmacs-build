@@ -1,0 +1,14 @@
+# -*- Makefile -*-
+# Eugene Skepner 2017
+# ======================================================================
+
+# $(1) - source lib
+define install_lib
+	ln -sf $(1) $(AD_LIB)
+	/usr/bin/install_name_tool -id $(AD_LIB)/$(notdir $(1)) $(AD_LIB)/$(notdir $(1))
+endef
+
+# ======================================================================
+### Local Variables:
+### eval: (if (fboundp 'eu-rename-buffer) (eu-rename-buffer))
+### End:
