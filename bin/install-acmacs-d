@@ -10,7 +10,7 @@ DEV=""
 GIT_URI="https://github.com/acorg"
 TT="T=R"
 ACORG_ONLY=""
-TAG="201710"
+TAG="201711"
 
 ARGV0=$(python3 -c "import os; print(os.path.realpath(\"$0\"))")
 
