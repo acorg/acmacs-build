@@ -1,10 +1,16 @@
-#! /bin/sh
+#! /bin/bash
 
 if [ -z "$ACMACSD_ROOT" ]; then
     echo ACMACSD_ROOT not set >&2
     exit 1
 fi
 
+if gmake --version >/dev/null 2>&1; then
+    MAKE=gmake
+else
+    MAKE=make
+fi
+
 for mf in $(find "$ACMACSD_ROOT/sources" -name Makefile -print); do
-    make -C $(dirname $mf) rtags T=D
+    ${MAKE} -C $(dirname $mf) rtags T=D
 done
