@@ -8,7 +8,7 @@ CXX_LIB =
 T=D
 
 ifeq ($(T),D)
-  OPTIMIZATION =
+  OPTIMIZATION = -O0
 else ifeq ($(T),R)
   # -fvisibility=hidden and -flto make resulting lib smaller (pybind11) but linking is much slower
   OPTIMIZATION = -O3
