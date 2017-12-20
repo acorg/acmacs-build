@@ -47,7 +47,13 @@ Scripts to build Acmacs-D.
 
 - cairo
 
+  * macOS: `brew install cairo`
+  * Ubuntu Linux: `apt-get install libcairo2-dev`
+
 - xz
+
+  * macOS: `brew install xz`
+  * Ubuntu Linux: `apt-get install xz-utils`
 
 - bzip2
 
@@ -55,6 +61,9 @@ Scripts to build Acmacs-D.
   * Ubuntu: comes with the system (e.g. /lib/x86_64-linux-gnu/libbz2.so.1.0)
 
 - CMake 3.2 or later
+
+  * macOS: `brew install cmake`
+  * Ubuntu Linux: `apt-get install cmake`
 
 - curl and libcurl
 
@@ -85,4 +94,8 @@ Additional program arguments:
 `--dev` - if you are developer, have github id and have write access
 to acmacs-d repositories, sources are checked out using ssh.
 
+`--dev-release` - for a developer, build using TT=R
+
 `--acorg-only` - do not update boost, pybind11, etc.
+
+`--tag` -  checkout specific tag
