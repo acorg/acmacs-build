@@ -21,7 +21,7 @@ main()
     trap fail ERR
     date
     export ACMACSD_ROOT="${TARGET_DIR}"
-    export LD_LIBRARY_PATH="${ACMACSD_ROOT}/lib"
+    export LD_LIBRARY_PATH="${ACMACSD_ROOT}/lib:${LD_LIBRARY_PATH}"
     echo ACMACSD_ROOT="${ACMACSD_ROOT}"
     build_dir
     make_dirs

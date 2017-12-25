@@ -2,6 +2,6 @@
 export ACMACSD_ROOT=$(/usr/bin/python -c "import os; print os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(\"$0\")))))")
 export PATH="$ACMACSD_ROOT/bin:$ACMACSD_ROOT/sources/acmacs-build/bin:$PATH"
 if [[ $(uname) == "Linux" ]]; then
-    export LD_LIBRARY_PATH="$ACMACSD_ROOT/lib"
+    export LD_LIBRARY_PATH="${ACMACSD_ROOT}/lib:${LD_LIBRARY_PATH}"
 fi
 exec time "$@"
