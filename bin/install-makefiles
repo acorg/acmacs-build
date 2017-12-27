@@ -22,6 +22,8 @@ find_gcc_Darwin()
         CXX_TYPE=clang
         CXX_NAME=$(printf "%-16s" "clang++-$(/usr/local/opt/llvm/bin/clang++ --version | grep version | cut -d ' ' -f 3)")
         CXX_ROOT="/usr/local/opt/llvm"
+        CXXFLAGS="${CXXFLAGS}"
+        LDFLAGS="${LDFLAGS}"
     else
         fail "llvm 5.0+ required on macOS, use \"brew install llvm\" to install it"
     fi
@@ -37,6 +39,8 @@ find_gcc_Linux()
         CXX_TYPE=gcc
         CXX_NAME=$(printf "%-16s" "g++-$(g++-7 --version | head -n 1 | cut -d ' ' -f 3 | cut -d - -f 1)")
         CXX_ROOT="$(dirname $(dirname $(which g++-7)))"
+        CXXFLAGS="${CXXFLAGS}"
+        LDFLAGS="${LDFLAGS}"
     else
         fail "g++ 7.2+ required on Linux"
     fi
@@ -47,11 +51,14 @@ find_gcc_Linux()
 makefile_gxx()
 {
     trap fail ERR
+    CXXFLAGS="-g -MMD \$(OPTIMIZATION) \$(PROFILE) -fPIC -std=\$(STD) \$(WARNINGS) -I\$(AD_INCLUDE)"
+    LDFLAGS="\$(OPTIMIZATION) \$(PROFILE)"
     find_gcc_$(uname)
-    DEST="${MAKEFILES_DEST}/Makefile.g++"
+    local DEST="${MAKEFILES_DEST}/Makefile.g++"
     if [[ ! -f "${DEST}" ]]; then
+        echo "Creating ${DEST}"
         cp "${MAKEFILES_SRC}/Makefile.g++.$(uname).${CXX_TYPE}.in" "${DEST}"
-        printf '\nCXX_TYPE = %s\nCXX_NAME = "%s"\nCXX_ROOT = %s\n' "${CXX_TYPE}" "${CXX_NAME}" "${CXX_ROOT}" >>"${DEST}"
+        printf '\nCXX_TYPE = %s\nCXX_NAME = "%s"\nCXX_ROOT = %s\nCXXFLAGS = %s\nLDFLAGS = %s\n' "${CXX_TYPE}" "${CXX_NAME}" "${CXX_ROOT}" "${CXXFLAGS}" "${LDFLAGS}" >>"${DEST}"
     fi
 }
 
@@ -60,18 +67,21 @@ makefile_gxx()
 makefiles()
 {
     trap fail ERR
-    if [[ ! -f "${MAKEFILES_DEST}/Makefile.dist-build.vars" ]]; then
-        cp "${MAKEFILES_SRC}/Makefile.dist-build.vars.in" "${MAKEFILES_DEST}/Makefile.dist-build.vars"
+    local DEST="${MAKEFILES_DEST}/Makefile.dist-build.vars"
+    if [[ ! -f "${DEST}" ]]; then
+        echo "Creating ${DEST}"
+        cp "${MAKEFILES_SRC}/Makefile.dist-build.vars.in" "${DEST}"
         if [ -f "${MAKEFILES_SRC}/Makefile.dist-build.vars.$(uname).in" ]; then
-            cat "${MAKEFILES_SRC}/Makefile.dist-build.vars.$(uname).in" >> "${MAKEFILES_DEST}/Makefile.dist-build.vars"
+            cat "${MAKEFILES_SRC}/Makefile.dist-build.vars.$(uname).in" >> "${DEST}"
         fi
-        printf "\nPROJECT_BUILD_ROOT = ${BUILD_ROOT}/build/\$(PROJECT_NAME)" >>"${MAKEFILES_DEST}/Makefile.dist-build.vars"
+        printf "\nPROJECT_BUILD_ROOT = ${BUILD_ROOT}/build/\$(PROJECT_NAME)" >>"${DEST}"
     fi
     for nn in dist-build.rules python rtags cheerp sass; do
-        if [[ ! -f "${MAKEFILES_DEST}/Makefile.${nn}" ]]; then
-            cp "${MAKEFILES_SRC}/Makefile.${nn}.in" "${MAKEFILES_DEST}/Makefile.${nn}"
+        DEST="${MAKEFILES_DEST}/Makefile.${nn}"
+        if [[ ! -f "${DEST}" ]]; then
+            cp "${MAKEFILES_SRC}/Makefile.${nn}.in" "${DEST}"
             if [ -f "${MAKEFILES_SRC}/Makefile.${nn}.$(uname).in" ]; then
-                cat "${MAKEFILES_SRC}/Makefile.${nn}.$(uname).in" >> "${MAKEFILES_DEST}/Makefile.${nn}"
+                cat "${MAKEFILES_SRC}/Makefile.${nn}.$(uname).in" >> "${DEST}"
             fi
         fi
     done
@@ -81,13 +91,14 @@ makefiles()
 
 fail()
 {
-    echo ERROR: "$@" >&2
+    printf "ERROR: " >&2
+    printf "$@\n" >&2
     exit 2
 }
 
 trap fail ERR
 if [ $# -ne 3 ]; then
-    fail "Usage $0 <MAKEFILES_SRC> <MAKEFILES_DEST> <BUILD_ROOT>"
+    fail "Usage $0 <MAKEFILES_SRC> <MAKEFILES_DEST> <BUILD_ROOT>\n       $(basename $0) ${ACMACSD_ROOT}/sources/acmacs-build/makefiles /r/AD/share/makefiles /r/AD/build"
 fi
 MAKEFILES_SRC="$1"
 MAKEFILES_DEST="$2"
