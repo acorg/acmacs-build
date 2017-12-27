@@ -98,7 +98,7 @@ fail()
 
 trap fail ERR
 if [ $# -ne 3 ]; then
-    fail "Usage $0 <MAKEFILES_SRC> <MAKEFILES_DEST> <BUILD_ROOT>\n       $(basename $0) ${ACMACSD_ROOT}/sources/acmacs-build/makefiles /r/AD/share/makefiles /r/AD/build"
+    fail "Usage $0 <MAKEFILES_SRC> <MAKEFILES_DEST> <BUILD_ROOT>\n       $(basename $0) ${ACMACSD_ROOT}/sources/acmacs-build/makefiles ${ACMACSD_ROOT}/share/makefiles /r/AD/build"
 fi
 MAKEFILES_SRC="$1"
 MAKEFILES_DEST="$2"
