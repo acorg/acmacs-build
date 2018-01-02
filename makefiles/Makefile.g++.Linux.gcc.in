@@ -26,6 +26,6 @@ PROFILE = # -pg
 shared_lib_name = $(1).so.$(2)
 
 # $(1) - name, $(2) - major, $(3) - minor
-make_shared = $(CXX) -shared -Wl,-soname,$(1).so.$(2)
+make_shared = $(CXX) -shared -Wl,-soname,$(1).so.$(2) -Wl,-rpath,'$$ORIGIN'
 
 # ----------------------------------------------------------------------
