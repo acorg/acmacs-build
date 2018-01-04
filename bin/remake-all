@@ -11,5 +11,5 @@ else
 fi
 
 for package in $(cat "${PACKAGES_FILE}"); do
-    ( cd "${ACMACSD_ROOT}/sources/${package}" && ${MAKE} clean && ${MAKE} -j${NPROC} install "$@" ) || exit 1
+    ( cd "${ACMACSD_ROOT}/sources/${package}" && ${MAKE} clean && ${MAKE} -j${NPROC} install "$@" && ${MAKE} -j${NPROC} test "$@" ) || exit 1
 done

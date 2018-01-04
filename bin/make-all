@@ -5,5 +5,5 @@ TAG=$(cat "${ACMACSD_ROOT}/share/tag")
 PACKAGES_FILE=$(python3 -c "import os; print(os.path.dirname(os.path.realpath(\"$0\")) + '/../packages.$TAG')")
 
 for package in $(cat "${PACKAGES_FILE}"); do
-    ( cd "${ACMACSD_ROOT}/sources/${package}" && make -j${NPROC} "$@" ) || exit 1
+    ( cd "${ACMACSD_ROOT}/sources/${package}" && make -j${NPROC} "$@" && make -j${NPROC} test "$@" ) || exit 1
 done
