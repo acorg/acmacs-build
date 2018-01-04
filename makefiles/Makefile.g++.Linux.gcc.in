@@ -11,7 +11,7 @@ ifeq ($(T),D)
   OPTIMIZATION = -O0
 else ifeq ($(T),R)
   # -fvisibility=hidden and -flto make resulting lib smaller (pybind11) but linking is much slower
-  OPTIMIZATION = -O3
+  OPTIMIZATION = -Ofast -mavx2 -mtune=intel
 else ifeq ($(MAKECMDGOALS),clean)
   # pass
 else
