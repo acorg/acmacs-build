@@ -4,4 +4,9 @@ export PATH="$ACMACSD_ROOT/bin:$ACMACSD_ROOT/sources/acmacs-build/bin:$PATH"
 if [[ $(uname) == "Linux" ]]; then
     export LD_LIBRARY_PATH="${ACMACSD_ROOT}/lib:${LD_LIBRARY_PATH}"
 fi
-exec time "$@"
+if [[ "$1" == "--no-time" ]]; then
+    shift
+    exec "$@"
+else
+    exec time "$@"
+fi
