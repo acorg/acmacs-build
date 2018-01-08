@@ -23,6 +23,8 @@ main()
     export ACMACSD_ROOT="${TARGET_DIR}"
     export LD_LIBRARY_PATH="${ACMACSD_ROOT}/lib:${LD_LIBRARY_PATH}"
     echo ACMACSD_ROOT="${ACMACSD_ROOT}"
+    echo TARGET_DIR="${TARGET_DIR}"
+    echo SOURCE_DIR="${SOURCE_DIR}"
     build_dir
     make_dirs
     prepare_makefile_includes
@@ -288,6 +290,7 @@ parse_args()
                     *)
                         if [ "$OPTERR" = 1 ] && [ "${optspec:0:1}" != ":" ]; then
                             echo "Unknown option --${OPTARG}" >&2
+                            usage
                         fi
                         ;;
                 esac
