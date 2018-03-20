@@ -3,17 +3,17 @@ CXX = $(CXX_ROOT)/bin/clang++
 STD = c++17
 WARNINGS = -Wno-weak-vtables -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-padded
 FS_LIB = -L$(CXX_ROOT)/lib -lc++experimental
-CXX_LIB = -L$(CXX_ROOT)/lib -lc++
+CXX_LIB = -L$(CXX_ROOT)/lib -lc++ -lomp
 
 T=D
 
 ifeq ($(T),D)
-  OPTIMIZATION = -O0 -fno-inline-functions
+  OPTIMIZATION = -O0 -fno-inline-functions -Wno-source-uses-openmp
 else ifeq ($(T),R)
   # -fvisibility=hidden and -flto make resulting lib smaller (pybind11) but linking is much slower
   # -Ofast omits std::isnan() check but we need it for disconnected points and to avoid writing nan into .ace
   # -Ofast leads to sigp with serum circles failure, i.e. serum circles calculation failure
-  OPTIMIZATION = -O3 -mavx -mtune=intel
+  OPTIMIZATION = -O3 -mavx -mtune=intel -fopenmp
 else ifeq ($(MAKECMDGOALS),clean)
   # pass
 else
