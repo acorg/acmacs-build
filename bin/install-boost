@@ -6,7 +6,7 @@ if [[ "$(uname)" == "Linux" ]]; then
 else
     BOOST_URI="https://github.com/boostorg/boost.git"
 fi
-BOOST_SUBMODULES=(algorithm any array asio assert bind concept_check config container core date_time detail "function" function_types functional fusion integer io iterator lexical_cast locale math move mpl numeric optional predef preprocessor program_options range regex smart_ptr spirit static_assert system tokenizer throw_exception type_index type_traits typeof tti utility variant)
+BOOST_SUBMODULES=(algorithm any array asio assert bind concept_check config container container_hash core date_time detail "function" function_types functional fusion integer io iterator lexical_cast locale math move mpl numeric optional predef preprocessor program_options range regex smart_ptr spirit static_assert system tokenizer throw_exception type_index type_traits typeof tti utility variant)
 
 # ----------------------------------------------------------------------
 
