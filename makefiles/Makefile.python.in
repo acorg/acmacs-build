@@ -2,8 +2,9 @@
 # Eugene Skepner 2017
 # ======================================================================
 
-PYTHON_VERSION = $(shell python3 -c 'import sys; print("{0.major}.{0.minor}".format(sys.version_info))')
-PYTHON_CONFIG = python$(PYTHON_VERSION)-config
+# PYTHON_VERSION = $(shell python3 -c 'import sys; print("{0.major}.{0.minor}".format(sys.version_info))')
+# PYTHON_CONFIG = python$(PYTHON_VERSION)-config
+PYTHON_CONFIG = python3-config
 PYTHON_MODULE_SUFFIX = $(shell $(PYTHON_CONFIG) --extension-suffix)
 
 PYTHON_LDLIBS = $(shell $(PYTHON_CONFIG) --ldflags | sed -E 's/-Wl,-stack_size,[0-9]+//')
