@@ -193,7 +193,8 @@ install_websocketpp()
 install_mongo_c_driver()
 {
     trap fail ERR
-    local VERSION=1.6.3
+    # local VERSION=1.6.3
+    local VERSION=1.9.4
     local PACKAGE_DIR="${BUILD_ROOT}/sources/mongo-c-driver-${VERSION}"
     if [[ ! -d "${PACKAGE_DIR}" ]]; then
         cd "${BUILD_ROOT}/sources"
@@ -215,7 +216,7 @@ install_mongo_cxx_driver()
     clone_or_pull_requirements "${PACKAGE_DIR}" "https://github.com/mongodb/mongo-cxx-driver.git" --branch releases/stable
     export PKG_CONFIG_PATH="${TARGET_DIR}"/lib/pkgconfig
     cd "${PACKAGE_DIR}/build"
-    cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="${TARGET_DIR}" ..
+    cmake -DCMAKE_BUILD_TYPE=Release -DBSONCXX_POLY_USE_MNMLSTC=1 -DCMAKE_INSTALL_PREFIX="${TARGET_DIR}" -DCMAKE_PREFIX_PATH="${TARGET_DIR}" ..
     # -DBSONCXX_POLY_USE_BOOST=1
     # Only for MNMLSTC polyfill (default on Linux and macos
     # make EP_mnmlstc_core
