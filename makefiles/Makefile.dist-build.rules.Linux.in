@@ -5,6 +5,7 @@
 # $(1) - source lib
 define install_lib
 	ln -sf $(1) $(AD_LIB)
+	ln -sf $(notdir $(1)) $(AD_LIB)/$(basename $(notdir $(1)))
 endef
 
 # ======================================================================
