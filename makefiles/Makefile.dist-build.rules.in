@@ -15,7 +15,7 @@ install-headers: check-acmacsd-root
 # ----------------------------------------------------------------------
 
 clean:
-	rm -rf $(DIST) $(BUILD) dist build
+	rm -rf $(DIST)/* $(BUILD)
 
 $(DIST):
 	mkdir -p $(DIST)
