@@ -122,7 +122,7 @@ install_requirements()
     trap fail ERR
 
     install_pybind11
-    install_rapidjson
+    # install_rapidjson
     install_boost
     if grep acmacs-webserver "$1" >/dev/null 2>&1; then
         install_websocketpp
@@ -160,13 +160,13 @@ install_pybind11()
 
 # ----------------------------------------------------------------------
 
-install_rapidjson()
-{
-    trap fail ERR
-    local PACKAGE_DIR="${BUILD_ROOT}/sources/rapidjson"
-    clone_or_pull_requirements "${PACKAGE_DIR}" "https://github.com/Tencent/rapidjson.git"
-    ln -sf "${PACKAGE_DIR}/include/"* "${TARGET_DIR}/include"
-}
+# install_rapidjson()
+# {
+#     trap fail ERR
+#     local PACKAGE_DIR="${BUILD_ROOT}/sources/rapidjson"
+#     clone_or_pull_requirements "${PACKAGE_DIR}" "https://github.com/Tencent/rapidjson.git"
+#     ln -sf "${PACKAGE_DIR}/include/"* "${TARGET_DIR}/include"
+# }
 
 # ----------------------------------------------------------------------
 
