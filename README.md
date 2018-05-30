@@ -38,13 +38,6 @@ Scripts to build Acmacs-D.
 
     `apt-get install python3`
 
-- [sassc](https://github.com/sass/sassc)
-
-  Required by acmacs-api client
-
-  * macOS: `brew install sassc`
-  * Ubuntu Linux: install manually
-
 - cairo
 
   * macOS: `brew install cairo`
@@ -69,6 +62,18 @@ Scripts to build Acmacs-D.
 
   * macOS: installed by default.
   * Ubuntu Linux: apt-get install libcurl4-openssl-dev
+
+- apache for mod-acmacs
+
+  * macOS: apache coming with the system does not allow building modules
+    brew install apache2
+
+- ? [sassc](https://github.com/sass/sassc)
+
+  Required by acmacs-api client
+
+  * macOS: `brew install sassc`
+  * Ubuntu Linux: install manually
 
 # Installation
 
