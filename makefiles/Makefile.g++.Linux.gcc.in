@@ -3,7 +3,7 @@ CXX = $(CXX_ROOT)/bin/g++-7
 STD = c++1z
 WARNINGS = -Wall -Wextra
 FS_LIB = -lstdc++fs
-CXX_LIB =
+CXX_LIB = $(FS_LIB)
 
 T=D
 
