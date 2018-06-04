@@ -11,6 +11,7 @@ GIT_URI="https://github.com/acorg"
 TT="T=R"
 ACORG_ONLY=""
 TAG="master"
+QUICK="no"
 
 ARGV0=$(python3 -c "import os; print(os.path.realpath(\"$0\"))")
 
@@ -73,9 +74,13 @@ install_acorg_package()
     if [[ "$1" == "acmacs.r" ]]; then
         install_acmacs_r "$1"
     else
-        make -C "${PACKAGE_DIR}" -w clean
-        make -C "${PACKAGE_DIR}" -w -j$NPROC $TT install
-        make -C "${PACKAGE_DIR}" -w -j$NPROC $TT test
+        if [[ "${QUICK}" == "yes" ]]; then
+            make -C "${PACKAGE_DIR}" -w -j$NPROC $TT install
+        else
+            make -C "${PACKAGE_DIR}" -w clean
+            make -C "${PACKAGE_DIR}" -w -j$NPROC $TT install
+            make -C "${PACKAGE_DIR}" -w -j$NPROC $TT test
+        fi
     fi
 }
 
@@ -285,6 +290,9 @@ parse_args()
                         TAG="${!OPTIND}"
                         OPTIND=$(( $OPTIND + 1 ))
                         ;;
+                    quick)
+                        QUICK="yes"
+                        ;;
                     help)
                         usage
                         ;;
@@ -312,7 +320,7 @@ parse_args()
 
 usage()
 {
-    echo "usage: $0 [--source[=]<dir>] [--target[=]<dir>] [--dev|--dev-release] [--acorg-only] [--tag=201710]" >&2
+    echo "usage: $0 [--source[=]<dir>] [--target[=]<dir>] [--dev|--dev-release] [--acorg-only] [--quick] [--tag=201710]" >&2
     exit 2
 }
 

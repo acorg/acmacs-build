@@ -1,0 +1,18 @@
+#! /bin/bash
+
+on_error()
+{
+    (echo $PROG FAILED; echo "LOG: /scp:$HOSTNAME:$LOG") | mail -s "$(hostname) $PROG FAILED" eu@antigenic-cartography.org
+    exit 1
+}
+
+trap on_error ERR
+
+${ACMACSD_ROOT}/sources/acmacs-build/bin/install-acmacs-d --source ${ACMACSD_ROOT} --target ${ACMACSD_ROOT} --dev-release --acorg-only --quick
+install-apache-mod-acmacs
+cd /syn/eu/acmacs-api-server && acmacs-api-server-restart settings.json
+
+## ----------------------------------------------------------------------
+## Local Variables:
+## eval: (if (fboundp 'eu-rename-buffer) (eu-rename-buffer))
+## End:
