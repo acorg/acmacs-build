@@ -13,7 +13,8 @@ else ifeq ($(T),R)
   # -fvisibility=hidden and -flto make resulting lib smaller (pybind11) but linking is much slower
   # -Ofast omits std::isnan() check but we need it for disconnected points and to avoid writing nan into .ace
   # -Ofast leads to sigp with serum circles failure, i.e. serum circles calculation failure
-  OPTIMIZATION = -O3 -mavx -mtune=intel -fopenmp
+  # David B has machine with i7 920 which does not support AVX, so -mavx is replaced with -msse4
+  OPTIMIZATION = -O3 -msse4 -mfpmath=sse -mtune=intel -fopenmp
 else ifeq ($(MAKECMDGOALS),clean)
   # pass
 else
