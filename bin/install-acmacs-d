@@ -198,18 +198,32 @@ install_websocketpp()
 install_mongo_c_driver()
 {
     trap fail ERR
-    # local VERSION=1.6.3
-    local VERSION=1.9.4
+    local VERSION=1.11.0 # 2018-07-14
     local PACKAGE_DIR="${BUILD_ROOT}/sources/mongo-c-driver-${VERSION}"
-    if [[ ! -d "${PACKAGE_DIR}" ]]; then
+    if [[ -d "${PACKAGE_DIR}" ]]; then
         cd "${BUILD_ROOT}/sources"
         /usr/bin/curl -L -s https://github.com/mongodb/mongo-c-driver/releases/download/${VERSION}/mongo-c-driver-${VERSION}.tar.gz | tar xzf -
-        cd "${PACKAGE_DIR}"
-        ./configure --disable-automatic-init-and-cleanup --prefix="${TARGET_DIR}"
-        make -j$NPROC
-        make install
     fi
+    cd "${PACKAGE_DIR}/build"
+    cmake -DENABLE_AUTOMATIC_INIT_AND_CLEANUP=OFF -DCMAKE_BUILD_TYPE=Release  -DCMAKE_INSTALL_PREFIX="${TARGET_DIR}" -DCMAKE_PREFIX_PATH="${TARGET_DIR}" ..
+    make -j$NPROC
+    make install
 }
+
+# install_mongo_c_driver_old()
+# {
+#     trap fail ERR
+#     local VERSION=1.9.4
+#     local PACKAGE_DIR="${BUILD_ROOT}/sources/mongo-c-driver-${VERSION}"
+#     if [[ ! -d "${PACKAGE_DIR}" ]]; then
+#         cd "${BUILD_ROOT}/sources"
+#         /usr/bin/curl -L -s https://github.com/mongodb/mongo-c-driver/releases/download/${VERSION}/mongo-c-driver-${VERSION}.tar.gz | tar xzf -
+#         cd "${PACKAGE_DIR}"
+#         ./configure --disable-automatic-init-and-cleanup --prefix="${TARGET_DIR}"
+#         make -j$NPROC
+#         make install
+#     fi
+# }
 
 # ----------------------------------------------------------------------
 
