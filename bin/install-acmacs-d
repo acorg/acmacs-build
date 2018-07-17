@@ -221,7 +221,7 @@ install_mongo_c_driver_for_mongodb3()
 install_mongo_c_driver_for_mongodb2()
 {
     trap fail ERR
-    local VERSION=1.9.4
+    local VERSION=1.9.5 # cannot use 1.10+, it does not support mongodb2
     local PACKAGE_DIR="${BUILD_ROOT}/sources/mongo-c-driver-${VERSION}"
     if [[ ! -d "${PACKAGE_DIR}" ]]; then
         cd "${BUILD_ROOT}/sources"
@@ -232,6 +232,7 @@ install_mongo_c_driver_for_mongodb2()
         make install
     fi
     # install libbson
+    # https://github.com/mongodb/libbson/releases/download/1.9.5/libbson-1.9.5.tar.gz
 }
 
 # ----------------------------------------------------------------------
