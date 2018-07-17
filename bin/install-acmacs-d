@@ -133,8 +133,9 @@ install_requirements()
         install_websocketpp
     fi
     if grep acmacs-api "$1" >/dev/null 2>&1; then
+        install_libbson_for_mongodb2
         install_mongo_c_driver_for_mongodb2
-        install_mongo_cxx_driver
+        install_mongo_cxx_driver_for_mongodb2
     fi
 }
 
@@ -231,14 +232,29 @@ install_mongo_c_driver_for_mongodb2()
         make -j$NPROC
         make install
     fi
-    # install libbson
-    # https://github.com/mongodb/libbson/releases/download/1.9.5/libbson-1.9.5.tar.gz
+}
+
+# ----------------------------------------------------------------------
+
+install_libbson_for_mongodb2()
+{
+    trap fail ERR
+    local VERSION=1.9.5
+    local PACKAGE_DIR="${BUILD_ROOT}/sources/libbson-${VERSION}"
+    if [[ ! -d "${PACKAGE_DIR}" ]]; then
+        cd "${BUILD_ROOT}/sources"
+        /usr/bin/curl -L -s https://github.com/mongodb/libbson/releases/download/${VERSION}/libbson-${VERSION}.tar.gz | tar xzf -
+        cd "${PACKAGE_DIR}"
+        ./configure --disable-automatic-init-and-cleanup --prefix="${TARGET_DIR}"
+        make -j$NPROC
+        make install
+    fi
 }
 
 # ----------------------------------------------------------------------
 
 # https://mongodb.github.io/mongo-cxx-driver/mongocxx-v3/installation/
-install_mongo_cxx_driver()
+install_mongo_cxx_driver_for_mongodb3()
 {
     trap fail ERR
     local PACKAGE_DIR="${BUILD_ROOT}/sources/mongo-cxx-driver"
@@ -261,6 +277,29 @@ install_mongo_cxx_driver()
         # /usr/bin/install_name_tool -change "@rpath/libmongoc-1.0.0.dylib" "${TARGET_DIR}/lib/libmongoc-1.0.0.dylib" "libmongocxx._noabi.dylib"
         # /usr/bin/install_name_tool -change "libbson-1.0.0.dylib" "${TARGET_DIR}/lib/libbson-1.0.0.dylib" "libmongocxx._noabi.dylib"
         # /usr/bin/install_name_tool -change "libbson-1.0.0.dylib" "${TARGET_DIR}/lib/libbson-1.0.0.dylib" "libbsoncxx._noabi.dylib"
+    fi
+}
+
+install_mongo_cxx_driver_for_mongodb2()
+{
+    trap fail ERR
+    local PACKAGE_DIR="${BUILD_ROOT}/sources/mongo-cxx-driver"
+    clone_or_pull_requirements "${PACKAGE_DIR}" "https://github.com/mongodb/mongo-cxx-driver.git" --branch releases/v3.2
+    export PKG_CONFIG_PATH="${TARGET_DIR}"/lib/pkgconfig
+    cd "${PACKAGE_DIR}/build"
+    cmake -DCMAKE_BUILD_TYPE=Release -DBSONCXX_POLY_USE_MNMLSTC=1 -DCMAKE_INSTALL_PREFIX="${TARGET_DIR}" -DCMAKE_PREFIX_PATH="${TARGET_DIR}" ..
+    # -DBSONCXX_POLY_USE_BOOST=1
+    # Only for MNMLSTC polyfill (default on Linux and macos
+    # make EP_mnmlstc_core
+    make -j$NPROC
+    make install
+    if [ "$(uname)" == "Darwin" ]; then
+        cd "${TARGET_DIR}/lib"
+        rm -f *.a
+        for library in libbsoncxx._noabi.dylib libmongocxx._noabi.dylib; do
+            /usr/bin/install_name_tool -id "${TARGET_DIR}/lib/$library" "$library"
+        done
+        /usr/bin/install_name_tool -change "@rpath/libbsoncxx._noabi.dylib" "${TARGET_DIR}/lib/libbsoncxx._noabi.dylib" "libmongocxx._noabi.dylib"
     fi
 }
 
