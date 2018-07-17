@@ -257,6 +257,7 @@ install_mongo_cxx_driver()
         /usr/bin/install_name_tool -change "@rpath/libbsoncxx._noabi.dylib" "${TARGET_DIR}/lib/libbsoncxx._noabi.dylib" "libmongocxx._noabi.dylib"
         /usr/bin/install_name_tool -change "@rpath/libmongoc-1.0.0.dylib" "${TARGET_DIR}/lib/libmongoc-1.0.0.dylib" "libmongocxx._noabi.dylib"
         /usr/bin/install_name_tool -change "libbson-1.0.0.dylib" "${TARGET_DIR}/lib/libbson-1.0.0.dylib" "libmongocxx._noabi.dylib"
+        /usr/bin/install_name_tool -change "libbson-1.0.0.dylib" "${TARGET_DIR}/lib/libbson-1.0.0.dylib" "libbsoncxx._noabi.dylib"
     fi
 }
 
