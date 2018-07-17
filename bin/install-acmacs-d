@@ -208,6 +208,13 @@ install_mongo_c_driver()
     cmake -DENABLE_AUTOMATIC_INIT_AND_CLEANUP=OFF -DCMAKE_BUILD_TYPE=Release  -DCMAKE_INSTALL_PREFIX="${TARGET_DIR}" -DCMAKE_PREFIX_PATH="${TARGET_DIR}" ..
     make -j$NPROC
     make install
+    if [ "$(uname)" == "Darwin" ]; then
+        cd "${TARGET_DIR}/lib"
+        for library in libbson-1.0.dylib libmongoc-1.0.dylib; do
+            /usr/bin/install_name_tool -id "${TARGET_DIR}/lib/$library" "$library"
+        done
+        /usr/bin/install_name_tool -change "libbson-1.0.0.dylib" "${TARGET_DIR}/lib/libbson-1.0.0.dylib" "libmongoc-1.0.0.dylib"
+    fi
 }
 
 # install_mongo_c_driver_old()
@@ -248,6 +255,8 @@ install_mongo_cxx_driver()
             /usr/bin/install_name_tool -id "${TARGET_DIR}/lib/$library" "$library"
         done
         /usr/bin/install_name_tool -change "@rpath/libbsoncxx._noabi.dylib" "${TARGET_DIR}/lib/libbsoncxx._noabi.dylib" "libmongocxx._noabi.dylib"
+        /usr/bin/install_name_tool -change "@rpath/libmongoc-1.0.0.dylib" "${TARGET_DIR}/lib/libmongoc-1.0.0.dylib" "libmongocxx._noabi.dylib"
+        /usr/bin/install_name_tool -change "libbson-1.0.0.dylib" "${TARGET_DIR}/lib/libbson-1.0.0.dylib" "libmongocxx._noabi.dylib"
     fi
 }
 
