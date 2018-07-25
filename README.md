@@ -12,7 +12,7 @@ Scripts to build Acmacs-D.
 
 - C++
 
-  Acmacs-D is written in C++17. Either llvm 6.0 or gcc 7.2 required.
+  Acmacs-D is written in C++17. Either llvm 6.0 or gcc 7.2 required. (gcc 8 is not yet supported.)
 
   * macOS
 
@@ -38,6 +38,10 @@ Scripts to build Acmacs-D.
 
     `apt-get install python3`
 
+- R
+
+  acmacs.r requires R 3.5 with Rcpp package
+
 - cairo
 
   * macOS: `brew install cairo`
@@ -61,12 +65,12 @@ Scripts to build Acmacs-D.
 - curl and libcurl
 
   * macOS: installed by default.
-  * Ubuntu Linux: apt-get install libcurl4-openssl-dev
+  * Ubuntu Linux: `apt-get install libcurl4-openssl-dev`
 
 - apache for mod-acmacs
 
-  * macOS: apache coming with the system does not allow building modules
-    brew install apache2
+  * macOS: `brew install apache2` (apache coming with the system does not allow building modules)
+  * Ubuntu Linux: apache coming with the system works
 
 - ? [sassc](https://github.com/sass/sassc)
 
