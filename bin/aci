@@ -1,0 +1,2 @@
+#! /bin/bash
+ad chart-info "$@"
