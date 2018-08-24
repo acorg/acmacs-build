@@ -4,12 +4,14 @@ NPROC=$(if [ "$(uname -s)" = "Darwin" ]; then /usr/sbin/sysctl -n hw.logicalcpu;
 TAG=$(cat "${ACMACSD_ROOT}/share/tag")
 PACKAGES_FILE=$(python3 -c "import os; print(os.path.dirname(os.path.realpath(\"$0\")) + '/../packages.$TAG')")
 
-if gmake --version >/dev/null 2>&1; then
-    MAKE=gmake
-else
-    MAKE=make
-fi
+trap "{ echo FAILED >&2; exit 1; }" ERR
+
+if command -v gmake >/dev/null 2>&1; then MAKE=gmake; else MAKE=make; fi
 
 for package in $(cat "${PACKAGES_FILE}"); do
-    ( cd "${ACMACSD_ROOT}/sources/${package}" && ${MAKE} clean && ${MAKE} -j${NPROC} install "$@" && ${MAKE} -j${NPROC} test "$@" ) || exit 1
+    pushd "${ACMACSD_ROOT}/sources/${package}"
+    ${MAKE} clean
+    ${MAKE} -j${NPROC} "$@" install
+    ${MAKE} -j${NPROC} "$@" test
+    popd
 done

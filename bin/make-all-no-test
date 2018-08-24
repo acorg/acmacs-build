@@ -1,9 +1,14 @@
 #! /bin/bash
 
+trap "{ echo FAILED >&2; exit 1; }" ERR
+
+if command -v gmake >/dev/null 2>&1; then MAKE=gmake; else MAKE=make; fi
 NPROC=$(if [ "$(uname -s)" = "Darwin" ]; then /usr/sbin/sysctl -n hw.logicalcpu; else /usr/bin/nproc; fi)
 TAG=$(cat "${ACMACSD_ROOT}/share/tag")
 PACKAGES_FILE=$(python3 -c "import os; print(os.path.dirname(os.path.realpath(\"$0\")) + '/../packages.$TAG')")
 
 for package in $(cat "${PACKAGES_FILE}"); do
-    ( cd "${ACMACSD_ROOT}/sources/${package}" && make -j${NPROC} "$@" && make -j${NPROC} "$@" ) || exit 1
+    pushd "${ACMACSD_ROOT}/sources/${package}"
+    ${MAKE} -j${NPROC} "$@"
+    popd
 done
