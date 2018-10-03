@@ -10,8 +10,13 @@ if command -v gmake >/dev/null 2>&1; then MAKE=gmake; else MAKE=make; fi
 
 for package in $(cat "${PACKAGES_FILE}"); do
     pushd "${ACMACSD_ROOT}/sources/${package}"
+    if [[ "${package}" == "acmacs.r" ]]; then
+        OUTPUT_SYNC=""
+    else
+        OUTPUT_SYNC="--output-sync"
+    fi
     ${MAKE} clean
-    ${MAKE} -j${NPROC} "$@" install
-    ${MAKE} -j${NPROC} "$@" test
+    ${MAKE} ${OUTPUT_SYNC} -j${NPROC} -k "$@" install
+    ${MAKE} ${OUTPUT_SYNC} -j${NPROC} "$@" test
     popd
 done

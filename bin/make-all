@@ -9,7 +9,12 @@ PACKAGES_FILE=$(python3 -c "import os; print(os.path.dirname(os.path.realpath(\"
 
 for package in $(cat "${PACKAGES_FILE}"); do
     pushd "${ACMACSD_ROOT}/sources/${package}"
-    ${MAKE} -j${NPROC} "$@"
-    ${MAKE} -j${NPROC} "$@" test
+    if [[ "${package}" == "acmacs.r" ]]; then
+        OUTPUT_SYNC=""
+    else
+        OUTPUT_SYNC="--output-sync"
+    fi
+    ${MAKE} ${OUTPUT_SYNC} -j${NPROC} -k "$@"
+    ${MAKE} ${OUTPUT_SYNC} -j${NPROC} "$@" test
     popd
 done
