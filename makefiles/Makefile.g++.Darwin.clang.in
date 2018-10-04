@@ -2,7 +2,10 @@
 CXX = $(CXX_ROOT)/bin/clang++
 STD = c++17
 WARNINGS = -Wno-weak-vtables -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-padded
-FS_LIB = -L$(CXX_ROOT)/lib -lc++experimental
+# clang-6
+# FS_LIB = -L$(CXX_ROOT)/lib -lc++experimental
+# clang-7
+FS_LIB = -L$(CXX_ROOT)/lib -lc++fs
 CXX_LIB = -L$(CXX_ROOT)/lib -lc++ -lomp $(FS_LIB)
 
 T=D
