@@ -23,18 +23,45 @@ include Makefile.config
 
 # ----------------------------------------------------------------------
 
+ifeq ($(USER),eu)
+  GIT_URI = git@github.com:acorg
+else
+  GIT_URI = https://github.com/acorg
+endif
+
+ifeq ($(TEST),1)
+  PACKAGE_TARGET = test
+else
+  PACKAGE_TARGET = all
+endif
+
+# old makefiles support
+ifeq ($(DEBUG),1)
+  T = D
+else
+  T = R
+endif
+export T
+
+# ----------------------------------------------------------------------
+
 ifneq ($(dir $(CURDIR)),$(AD_SOURCES)/)
   $(error acmacs-build must be placed in $(AD_SOURCES) (currently in $(CURDIR)))
 endif
 
-update-and-build: make-dirs update-packages install-makefiles install-dependencies
+update-and-build: build-packages
 
 make-dirs: $(AD_INCLUDE) $(AD_LIB) $(AD_SHARE) $(AD_BIN) $(AD_PY) $(AD_DATA)
 
 install-makefiles: $(AD_SHARE)/Makefile.config
 
 update-packages: $(patsubst %,$(AD_SOURCES)/%,$(PACKAGES))
-	echo update $^
+
+build-packages: make-dirs update-packages install-makefiles install-dependencies
+	for package in $(PACKAGES); do \
+	  echo Building $$package; \
+	  $(MAKE) -C $(AD_SOURCES)/$$package $(PACKAGE_TARGET) || exit 1; \
+	done
 
 install-dependencies:
 # install_pybind11
@@ -45,13 +72,21 @@ install-dependencies:
 # install_mongo_c_driver_for_mongodb2
 # install_mongo_cxx_driver_for_mongodb2
 
-$(AD_SOURCES)/acmacs-base:
+help: help-vars
+	printf "\nVariables:\n"
+	printf "\tTEST=1 - run tests\n"
+	printf "Targets:\n\tupdate-and-build\n\n"
+
+$(patsubst %,$(AD_SOURCES)/%,$(PACKAGES)):
 	if [[ -d $@ ]]; then \
-	  echo Updating $@; \
+	  echo Pulling in $@; \
 	  cd $@; git pull -q || exit 1; \
+	else \
+	  echo Cloning to $@; \
+	  git clone $(GIT_URI)/$(notdir $@).git $@; \
 	fi
 
-$(ACMACSD_ROOT)/%:
+$(AD_INCLUDE) $(AD_LIB) $(AD_SHARE) $(AD_BIN) $(AD_PY) $(AD_DATA):
 	mkdir -p $@
 
 $(AD_SHARE)/Makefile.%:
