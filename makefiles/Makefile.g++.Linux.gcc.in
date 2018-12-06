@@ -5,7 +5,7 @@ WARNINGS = -Wall -Wextra
 FS_LIB = -lstdc++fs
 CXX_LIB = $(FS_LIB)
 
-T=D
+T ?= D
 
 ifeq ($(T),D)
   OPTIMIZATION = -O0

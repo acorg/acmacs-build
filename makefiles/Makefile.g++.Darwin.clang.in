@@ -8,7 +8,7 @@ WARNINGS = -Wno-weak-vtables -Weverything -Wno-c++98-compat -Wno-c++98-compat-pe
 FS_LIB = -L$(CXX_ROOT)/lib -lc++fs
 CXX_LIB = -L$(CXX_ROOT)/lib -lc++ -lomp $(FS_LIB)
 
-T=D
+T ?= D
 
 ifeq ($(T),D)
   OPTIMIZATION = -O0 -fno-inline-functions -Wno-source-uses-openmp
