@@ -75,6 +75,7 @@ install-dependencies:
 help: help-vars
 	printf "\nVariables:\n"
 	printf "\tTEST=1 - run tests\n"
+	printf "\n"
 	printf "Targets:\n\tupdate-and-build\n\n"
 
 $(patsubst %,$(AD_SOURCES)/%,$(PACKAGES)):
