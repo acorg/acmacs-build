@@ -79,7 +79,7 @@ help: help-vars
 	printf "Targets:\n\tupdate-and-build\n\n"
 
 $(patsubst %,$(AD_SOURCES)/%,$(PACKAGES)):
-	if [[ -d $@ ]]; then \
+	if [ -d $@ ]; then \
 	  echo Pulling in $@; \
 	  cd $@; git pull -q || exit 1; \
 	else \
