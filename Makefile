@@ -67,7 +67,6 @@ build-packages: make-dirs update-packages install-makefiles install-dependencies
 install-dependencies:
 # install_pybind11
 # install_rapidjson
-# install_boost
 # install_websocketpp
 # install_libbson_for_mongodb2
 # install_mongo_c_driver_for_mongodb2
