@@ -65,6 +65,7 @@ build-packages: make-dirs update-packages install-makefiles install-dependencies
 	done
 
 install-dependencies:
+	$(MAKE) -f Makefile.mongocxx
 # install_pybind11
 # install_rapidjson
 # install_websocketpp
@@ -82,13 +83,7 @@ help: help-vars
 	printf "Targets:\n\tupdate-and-build\n\n"
 
 $(patsubst %,$(AD_SOURCES)/%,$(PACKAGES)):
-	if [ -d $@ ]; then \
-	  echo Pulling in $@; \
-	  cd $@; git pull -q || exit 1; \
-	else \
-	  echo Cloning to $@; \
-	  git clone $(GIT_URI)/$(notdir $@).git $@; \
-	fi
+	$(call git_clone_or_pull,$@,$(GIT_URI))
 
 $(AD_INCLUDE) $(AD_LIB) $(AD_SHARE) $(AD_BIN) $(AD_PY) $(AD_DATA):
 	mkdir -p $@

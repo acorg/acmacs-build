@@ -228,7 +228,7 @@ install_mongo_c_driver_for_mongodb2()
         cd "${BUILD_ROOT}/sources"
         /usr/bin/curl -L -s https://github.com/mongodb/mongo-c-driver/releases/download/${VERSION}/mongo-c-driver-${VERSION}.tar.gz | tar xzf -
         cd "${PACKAGE_DIR}"
-        ./configure --disable-automatic-init-and-cleanup --prefix="${TARGET_DIR}"
+        ./configure --disable-automatic-init-and-cleanup --with-libbson=bundled --prefix="${TARGET_DIR}"
         make -j$NPROC
         make install
     fi
