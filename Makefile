@@ -19,6 +19,7 @@ PACKAGES = \
 
 all: update-and-build
 
+NO_CLEAN_TARGET = 1
 include Makefile.config
 
 # ----------------------------------------------------------------------
@@ -71,6 +72,9 @@ install-dependencies:
 # install_libbson_for_mongodb2
 # install_mongo_c_driver_for_mongodb2
 # install_mongo_cxx_driver_for_mongodb2
+
+clean:
+	rm -rf $(ACMACSD_ROOT)/build
 
 help: help-vars
 	printf "\nVariables:\n"
