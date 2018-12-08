@@ -92,7 +92,7 @@ $(AD_DATA): $(AD_BUILD)
 	mkdir -p $@
 
 $(AD_SHARE)/Makefile.%:
-	ln -sf $(abspath $(notdir $@)) $(AD_SHARE)
+	ln -svf $(abspath $(@F)) $@
 
 .PHONY: update-and-build git-update make-dirs install-dependencies install-makefiles
 .PHONY: $(patsubst %,$(AD_SOURCES)/%,$(PACKAGES))
