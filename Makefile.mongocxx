@@ -31,7 +31,7 @@ $(MONGOC_DRIVER_LIB): $(MONGOC_DRIVER_DIR)/VERSION_CURRENT
 
 $(MONGOC_DRIVER_DIR)/VERSION_CURRENT:
 	if [ ! -d $(MONGOC_DRIVER_DIR) ]; then \
-	  echo Downloading mongo-c-driver-$(MONGOC_DRIVER_VERSION)
+	  echo Downloading mongo-c-driver-$(MONGOC_DRIVER_VERSION); \
 	  mkdir -p $$(dirname $(MONGOC_DRIVER_DIR)) || exit 1; \
 	  cd $$(dirname $(MONGOC_DRIVER_DIR)) || exit 1; \
 	  /usr/bin/curl -L -s https://github.com/mongodb/mongo-c-driver/releases/download/$(MONGOC_DRIVER_VERSION)/mongo-c-driver-$(MONGOC_DRIVER_VERSION).tar.gz | tar xzf - || exit 1; \

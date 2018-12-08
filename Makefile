@@ -85,7 +85,10 @@ help: help-vars
 $(patsubst %,$(AD_SOURCES)/%,$(PACKAGES)):
 	$(call git_clone_or_pull,$@,$(GIT_URI))
 
-$(AD_INCLUDE) $(AD_LIB) $(AD_SHARE) $(AD_BIN) $(AD_PY) $(AD_DATA):
+$(AD_BIN) $(AD_INCLUDE) $(AD_LIB) $(AD_PY) $(AD_SHARE): $(AD_BUILD)
+	mkdir -p $(AD_BUILD)/$(@F) && if [ ! -L $@ ]; then rm -f $@; ln -sv $(AD_BUILD)/$(@F) $@; fi
+
+$(AD_DATA): $(AD_BUILD)
 	mkdir -p $@
 
 $(AD_SHARE)/Makefile.%:
