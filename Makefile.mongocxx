@@ -10,17 +10,20 @@ ifneq (1,$(shell if [[ "$$(cmake --version 2>/dev/null | grep version | cut -d '
 endif
 
 MONGO_PREFIX = $(BUILD)
-MONGOC_DRIVER_LIB = $(MONGO_PREFIX)/lib/
-MONGOCXX_DRIVER_LIB = $(MONGO_PREFIX)/lib/libmongoclient.dylib
+MONGOC_DRIVER_LIB = $(MONGO_PREFIX)/lib/libmongoc-1.0.dylib
+MONGOCXX_DRIVER_LIB = $(MONGO_PREFIX)/lib/libmongocxx._noabi.dylib
 
 # cannot use 1.10+, it does not support mongodb2 used by acmacs-web
 MONGOC_DRIVER_VERSION = 1.9.5
 MONGOC_DRIVER_DIR = $(BUILD)/mongo-c-driver-$(MONGOC_DRIVER_VERSION)
 
+MONGOCXX_DRIVER_BRANCH = releases/v3.2
+MONGOCXX_DRIVER_DIR = $(BUILD)/mongo-cxx-driver
+
 mongo-client-lib: $(MONGOC_DRIVER_LIB) $(MONGOCXX_DRIVER_LIB)
 
 $(MONGOC_DRIVER_LIB): $(MONGOC_DRIVER_DIR)/VERSION_CURRENT
-	echo Configuring mongo-c-driver-$(MONGOC_DRIVER_VERSION)
+	echo Configuring mongo-c-driver-$(MONGOC_DRIVER_VERSION) for building $(MONGOC_DRIVER_LIB)
 	cd $(MONGOC_DRIVER_DIR) && ./configure --disable-automatic-init-and-cleanup --with-libbson=bundled --prefix="$(MONGO_PREFIX)" >/dev/null 2>&1
 	echo Building mongo-c-driver-$(MONGOC_DRIVER_VERSION)
 	$(MAKE) -C $(MONGOC_DRIVER_DIR) install
@@ -34,29 +37,23 @@ $(MONGOC_DRIVER_DIR)/VERSION_CURRENT:
 	  /usr/bin/curl -L -s https://github.com/mongodb/mongo-c-driver/releases/download/$(MONGOC_DRIVER_VERSION)/mongo-c-driver-$(MONGOC_DRIVER_VERSION).tar.gz | tar xzf - || exit 1; \
 	fi
 
-$(MONGOCXX_DRIVER_LIB):
-# $(BUILD)/mongo-cxx-driver/SConstruct
+$(MONGOCXX_DRIVER_LIB): $(MONGOCXX_DRIVER_DIR)/CMakeLists.txt
+	export PKG_CONFIG_PATH=$(MONGO_PREFIX)/lib/pkgconfig:"$$PKG_CONFIG_PATH" && \
+	mkdir -p $(MONGOCXX_DRIVER_DIR)/build && \
+	cd $(MONGOCXX_DRIVER_DIR)/build && \
+	cmake -DCMAKE_BUILD_TYPE=Release -DBSONCXX_POLY_USE_MNMLSTC=1 -DCMAKE_INSTALL_PREFIX="$(MONGO_PREFIX)" -DCMAKE_PREFIX_PATH="$(MONGO_PREFIX)" .. && \
+	$(MAKE) install && \
+	if [ "$$(uname)" == "Darwin" ]; then \
+	  cd "$(MONGO_PREFIX)/lib" || exit 1; \
+	  rm -f *.a; \
+	  for library in libbsoncxx._noabi.dylib libmongocxx._noabi.dylib; do \
+	    /usr/bin/install_name_tool -id "$(MONGO_PREFIX)/lib/$$library" "$$library" || exit 1; \
+	  done; \
+	  /usr/bin/install_name_tool -change "@rpath/libbsoncxx._noabi.dylib" "$(MONGO_PREFIX)/lib/libbsoncxx._noabi.dylib" "libmongocxx._noabi.dylib" || exit 1; \
+	fi
 
-mongo-cxx-driver/SConstruct: mongo-26compat
-
-# ifeq ($(PLATFORM),darwin)
-# mongo-26compat:
-#	if [[ ! -d mongo-cxx-driver ]]; then git clone -b 26compat https://github.com/mongodb/mongo-cxx-driver.git; fi
-#	cd mongo-cxx-driver; \
-#	git pull; \
-#	sed -i orig 's/return _conn > 0;/return _conn != 0;/g' src/mongo/client/connpool.h src/mongo/s/shard.h; \
-#	scons -j8 --prefix="$(MONGO_CXX_PREFIX)" --sharedclient --extrapath="$(MONGO_CXX_PREFIX)" --full --use-system-boost --osx-version-min=10.11 install-mongoclient
-# endif
-
-# ifeq ($(PLATFORM),linux)
-# mongo-26compat:
-#	if ! gcc-5 --version 2>/dev/null; then echo gcc-5 required to build compat26 driver >&2; false; fi
-#	if [[ ! -d mongo-cxx-driver ]]; then git clone -b 26compat https://github.com/mongodb/mongo-cxx-driver.git; fi
-#	cd mongo-cxx-driver; \
-#	git pull; \
-#	sed -i orig 's/return _conn > 0;/return _conn != 0;/g' src/mongo/client/connpool.h src/mongo/s/shard.h; \
-#	scons -j$(shell nproc) --prefix="$(MONGO_CXX_PREFIX)" --cc=gcc-5 --cxx=g++-5 --sharedclient  --extrapath="$(MONGO_CXX_PREFIX)" --use-system-boost --full install-mongoclient
-# endif
+$(MONGOCXX_DRIVER_DIR)/CMakeLists.txt:
+	$(call git_clone_or_pull,$(MONGOCXX_DRIVER_DIR),https://github.com/mongodb,$(MONGOCXX_DRIVER_BRANCH))
 
 
 # ======================================================================
