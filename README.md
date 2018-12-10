@@ -88,13 +88,15 @@ Scripts to build Acmacs-D.
 
 Choose a directory where all the sources will be downloaded to and
 programs will be built and installed. Set env variable ACMACSD\_ROOT
-pointing to that directory, e.g. `ACMACSD\_ROOT=$HOME/AD`
+pointing to that directory, e.g. `ACMACSD_ROOT=$HOME/AD`
 
 Clone this repository:
-`mkdir -p $ACMACSD\_ROOT/sources && git clone git@github.com:acorg/acmacs-build.git $ACMACSD\_ROOT/sources/acmacs-build`
+
+    mkdir -p $ACMACSD_ROOT/sources && git clone git@github.com:acorg/acmacs-build.git $ACMACSD_ROOT/sources/acmacs-build
 
 Build acmacs-d
-`make -C $ACMACSD\_ROOT/sources/acmacs-build -j8`
+
+    make -C $ACMACSD_ROOT/sources/acmacs-build -j8
 
 # Installation (OBSOLETE)
 
