@@ -64,10 +64,22 @@ build-packages: make-dirs update-packages install-makefiles install-dependencies
 	  $(MAKE) -C $(AD_SOURCES)/$$package $(PACKAGE_TARGET) || exit 1; \
 	done
 
-install-dependencies:
+install-dependencies: pybind11 websocketpp
 	$(MAKE) -f Makefile.mongocxx
-	$(MAKE) -f Makefile.pybind11
-# install_websocketpp
+
+PYBIND11_PREFIX = $(BUILD)
+PYBIND11_DIR = $(BUILD)/pybind11
+
+pybind11:
+	$(call git_clone_or_pull,$(PYBIND11_DIR),https://github.com/pybind)
+	$(call symbolic_link,$(PYBIND11_DIR)/include/pybind11,$(AD_INCLUDE)/pybind11)
+
+WEBSOCKETPP_PREFIX = $(BUILD)
+WEBSOCKETPP_DIR = $(BUILD)/websocketpp
+
+websocketpp:
+	$(call git_clone_or_pull,$(WEBSOCKETPP_DIR),https://github.com/zaphoyd)
+	$(call symbolic_link,$(WEBSOCKETPP_DIR)/websocketpp,$(AD_INCLUDE)/websocketpp)
 
 clean:
 	rm -rf $(ACMACSD_ROOT)/build
