@@ -26,7 +26,7 @@ MONGOC_DRIVER_DIR = $(BUILD)/mongo-c-driver-$(MONGOC_DRIVER_VERSION)
 MONGOCXX_DRIVER_BRANCH = releases/v3.2
 MONGOCXX_DRIVER_DIR = $(BUILD)/mongo-cxx-driver
 
-mongo-client-lib: $(MONGOC_DRIVER_LIB) $(MONGOCXX_DRIVER_LIB)
+mongo-client-lib: $(MONGOCXX_DRIVER_LIB)
 	$(call symbolic_link_wildcard,$(MONGO_PREFIX)/include/*cxx,$(AD_INCLUDE))
 	$(call symbolic_link_wildcard,$(MONGO_PREFIX)/lib/lib*,$(AD_LIB))
 
@@ -45,7 +45,7 @@ $(MONGOC_DRIVER_DIR)/VERSION_CURRENT:
 	  /usr/bin/curl -L -s https://github.com/mongodb/mongo-c-driver/releases/download/$(MONGOC_DRIVER_VERSION)/mongo-c-driver-$(MONGOC_DRIVER_VERSION).tar.gz | tar xzf - || exit 1; \
 	fi
 
-$(MONGOCXX_DRIVER_LIB): $(MONGOCXX_DRIVER_DIR)/CMakeLists.txt
+$(MONGOCXX_DRIVER_LIB): $(MONGOCXX_DRIVER_DIR)/CMakeLists.txt $(MONGOC_DRIVER_LIB)
 	export PKG_CONFIG_PATH=$(MONGO_PREFIX)/lib/pkgconfig:"$$PKG_CONFIG_PATH" && \
 	mkdir -p $(MONGOCXX_DRIVER_DIR)/build && \
 	cd $(MONGOCXX_DRIVER_DIR)/build && \
