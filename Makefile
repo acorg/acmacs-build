@@ -66,6 +66,7 @@ build-packages: make-dirs update-packages install-makefiles install-dependencies
 
 install-dependencies: pybind11 websocketpp
 	$(MAKE) -f Makefile.mongocxx
+.PHONY: install-dependencies
 
 PYBIND11_PREFIX = $(BUILD)
 PYBIND11_DIR = $(BUILD)/pybind11
