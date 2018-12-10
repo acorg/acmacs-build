@@ -1,0 +1,19 @@
+# -*- Makefile -*-
+# ======================================================================
+
+all: pybind11
+
+include Makefile.config
+
+PYBIND11_PREFIX = $(BUILD)
+PYBIND11_DIR = $(BUILD)/pybind11
+
+pybind11:
+	$(call git_clone_or_pull,$(PYBIND11_DIR),https://github.com/pybind)
+	$(call symbolic_link,$(PYBIND11_DIR)/include/pybind11,$(AD_INCLUDE)/pybind11)
+
+
+# ======================================================================
+### Local Variables:
+### eval: (if (fboundp 'eu-rename-buffer) (eu-rename-buffer))
+### End:

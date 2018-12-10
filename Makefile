@@ -66,12 +66,8 @@ build-packages: make-dirs update-packages install-makefiles install-dependencies
 
 install-dependencies:
 	$(MAKE) -f Makefile.mongocxx
-# install_pybind11
-# install_rapidjson
+	$(MAKE) -f Makefile.pybind11
 # install_websocketpp
-# install_libbson_for_mongodb2
-# install_mongo_c_driver_for_mongodb2
-# install_mongo_cxx_driver_for_mongodb2
 
 clean:
 	rm -rf $(ACMACSD_ROOT)/build
@@ -91,7 +87,7 @@ $(AD_BIN) $(AD_INCLUDE) $(AD_LIB) $(AD_PY) $(AD_SHARE): $(AD_BUILD)
 $(AD_DATA): $(AD_BUILD)
 	mkdir -p $@
 
-$(AD_SHARE)/Makefile.%:
+$(AD_SHARE)/Makefile.%: | $(AD_SHARE)
 	ln -svf $(abspath $(@F)) $@
 
 .PHONY: update-and-build git-update make-dirs install-dependencies install-makefiles

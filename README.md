@@ -52,11 +52,6 @@ Scripts to build Acmacs-D.
   * macOS: `brew install rapidjson`
   * Ubuntu Linux: `apt-get install rapidjson-dev`
 
-- pybind11
-
-  * macOS: `brew install pybind11`
-  * Ubuntu Linux: `apt-get install pybind11-dev`
-
 - xz
 
   * macOS: `brew install xz`
