@@ -45,7 +45,7 @@ Scripts to build Acmacs-D.
 - boost
 
   * macOS: `brew install boost`
-  * Ubuntu Linux: `apt-get install libboost-dev`
+  * Ubuntu Linux: `apt-get install libboost-dev libboost-date-time-dev`
 
 - cairo
 
