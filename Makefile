@@ -46,8 +46,8 @@ export T
 
 # ----------------------------------------------------------------------
 
-ifneq ($(dir $(CURDIR)),$(AD_SOURCES)/)
-  $(error acmacs-build must be placed in $(AD_SOURCES) (currently in $(CURDIR)))
+ifneq ($(realpath $(dir $(CURDIR))),$(realpath $(AD_SOURCES))/)
+  $(error acmacs-build must be placed in $(realpath $(AD_SOURCES)) (currently in $(realpath $(CURDIR))))
 endif
 
 update-and-build: build-packages
