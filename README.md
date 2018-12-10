@@ -42,10 +42,11 @@ Scripts to build Acmacs-D.
 
   acmacs.r requires R 3.5 with Rcpp package
 
-- boost
+- boost 1.68+
 
   * macOS: `brew install boost`
   * Ubuntu Linux: `apt-get install libboost-dev libboost-date-time-dev`
+    Note, make sure it's 1.68 or more recent. Otherwise install from sources.
 
 - cairo
 
