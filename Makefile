@@ -64,7 +64,7 @@ build-packages: make-dirs update-packages install-makefiles install-dependencies
 	  $(MAKE) -C $(AD_SOURCES)/$$package $(PACKAGE_TARGET) || exit 1; \
 	done
 
-install-dependencies: pybind11 websocketpp
+install-dependencies: rapidjson pybind11 websocketpp
 	$(MAKE) -f Makefile.mongocxx
 .PHONY: install-dependencies
 
@@ -81,6 +81,13 @@ WEBSOCKETPP_DIR = $(BUILD)/websocketpp
 websocketpp:
 	$(call git_clone_or_pull,$(WEBSOCKETPP_DIR),https://github.com/zaphoyd)
 	$(call symbolic_link,$(WEBSOCKETPP_DIR)/websocketpp,$(AD_INCLUDE)/websocketpp)
+
+RAPIDJSON_PREFIX = $(BUILD)
+RAPIDJSON_DIR = $(BUILD)/rapidjson
+
+rapidjson:
+	$(call git_clone_or_pull,$(RAPIDJSON_DIR),https://github.com/Tencent)
+	$(call symbolic_link,$(RAPIDJSON_DIR)/include/rapidjson,$(AD_INCLUDE)/rapidjson)
 
 clean:
 	rm -rf $(ACMACSD_ROOT)/build

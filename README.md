@@ -42,15 +42,15 @@ Scripts to build Acmacs-D.
 
   acmacs.r requires R 3.5 with Rcpp package
 
+- boost
+
+  * macOS: `brew install boost`
+  * Ubuntu Linux: `apt-get install libboost-dev`
+
 - cairo
 
   * macOS: `brew install cairo`
   * Ubuntu Linux: `apt-get install libcairo2-dev`
-
-- rapidjson
-
-  * macOS: `brew install rapidjson`
-  * Ubuntu Linux: `apt-get install rapidjson-dev`
 
 - xz
 
