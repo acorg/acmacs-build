@@ -22,6 +22,7 @@ MONGOCXX_DRIVER_DIR = $(BUILD)/mongo-cxx-driver
 
 mongo-client-lib: $(MONGOC_DRIVER_LIB) $(MONGOCXX_DRIVER_LIB)
 	$(call symbolic_link_wildcard,$(MONGO_PREFIX)/include/*cxx,$(AD_INCLUDE))
+	$(call symbolic_link_wildcard,$(MONGO_PREFIX)/lib/lib*,$(AD_LIB))
 
 $(MONGOC_DRIVER_LIB): $(MONGOC_DRIVER_DIR)/VERSION_CURRENT
 	echo Configuring mongo-c-driver-$(MONGOC_DRIVER_VERSION) for building $(MONGOC_DRIVER_LIB)
