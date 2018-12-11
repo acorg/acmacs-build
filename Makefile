@@ -36,14 +36,6 @@ else
   PACKAGE_TARGET = all
 endif
 
-# old makefiles support
-ifeq ($(DEBUG),1)
-  T = D
-else
-  T = R
-endif
-export T
-
 # ----------------------------------------------------------------------
 
 ifneq ($(dir $(CURDIR)),$(realpath $(AD_SOURCES))/)
