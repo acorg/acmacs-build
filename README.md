@@ -4,7 +4,7 @@ Scripts to build Acmacs-D.
 
 # Supported platforms
 
- - macOS 10.12 and 10.13
+ - macOS 10.12+
  - Ubuntu Linux 16.04 or later
  - Theoretcially any Linux distribution fulfilled requirements below.
 
@@ -83,6 +83,10 @@ Scripts to build Acmacs-D.
   * macOS: `brew install apache2` (apache coming with the system does not allow building modules)
   * Ubuntu Linux: apache coming with the system works
 
+- openssl for acmacs-webserver
+
+  * macOS: `brew install openssl`
+  
 - ? [sassc](https://github.com/sass/sassc)
 
   Required by acmacs-api client
