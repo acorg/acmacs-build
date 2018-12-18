@@ -63,6 +63,11 @@ Scripts to build Acmacs-D.
   * macOS: comes with the system (/usr/lib/libbz2.1.0.dylib)
   * Ubuntu: comes with the system (e.g. /lib/x86_64-linux-gnu/libbz2.so.1.0)
 
+- GNU make 4.2
+
+  * macOS: `brew install make`
+  * Ubuntu Linux: comes with the system
+
 - CMake 3.2 or later
 
   * macOS: `brew install cmake`
@@ -96,6 +101,8 @@ Clone this repository:
     mkdir -p $ACMACSD_ROOT/sources && git clone git@github.com:acorg/acmacs-build.git $ACMACSD_ROOT/sources/acmacs-build
 
 Build acmacs-d
+
+*Use GNU make* 
 
     make -C $ACMACSD_ROOT/sources/acmacs-build -j8
 
