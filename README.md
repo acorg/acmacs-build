@@ -40,7 +40,8 @@ Scripts to build Acmacs-D.
 
 - R
 
-  acmacs.r requires R 3.5 with Rcpp package
+  acmacs.r requires R 3.5+ (https://www.r-project.org) with Rcpp, testthat packages.
+  
 
 - boost 1.68+
 
