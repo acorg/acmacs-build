@@ -20,6 +20,7 @@ PACKAGES = \
 all: update-and-build
 
 NO_CLEAN_TARGET = 1
+NO_RTAGS_TARGET = 1
 include Makefile.config
 
 # ----------------------------------------------------------------------
@@ -54,6 +55,11 @@ build-packages: make-dirs update-packages install-makefiles install-dependencies
 	for package in $(PACKAGES); do \
 	  echo Building $$package; \
 	  $(MAKE) -C $(AD_SOURCES)/$$package $(PACKAGE_TARGET) || exit 1; \
+	done
+
+rtags:
+	for package in $(PACKAGES); do \
+	  $(MAKE) -C $(AD_SOURCES)/$$package rtags || exit 1; \
 	done
 
 install-dependencies: rapidjson pybind11 websocketpp
