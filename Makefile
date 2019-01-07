@@ -11,8 +11,8 @@ PACKAGES = \
   acmacs-map-draw \
   acmacs-tree-maker \
   signature-page \
-  ssm-report \
   acmacs-whocc \
+  ssm-report \
   acmacs-webserver \
   acmacs-api \
   acmacs.r
