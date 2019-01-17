@@ -10,9 +10,10 @@ ifneq (1,$(shell if [ "$$(cmake --version 2>/dev/null | grep version | cut -d ' 
 endif
 
 ifeq ($(PLATFORM),darwin)
-  SHARED_LIB_SUFFIX=dylib
+  SHARED_LIB_SUFFIX = dylib
+  PKG_CONFIG_PATH = /usr/local/opt/openssl/lib/pkgconfig
 else
-  SHARED_LIB_SUFFIX=so
+  SHARED_LIB_SUFFIX = so
 endif
 
 MONGO_PREFIX = $(BUILD)
@@ -32,7 +33,7 @@ mongo-client-lib: $(MONGOCXX_DRIVER_LIB)
 
 $(MONGOC_DRIVER_LIB): $(MONGOC_DRIVER_DIR)/VERSION_CURRENT
 	echo Configuring mongo-c-driver-$(MONGOC_DRIVER_VERSION) for building $(MONGOC_DRIVER_LIB)
-	cd $(MONGOC_DRIVER_DIR) && ./configure --disable-automatic-init-and-cleanup --with-libbson=bundled --with-snappy=no --prefix="$(MONGO_PREFIX)"
+	cd $(MONGOC_DRIVER_DIR) && env PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) ./configure --disable-automatic-init-and-cleanup --with-libbson=bundled --with-snappy=no --prefix="$(MONGO_PREFIX)"
 	echo Building mongo-c-driver-$(MONGOC_DRIVER_VERSION)
 	$(MAKE) -C $(MONGOC_DRIVER_DIR) install
 	echo mongo-c-driver-$(MONGOC_DRIVER_VERSION) installed
