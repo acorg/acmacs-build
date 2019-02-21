@@ -1,7 +1,7 @@
 # -*- Makefile -*-
 # ======================================================================
 
-PACKAGES = \
+PACKAGES_CXX = \
   acmacs-base \
   locationdb \
   acmacs-chart-2 \
@@ -12,9 +12,12 @@ PACKAGES = \
   acmacs-tree-maker \
   signature-page \
   acmacs-whocc \
-  ssm-report \
   acmacs-webserver \
-  acmacs-api \
+  acmacs-api
+
+PACKAGES = \
+  $(PACKAGES_CXX) \
+  ssm-report \
   acmacs.r
 
 all: update-and-build
@@ -53,6 +56,12 @@ update-packages: $(patsubst %,$(AD_SOURCES)/%,$(PACKAGES))
 
 build-packages: make-dirs update-packages install-makefiles install-dependencies
 	for package in $(PACKAGES); do \
+	  echo Building $$package; \
+	  $(MAKE) -C $(AD_SOURCES)/$$package $(PACKAGE_TARGET) || exit 1; \
+	done
+
+cxx:
+	for package in $(PACKAGES_CXX); do \
 	  echo Building $$package; \
 	  $(MAKE) -C $(AD_SOURCES)/$$package $(PACKAGE_TARGET) || exit 1; \
 	done
