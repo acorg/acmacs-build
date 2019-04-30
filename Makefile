@@ -96,6 +96,9 @@ rapidjson:
 	$(call git_clone_or_pull,$(RAPIDJSON_DIR),https://github.com/Tencent)
 	$(call symbolic_link,$(RAPIDJSON_DIR)/include/rapidjson,$(AD_INCLUDE)/rapidjson)
 
+test:
+	$(MAKE) TEST=1
+
 clean:
 	rm -rf $(ACMACSD_ROOT)/build
 
