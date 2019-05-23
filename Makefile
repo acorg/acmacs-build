@@ -73,7 +73,7 @@ rtags:
 	  $(MAKE) -C $(AD_SOURCES)/$$package rtags || exit 1; \
 	done
 
-install-dependencies: rapidjson pybind11 websocketpp
+install-dependencies: rapidjson fmt pybind11 websocketpp
 	$(MAKE) -f Makefile.mongocxx
 .PHONY: install-dependencies
 
@@ -97,6 +97,17 @@ RAPIDJSON_DIR = $(BUILD)/rapidjson
 rapidjson:
 	$(call git_clone_or_pull,$(RAPIDJSON_DIR),https://github.com/Tencent)
 	$(call symbolic_link,$(RAPIDJSON_DIR)/include/rapidjson,$(AD_INCLUDE)/rapidjson)
+
+FMT_PREFIX = $(BUILD)
+FMT_DIR = $(BUILD)/fmt
+
+fmt:
+	$(call git_clone_or_pull,$(FMT_DIR),https://github.com/fmtlib)
+	$(call symbolic_link,$(FMT_DIR)/include/fmt,$(AD_INCLUDE)/fmt)
+	mkdir -p $(BUILD)/fmt/build && \
+	  cd $(BUILD)/fmt/build && \
+	  cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$(FMT_PREFIX)" -DCMAKE_PREFIX_PATH="$(FMT_PREFIX)" .. && \
+	  $(MAKE) install
 
 test:
 	$(MAKE) TEST=1
