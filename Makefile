@@ -73,7 +73,7 @@ rtags:
 	  $(MAKE) -C $(AD_SOURCES)/$$package rtags || exit 1; \
 	done
 
-install-dependencies: rapidjson fmt pybind11 websocketpp
+install-dependencies: rapidjson fmt range-v3 pybind11 websocketpp
 	$(MAKE) -f Makefile.mongocxx
 .PHONY: install-dependencies
 
@@ -108,6 +108,12 @@ fmt:
 	  cd $(BUILD)/fmt/build && \
 	  cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DCMAKE_INSTALL_PREFIX="$(FMT_PREFIX)" -DCMAKE_PREFIX_PATH="$(FMT_PREFIX)" .. && \
 	  $(MAKE) install
+
+RANGEV3_DIR = $(BUILD)/range-v3
+
+range-v3:
+	$(call git_clone_or_pull,$(RANGEV3_DIR),https://github.com/ericniebler)
+	for dd in $(RANGEV3_DIR)/include/*; do if [ ! -d $(AD_INCLUDE)/$$(basename $$dd) ]; then ln -sfv $$dd $(AD_INCLUDE); fi; done
 
 test:
 	$(MAKE) TEST=1
