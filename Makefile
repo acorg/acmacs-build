@@ -73,7 +73,7 @@ rtags:
 	  $(MAKE) -C $(AD_SOURCES)/$$package rtags || exit 1; \
 	done
 
-install-dependencies: rapidjson fmt range-v3 pybind11 websocketpp
+install-dependencies: rapidjson fmt range-v3 pybind11 websocketpp asio
 	$(MAKE) -f Makefile.mongocxx
 .PHONY: install-dependencies
 
@@ -90,6 +90,17 @@ WEBSOCKETPP_DIR = $(BUILD)/websocketpp
 websocketpp:
 	$(call git_clone_or_pull,$(WEBSOCKETPP_DIR),https://github.com/zaphoyd)
 	$(call symbolic_link,$(WEBSOCKETPP_DIR)/websocketpp,$(AD_INCLUDE)/websocketpp)
+
+# https://think-async.com/Asio/AsioStandalone.html
+# https://github.com/chriskohlhoff/asio/
+ASIO_TAG = asio-1-12-2
+ASIO_PREFIX = $(BUILD)
+ASIO_DIR = $(BUILD)/asio
+
+asio:
+	$(call git_clone_tag,$(ASIO_DIR),https://github.com/chriskohlhoff,$(ASIO_TAG))
+	$(call symbolic_link,$(ASIO_DIR)/asio/include/asio,$(AD_INCLUDE)/asio)
+	$(call symbolic_link,$(ASIO_DIR)/asio/include/asio.hpp,$(AD_INCLUDE)/asio.hpp)
 
 RAPIDJSON_PREFIX = $(BUILD)
 RAPIDJSON_DIR = $(BUILD)/rapidjson
