@@ -119,6 +119,7 @@ fmt:
 	  cd $(BUILD)/fmt/build && \
 	  cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DCMAKE_INSTALL_PREFIX="$(FMT_PREFIX)" -DCMAKE_PREFIX_PATH="$(FMT_PREFIX)" .. && \
 	  $(MAKE) install
+	$(call symbolic_link,$(BUILD)/lib/libfmt.a,$(AD_LIB))
 
 RANGEV3_DIR = $(BUILD)/range-v3
 
