@@ -121,6 +121,7 @@ fmt:
 	  $(MAKE) install
 	$(call symbolic_link,$(BUILD)/lib/libfmt.a,$(AD_LIB))
 
+# RANGEV3_BRANCH = v1.0-beta
 RANGEV3_DIR = $(BUILD)/range-v3
 
 range-v3:
