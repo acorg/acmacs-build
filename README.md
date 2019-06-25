@@ -77,7 +77,7 @@ Scripts to build Acmacs-D.
 - apache for mod-acmacs
 
   * macOS: `brew install apache2` (apache coming with the system does not allow building modules)
-  * Ubuntu Linux: apache coming with the system works
+  * Ubuntu Linux: `sudo apt install apache2-dev`
 
 - openssl for acmacs-webserver
 
