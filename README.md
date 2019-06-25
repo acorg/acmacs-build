@@ -30,39 +30,34 @@ Scripts to build Acmacs-D.
 
   Some of the Acmacs-D modules have python interface, Python 3.6.2 or later is required.
 
-  * macOS
-
-    `brew install python3`
-
-  * Ubuntu Linux
-
-    `apt-get install python3`
+  * macOS: `brew install python3`
+  * Ubuntu Linux: most probably comes with the system, otherwise `sudo apt install python3`
 
 - R
 
   acmacs.r requires R 3.5+ (https://www.r-project.org) with Rcpp, testthat, roxygen2 packages.
-  
+
 
 - boost 1.68+
 
   * macOS: `brew install boost`
-  * Ubuntu Linux: `apt-get install libboost-dev libboost-date-time-dev`
+  * Ubuntu Linux: `sudo apt install libboost-dev libboost-date-time-dev`
     Note, make sure it's 1.68 or more recent. Otherwise install from sources.
 
 - cairo
 
   * macOS: `brew install cairo`
-  * Ubuntu Linux: `apt-get install libcairo2-dev`
+  * Ubuntu Linux: `sudo apt install libcairo2-dev`
 
 - xz
 
   * macOS: `brew install xz`
-  * Ubuntu Linux: `apt-get install xz-utils`
+  * Ubuntu Linux: `sudo apt install xz-utils`
 
 - bzip2
 
   * macOS: comes with the system (/usr/lib/libbz2.1.0.dylib)
-  * Ubuntu: comes with the system (e.g. /lib/x86_64-linux-gnu/libbz2.so.1.0)
+  * Ubuntu: `sudo apt install libbz2-dev`
 
 - GNU make 4.2
 
@@ -72,12 +67,12 @@ Scripts to build Acmacs-D.
 - CMake 3.2 or later
 
   * macOS: `brew install cmake`
-  * Ubuntu Linux: `apt-get install cmake`
+  * Ubuntu Linux: `sudo apt install cmake`
 
 - curl and libcurl
 
   * macOS: installed by default.
-  * Ubuntu Linux: `apt-get install libcurl4-openssl-dev`
+  * Ubuntu Linux: `sudo apt install libcurl4-openssl-dev`
 
 - apache for mod-acmacs
 
@@ -87,7 +82,7 @@ Scripts to build Acmacs-D.
 - openssl for acmacs-webserver
 
   * macOS: `brew install openssl`
-  
+
 - ? [sassc](https://github.com/sass/sassc)
 
   Required by acmacs-api client
@@ -107,7 +102,7 @@ Clone this repository:
 
 Build acmacs-d
 
-*Use GNU make* 
+*Use GNU make*
 
     make -C $ACMACSD_ROOT/sources/acmacs-build -j8
 
