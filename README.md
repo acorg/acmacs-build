@@ -37,6 +37,7 @@ Scripts to build Acmacs-D.
 
   acmacs.r requires R 3.5+ (https://www.r-project.org) with Rcpp, testthat, roxygen2 packages.
 
+  * Ubuntu Linux: `sudo apt install r-base-core`
 
 - boost 1.68+
 
