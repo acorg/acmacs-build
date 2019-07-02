@@ -73,7 +73,7 @@ rtags:
 	  $(MAKE) -C $(AD_SOURCES)/$$package rtags || exit 1; \
 	done
 
-install-dependencies: rapidjson fmt range-v3 pybind11 websocketpp asio
+install-dependencies: rapidjson fmt std_date range-v3 pybind11 websocketpp asio
 	$(MAKE) -f Makefile.mongocxx
 .PHONY: install-dependencies
 
@@ -120,6 +120,13 @@ fmt:
 	  cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DCMAKE_INSTALL_PREFIX="$(FMT_PREFIX)" -DCMAKE_PREFIX_PATH="$(FMT_PREFIX)" .. && \
 	  $(MAKE) install
 	$(call symbolic_link,$(BUILD)/lib/libfmt.a,$(AD_LIB))
+
+STD_DATE_PREFIX = $(BUILD)
+STD_DATE_DIR = $(BUILD)/date
+
+std_date:
+	$(call git_clone_or_pull,$(STD_DATE_DIR),https://github.com/HowardHinnant)
+	$(call symbolic_link,$(STD_DATE_DIR)/include/date,$(AD_INCLUDE)/date)
 
 # RANGEV3_BRANCH = v1.0-beta
 RANGEV3_DIR = $(BUILD)/range-v3
