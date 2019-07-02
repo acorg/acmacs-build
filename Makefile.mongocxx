@@ -54,7 +54,6 @@ $(MONGOCXX_DRIVER_LIB): $(MONGOCXX_DRIVER_DIR)/CMakeLists.txt $(MONGOC_DRIVER_LI
 	$(MAKE) install && \
 	if [ "$$(uname)" = "Darwin" ]; then \
 	  cd "$(MONGO_PREFIX)/lib" || exit 1; \
-	  rm -f *.a; \
 	  for library in libbsoncxx._noabi.dylib libmongocxx._noabi.dylib; do \
 	    /usr/bin/install_name_tool -id "$(MONGO_PREFIX)/lib/$$library" "$$library" || exit 1; \
 	  done; \
