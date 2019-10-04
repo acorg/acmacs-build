@@ -13,6 +13,7 @@ PACKAGES_CXX = \
   acmacs-map-draw \
   acmacs-tree-maker \
   signature-page \
+  acmacs-tal \
   acmacs-whocc \
   acmacs-webserver \
   acmacs-api
