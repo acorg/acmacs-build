@@ -7,7 +7,6 @@ PACKAGES_CXX = \
   acmacs-virus \
   acmacs-chart-2 \
   hidb-5 \
-  seqdb \
   seqdb-3 \
   acmacs-draw \
   acmacs-map-draw \
