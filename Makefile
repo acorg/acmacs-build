@@ -69,6 +69,12 @@ cxx:
 	  $(MAKE) -C $(AD_SOURCES)/$$package $(PACKAGE_TARGET) || exit 1; \
 	done
 
+cxx-test:
+	for package in $(PACKAGES_CXX); do \
+	  echo Building $$package; \
+	  $(MAKE) -C $(AD_SOURCES)/$$package test || exit 1; \
+	done
+
 rtags:
 	for package in $(PACKAGES); do \
 	  $(MAKE) -C $(AD_SOURCES)/$$package rtags || exit 1; \
