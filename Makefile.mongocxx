@@ -58,7 +58,8 @@ $(MONGOCXX_DRIVER_LIB): $(MONGOCXX_DRIVER_DIR)/CMakeLists.txt $(MONGOC_DRIVER_LI
 	    /usr/bin/install_name_tool -id "$(MONGO_PREFIX)/lib/$$library" "$$library" || exit 1; \
 	  done; \
 	  /usr/bin/install_name_tool -change "@rpath/libbsoncxx._noabi.dylib" "$(MONGO_PREFIX)/lib/libbsoncxx._noabi.dylib" "libmongocxx._noabi.dylib" || exit 1; \
-	fi
+	fi; \
+	if [ ! -d $(AD_BUILD)/include/bsoncxx ]; then ln -s $(BUILD)/include/bsoncxx $(AD_BUILD)/include/bsoncxx; fi
 
 $(MONGOCXX_DRIVER_DIR)/CMakeLists.txt:
 	$(call git_clone_or_pull,$(MONGOCXX_DRIVER_DIR),https://github.com/mongodb,$(MONGOCXX_DRIVER_BRANCH))
