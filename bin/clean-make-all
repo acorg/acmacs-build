@@ -1,0 +1,4 @@
+#! /bin/bash
+BIN_DIR=$(dirname $0)
+${BIN_DIR}/clean-all
+exec ${BIN_DIR}/make-all "$@"
