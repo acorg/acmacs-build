@@ -1,0 +1,6 @@
+#! /bin/bash
+if [[ -d "${ACMACSD_ROOT}/build" ]]; then
+    cd "${ACMACSD_ROOT}/build"
+    rm -rf acmacs-base acmacs-[ac-w]* hidb-5 locationdb seqdb-3 signature-page
+fi
+
