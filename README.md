@@ -12,11 +12,11 @@ Scripts to build Acmacs-D.
 
 - C++
 
-  Acmacs-D is written in C++17. Either llvm 9.x or gcc 9.x required.
+  Acmacs-D is written in C++17. Either llvm 10.x or gcc 9.x required.
 
   * macOS
 
-     llvm 9.0 can be installed using [homebrew](https://brew.sh):
+     llvm 10.0 can be installed using [homebrew](https://brew.sh):
 
      `brew install llvm`
 
