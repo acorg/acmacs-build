@@ -5,8 +5,8 @@ PACKAGES_CXX = \
   acmacs-base \
   locationdb \
   acmacs-virus \
-  acmacs-chart-2 \
   acmacs-whocc-data \
+  acmacs-chart-2 \
   hidb-5 \
   seqdb-3 \
   acmacs-draw \
