@@ -51,8 +51,6 @@ endif
 
 update-and-build: build-packages
 
-make-dirs: $(AD_INCLUDE) $(AD_LIB) $(AD_SHARE) $(AD_BIN) $(AD_PY) $(AD_DATA)
-
 install-makefiles: $(AD_SHARE)/Makefile.config
 
 update-packages: $(patsubst %,$(AD_SOURCES)/%,$(PACKAGES))
@@ -157,12 +155,6 @@ help: help-vars
 
 $(patsubst %,$(AD_SOURCES)/%,$(PACKAGES)):
 	$(call git_clone_or_pull,$@,$(GIT_URI))
-
-$(AD_BIN) $(AD_INCLUDE) $(AD_LIB) $(AD_PY) $(AD_SHARE): $(AD_BUILD)
-	mkdir -p $(AD_BUILD)/$(@F) && if [ ! -L $@ ]; then rm -f $@; ln -sv $(AD_BUILD)/$(@F) $@; fi
-
-$(AD_DATA): $(AD_BUILD)
-	mkdir -p $@
 
 $(AD_SHARE)/Makefile.%: | $(AD_SHARE)
 	ln -svf $(abspath $(@F)) $@
