@@ -85,14 +85,14 @@ install-dependencies: rapidjson fmt std_date range-v3 pybind11 websocketpp asio
 PYBIND11_PREFIX = $(BUILD)
 PYBIND11_DIR = $(BUILD)/pybind11
 
-pybind11:
+pybind11: $(AD_INCLUDE)
 	$(call git_clone_or_pull,$(PYBIND11_DIR),https://github.com/pybind)
 	$(call symbolic_link,$(PYBIND11_DIR)/include/pybind11,$(AD_INCLUDE)/pybind11)
 
 WEBSOCKETPP_PREFIX = $(BUILD)
 WEBSOCKETPP_DIR = $(BUILD)/websocketpp
 
-websocketpp:
+websocketpp: $(AD_INCLUDE)
 	$(call git_clone_or_pull,$(WEBSOCKETPP_DIR),https://github.com/zaphoyd)
 	$(call symbolic_link,$(WEBSOCKETPP_DIR)/websocketpp,$(AD_INCLUDE)/websocketpp)
 
@@ -102,7 +102,7 @@ ASIO_TAG = asio-1-12-2
 ASIO_PREFIX = $(BUILD)
 ASIO_DIR = $(BUILD)/asio
 
-asio:
+asio: $(AD_INCLUDE)
 	$(call git_clone_tag,$(ASIO_DIR),https://github.com/chriskohlhoff,$(ASIO_TAG))
 	$(call symbolic_link,$(ASIO_DIR)/asio/include/asio,$(AD_INCLUDE)/asio)
 	$(call symbolic_link,$(ASIO_DIR)/asio/include/asio.hpp,$(AD_INCLUDE)/asio.hpp)
@@ -110,7 +110,7 @@ asio:
 RAPIDJSON_PREFIX = $(BUILD)
 RAPIDJSON_DIR = $(BUILD)/rapidjson
 
-rapidjson:
+rapidjson: $(AD_INCLUDE)
 	$(call git_clone_or_pull,$(RAPIDJSON_DIR),https://github.com/Tencent)
 	$(call symbolic_link,$(RAPIDJSON_DIR)/include/rapidjson,$(AD_INCLUDE)/rapidjson)
 
@@ -118,7 +118,7 @@ FMT_PREFIX = $(BUILD)
 FMT_DIR = $(BUILD)/fmt
 
 # https://github.com/fmtlib/fmt
-fmt:
+fmt: $(AD_INCLUDE) $(AD_LIB)
 	$(call git_clone_or_pull,$(FMT_DIR),https://github.com/fmtlib)
 	$(call symbolic_link,$(FMT_DIR)/include/fmt,$(AD_INCLUDE)/fmt)
 	mkdir -p $(BUILD)/fmt/build && \
@@ -130,14 +130,14 @@ fmt:
 STD_DATE_PREFIX = $(BUILD)
 STD_DATE_DIR = $(BUILD)/date
 
-std_date:
+std_date: $(AD_INCLUDE)
 	$(call git_clone_or_pull,$(STD_DATE_DIR),https://github.com/HowardHinnant)
 	$(call symbolic_link,$(STD_DATE_DIR)/include/date,$(AD_INCLUDE)/date)
 
 # RANGEV3_BRANCH = v1.0-beta
 RANGEV3_DIR = $(BUILD)/range-v3
 
-range-v3:
+range-v3: $(AD_INCLUDE)
 	$(call git_clone_or_pull,$(RANGEV3_DIR),https://github.com/ericniebler)
 	for dd in $(RANGEV3_DIR)/include/*; do if [ ! -d $(AD_INCLUDE)/$$(basename $$dd) ]; then ln -sfv $$dd $(AD_INCLUDE); fi; done
 
