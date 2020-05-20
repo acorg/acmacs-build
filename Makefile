@@ -73,6 +73,18 @@ cxx-test:
 	  $(MAKE) -C $(AD_SOURCES)/$$package test || exit 1; \
 	done
 
+# ----------------------------------------------------------------------
+# compilation database https://sarcasm.github.io/notes/dev/compilation-database.html
+# ----------------------------------------------------------------------
+
+ccls:
+	sed -e '1s/^/[\'$$'\n''/' -e '$$s/,$$/\'$$'\n'']/' $(AD_BUILD)/*/build/*.o.json > $(AD_BUILD)/compile_commands.json
+	ln -sf ../build/compile_commands.json $(AD_SOURCES)
+
+# ----------------------------------------------------------------------
+# rtags
+# ----------------------------------------------------------------------
+
 rtags:
 	for package in $(PACKAGES); do \
 	  $(MAKE) -C $(AD_SOURCES)/$$package rtags || exit 1; \
