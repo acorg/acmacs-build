@@ -90,7 +90,7 @@ rtags:
 	  $(MAKE) -C $(AD_SOURCES)/$$package rtags || exit 1; \
 	done
 
-install-dependencies: rapidjson fmt std_date range-v3 pybind11 websocketpp asio
+install-dependencies: rapidjson fmt std_date range-v3 pybind11 websocketpp asio optim
 	$(MAKE) -f Makefile.mongocxx
 .PHONY: install-dependencies
 
@@ -152,6 +152,16 @@ RANGEV3_DIR = $(BUILD)/range-v3
 range-v3: $(AD_INCLUDE)
 	$(call git_clone_or_pull,$(RANGEV3_DIR),https://github.com/ericniebler)
 	for dd in $(RANGEV3_DIR)/include/*; do if [ ! -d $(AD_INCLUDE)/$$(basename $$dd) ]; then ln -sfv $$dd $(AD_INCLUDE); fi; done
+
+# https://github.com/kthohr/optim
+OPTIM_PREFIX = $(BUILD)
+OPTIM_DIR = $(BUILD)/optim
+OPTIM_INCLUDES = -I$(AD_INCLUDE)/optim
+
+optim: $(AD_INCLUDE)
+	$(call git_clone_or_pull,$(OPTIM_DIR),https://github.com/kthohr)
+	cd $(OPTIM_DIR) && ./configure --header-only-version
+	$(call symbolic_link,$(OPTIM_DIR)/header_only_version,$(AD_INCLUDE)/optim)
 
 test:
 	$(MAKE) TEST=1
