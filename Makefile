@@ -128,9 +128,21 @@ rapidjson: $(AD_INCLUDE)
 
 FMT_PREFIX = $(BUILD)
 FMT_DIR = $(BUILD)/fmt
+FMT_URL = "https://github.com/fmtlib/fmt/releases/download/7.0.3/fmt-7.0.3.zip"
 
 # https://github.com/fmtlib/fmt
 fmt: $(AD_INCLUDE) $(AD_LIB)
+	rm -rf $(BUILD)/*fmt*
+	curl -sL -o $(BUILD)/release-fmt.zip "$(FMT_URL)"
+	cd $(BUILD) && unzip release-fmt.zip && ln -s fmt-* $(FMT_DIR)
+	$(call symbolic_link,$(FMT_DIR)/include/fmt,$(AD_INCLUDE)/fmt)
+	mkdir -p $(BUILD)/fmt/build && \
+	  cd $(BUILD)/fmt/build && \
+	  cmake -DFMT_TEST=OFF -DFMT_DOC=OFF -DCMAKE_BUILD_TYPE=Release -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DCMAKE_INSTALL_PREFIX="$(FMT_PREFIX)" -DCMAKE_PREFIX_PATH="$(FMT_PREFIX)" .. && \
+	  $(MAKE) install
+	$(call symbolic_link,$(BUILD)/lib/libfmt.a,$(AD_LIB))
+
+fmt-master: $(AD_INCLUDE) $(AD_LIB)
 	$(call git_clone_or_pull,$(FMT_DIR),https://github.com/fmtlib)
 	$(call symbolic_link,$(FMT_DIR)/include/fmt,$(AD_INCLUDE)/fmt)
 	mkdir -p $(BUILD)/fmt/build && \
