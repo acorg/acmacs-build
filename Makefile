@@ -60,6 +60,7 @@ build-packages: make-dirs update-packages install-makefiles install-dependencies
 	  echo Building $$package; \
 	  $(MAKE) -C $(AD_SOURCES)/$$package $(PACKAGE_TARGET) || exit 1; \
 	done
+	$(MAKE) ccls
 
 cxx:
 	for package in $(PACKAGES_CXX); do \
