@@ -79,8 +79,10 @@ cxx-test:
 # ----------------------------------------------------------------------
 
 ccls:
+ifeq ($(PLATFORM),darwin)
 	sed -e '1s/^/[\'$$'\n''/' -e '$$s/,$$/\'$$'\n'']/' $(AD_BUILD)/*/build/*.o.json > $(AD_BUILD)/compile_commands.json
 	ln -sf ../build/compile_commands.json $(AD_SOURCES)
+endif
 
 # ----------------------------------------------------------------------
 # rtags
