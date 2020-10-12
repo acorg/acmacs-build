@@ -5,14 +5,14 @@ Scripts to build Acmacs-D.
 # Supported platforms
 
  - macOS 10.12+
- - Ubuntu Linux 16.04 or later
+ - Ubuntu Linux 20.04 (earlier versions are most probably good enough too)
  - Theoretcially any Linux distribution fulfilled requirements below.
 
 # Requirements
 
 - C++
 
-  Acmacs-D is written in C++17. Either llvm 10.x or gcc 9.x required.
+  Acmacs-D is written in C++20 (state of Sep 2020). Either llvm 10.x or gcc 10.x required.
 
   * macOS
 
@@ -24,19 +24,18 @@ Scripts to build Acmacs-D.
 
   * Ubuntu Linux
 
-    gcc 9.x can be installed using `apt-get install gcc-9`
-    Also [see here](https://gist.github.com/application2000/73fd6f4bf1be6600a2cf9f56315a2d91)
+    g++ 10.x can be installed using `apt-get install g++-10`
 
 - Python
 
-  Some of the Acmacs-D modules have python interface, Python 3.7 or later is required.
+  Some of the Acmacs-D modules have python interface, Python 3.8 or later is required.
 
   * macOS: `brew install python3`
   * Ubuntu Linux: most probably comes with the system, otherwise `sudo apt install python3`
 
 - R
 
-  acmacs.r requires R 3.6+ (https://www.r-project.org) with Rcpp, testthat, roxygen2 packages.
+  acmacs.r requires R 4.0+ (https://www.r-project.org) with Rcpp, testthat, roxygen2 packages.
 
   * macOS: `brew cask install r`
   * Ubuntu Linux: `sudo apt install r-base-core`
