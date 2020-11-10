@@ -139,8 +139,8 @@ fmt: $(AD_INCLUDE) $(AD_LIB)
 	curl -sL -o $(BUILD)/release-fmt.zip "$(FMT_URL)"
 	cd $(BUILD) && unzip release-fmt.zip && ln -s fmt-* $(FMT_DIR)
 	$(call symbolic_link,$(FMT_DIR)/include/fmt,$(AD_INCLUDE)/fmt)
-	mkdir -p $(BUILD)/fmt/build && \
-	  cd $(BUILD)/fmt/build && \
+	mkdir -p $(FMT_DIR)/build && \
+	  cd $(FMT_DIR)/build && \
 	  cmake -DFMT_TEST=OFF -DFMT_DOC=OFF -DCMAKE_BUILD_TYPE=Release -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DCMAKE_INSTALL_PREFIX="$(FMT_PREFIX)" -DCMAKE_PREFIX_PATH="$(FMT_PREFIX)" .. && \
 	  $(MAKE) install
 	$(call symbolic_link,$(BUILD)/lib/libfmt.a,$(AD_LIB))
@@ -177,6 +177,24 @@ optim: $(AD_INCLUDE)
 	$(call git_clone_or_pull,$(OPTIM_DIR),https://github.com/kthohr)
 	cd $(OPTIM_DIR) && ./configure --header-only-version
 	$(call symbolic_link,$(OPTIM_DIR)/header_only_version,$(AD_INCLUDE)/optim)
+
+# https://github.com/troldal/OpenXLSX
+OPENXLSX_PREFIX = $(BUILD)
+OPENXLSX_DIR = $(BUILD)/openxlsx
+# OPENXLSX_INCLUDES = -I$(AD_INCLUDE)/openxlsx
+
+openxlsx: $(AD_INCLUDE)
+	$(call git_clone_or_pull,$(OPENXLSX_DIR),https://github.com/troldal)
+	mkdir -p $(OPENXLSX_DIR)/build && \
+	  cd $(OPENXLSX_DIR)/build && \
+	  cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DCMAKE_INSTALL_PREFIX="$(OPENXLSX_PREFIX)" -DCMAKE_PREFIX_PATH="$(OPENXLSX_PREFIX)" .. && \
+	  $(MAKE)
+	cp $(OPENXLSX_DIR)/build/output/libOpenXLSX-shared.dylib $(AD_LIB)/libOpenXLSX.dylib && \
+	  /usr/bin/install_name_tool -id "$(AD_LIB)/libOpenXLSX.dylib" $(AD_LIB)/libOpenXLSX.dylib
+	mkdir -p $(AD_INCLUDE)/OpenXLSX
+	$(call symbolic_link_wildcard,$(OPENXLSX_DIR)/library/headers/*.hpp,$(AD_INCLUDE)/OpenXLSX)
+	/usr/bin/sed 's/headers/OpenXLSX/g' $(OPENXLSX_DIR)/library/OpenXLSX.hpp >$(AD_INCLUDE)/OpenXLSX/OpenXLSX.hpp
+	printf "#pragma once\n#define OPENXLSX_EXPORT __attribute__((visibility(\"default\")))\n" >$(AD_INCLUDE)/OpenXLSX/OpenXLSX-Exports.hpp
 
 test:
 	$(MAKE) TEST=1
