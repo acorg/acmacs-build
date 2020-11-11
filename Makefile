@@ -93,7 +93,7 @@ rtags:
 	  $(MAKE) -C $(AD_SOURCES)/$$package rtags || exit 1; \
 	done
 
-install-dependencies: rapidjson fmt std_date range-v3 pybind11 websocketpp asio optim
+install-dependencies: rapidjson fmt std_date range-v3 pybind11 websocketpp asio optim openxlsx
 	$(MAKE) -f Makefile.mongocxx
 .PHONY: install-dependencies
 
