@@ -189,8 +189,12 @@ openxlsx: $(AD_INCLUDE)
 	  cd $(OPENXLSX_DIR)/build && \
 	  cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DCMAKE_INSTALL_PREFIX="$(OPENXLSX_PREFIX)" -DCMAKE_PREFIX_PATH="$(OPENXLSX_PREFIX)" .. && \
 	  $(MAKE)
+ifeq ($(PLATFORM),darwin)
 	cp $(OPENXLSX_DIR)/build/output/libOpenXLSX-shared.dylib $(AD_LIB)/libOpenXLSX.dylib && \
 	  /usr/bin/install_name_tool -id "$(AD_LIB)/libOpenXLSX.dylib" $(AD_LIB)/libOpenXLSX.dylib
+else
+	$(call symbolic_link,$(OPENXLSX_DIR)/build/output/libOpenXLSX-shared.so,$(AD_LIB))
+endif
 	mkdir -p $(AD_INCLUDE)/OpenXLSX
 	$(call symbolic_link_wildcard,$(OPENXLSX_DIR)/library/headers/*.hpp,$(AD_INCLUDE)/OpenXLSX)
 	/usr/bin/sed 's/headers/OpenXLSX/g' $(OPENXLSX_DIR)/library/OpenXLSX.hpp >$(AD_INCLUDE)/OpenXLSX/OpenXLSX.hpp
