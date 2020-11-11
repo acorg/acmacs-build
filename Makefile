@@ -183,7 +183,11 @@ XLNT_RELEASE = 1.5.0
 XLNT_TAG = v$(XLNT_RELEASE)
 XLNT_PREFIX = $(AD_BUILD)
 XLNT_DIR = $(BUILD)/xlnt
-XLNT_CXX_FLAGS = -Wno-suggest-override -Wno-suggest-destructor-override -Wno-extra-semi-stmt -Wno-implicit-int-float-conversion
+ifeq ($(C),CLANG)
+  XLNT_CXX_FLAGS = -Wno-suggest-override -Wno-suggest-destructor-override -Wno-extra-semi-stmt -Wno-implicit-int-float-conversion -Wno-missing-field-initializers
+else
+  XLNT_CXX_FLAGS = -Wno-missing-field-initializers
+endif
 
 xlnt: $(AD_INCLUDE)
 	$(call git_clone_tag,$(XLNT_DIR),https://github.com/tfussell,$(XLNT_TAG))
