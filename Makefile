@@ -93,7 +93,7 @@ rtags:
 	  $(MAKE) -C $(AD_SOURCES)/$$package rtags || exit 1; \
 	done
 
-install-dependencies: rapidjson fmt std_date range-v3 pybind11 websocketpp asio optim openxlsx
+install-dependencies: rapidjson fmt std_date range-v3 pybind11 websocketpp asio optim xlnt
 	$(MAKE) -f Makefile.mongocxx
 .PHONY: install-dependencies
 
@@ -177,6 +177,24 @@ optim: $(AD_INCLUDE)
 	$(call git_clone_or_pull,$(OPTIM_DIR),https://github.com/kthohr)
 	cd $(OPTIM_DIR) && ./configure --header-only-version
 	$(call symbolic_link,$(OPTIM_DIR)/header_only_version,$(AD_INCLUDE)/optim)
+
+# https://github.com/tfussell/xlnt
+XLNT_RELEASE = 1.5.0
+XLNT_TAG = v$(XLNT_RELEASE)
+XLNT_PREFIX = $(AD_BUILD)
+XLNT_DIR = $(BUILD)/xlnt
+XLNT_CXX_FLAGS = -Wno-suggest-override -Wno-suggest-destructor-override -Wno-extra-semi-stmt -Wno-implicit-int-float-conversion
+
+xlnt: $(AD_INCLUDE)
+	$(call git_clone_tag,$(XLNT_DIR),https://github.com/tfussell,$(XLNT_TAG))
+	if [ -f $(XLNT_DIR)/third-party/libstudxml/version ]; then mv $(XLNT_DIR)/third-party/libstudxml/version $(XLNT_DIR)/third-party/libstudxml/version.orig; fi
+	mkdir -p $(XLNT_DIR)/build && \
+	  cd $(XLNT_DIR)/build && \
+	  cmake -D CMAKE_BUILD_TYPE=Release -D TESTS=OFF -D CMAKE_CXX_FLAGS_RELEASE="$(OPT) $(XLNT_CXX_FLAGS)" -D CMAKE_CXX_COMPILER="$(CXX)" -DCMAKE_INSTALL_PREFIX="$(XLNT_PREFIX)" -DCMAKE_PREFIX_PATH="$(XLNT_PREFIX)" .. && \
+	  $(MAKE) install
+ifeq ($(PLATFORM),darwin)
+	/usr/bin/install_name_tool -id "$(AD_LIB)/libxlnt.$(XLNT_RELEASE).dylib" $(AD_LIB)/libxlnt.$(XLNT_RELEASE).dylib
+endif
 
 # https://github.com/troldal/OpenXLSX
 OPENXLSX_PREFIX = $(BUILD)
