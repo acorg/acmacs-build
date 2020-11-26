@@ -131,17 +131,20 @@ rapidjson: $(AD_INCLUDE)
 
 FMT_PREFIX = $(BUILD)
 FMT_DIR = $(BUILD)/fmt
-FMT_URL = "https://github.com/fmtlib/fmt/releases/download/7.1.3/fmt-7.1.3.zip"
+FMT_VERSION = 7.1.3
+FMT_URL = "https://github.com/fmtlib/fmt/releases/download/$(FMT_VERSION)/fmt-$(FMT_VERSION).zip"
 
 # https://github.com/fmtlib/fmt
-fmt: $(AD_INCLUDE) $(AD_LIB)
+fmt: $(FMT_PREFIX)/lib/libfmt.$(FMT_VERSION).dylib
+
+$(FMT_PREFIX)/lib/libfmt.$(FMT_VERSION).dylib: $(FMT_DIR)/include/fmt
 	rm -rf $(BUILD)/*fmt*
 	curl -sL -o $(BUILD)/release-fmt.zip "$(FMT_URL)"
 	cd $(BUILD) && unzip release-fmt.zip && ln -s fmt-* $(FMT_DIR)
 	$(call symbolic_link,$(FMT_DIR)/include/fmt,$(AD_INCLUDE)/fmt)
 	mkdir -p $(FMT_DIR)/build && \
 	  cd $(FMT_DIR)/build && \
-	  cmake -DFMT_TEST=OFF -DFMT_DOC=OFF -DCMAKE_BUILD_TYPE=Release -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DCMAKE_INSTALL_PREFIX="$(FMT_PREFIX)" -DCMAKE_PREFIX_PATH="$(FMT_PREFIX)" .. && \
+	  cmake -DFMT_TEST=OFF -DFMT_DOC=OFF -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=TRUE -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DCMAKE_INSTALL_PREFIX="$(FMT_PREFIX)" -DCMAKE_PREFIX_PATH="$(FMT_PREFIX)" .. && \
 	  $(MAKE) install
 	$(call symbolic_link,$(BUILD)/lib/libfmt.a,$(AD_LIB))
 
