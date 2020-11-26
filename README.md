@@ -12,11 +12,11 @@ Scripts to build Acmacs-D.
 
 - C++
 
-  Acmacs-D is written in C++20 (state of Sep 2020). Either llvm 10.x or gcc 10.x required.
+  Acmacs-D is written in C++20 (state of Nov 2020). Either llvm 11.x or gcc 10.x required.
 
   * macOS
 
-     llvm 10.0 can be installed using [homebrew](https://brew.sh):
+     llvm 11.0 can be installed using [homebrew](https://brew.sh):
 
      `brew install llvm`
 
@@ -29,6 +29,7 @@ Scripts to build Acmacs-D.
 - Python
 
   Some of the Acmacs-D modules have python interface, Python 3.8 or later is required.
+  As of Nov 2020 python interface is not maintained.
 
   * macOS: `brew install python3`
   * Ubuntu Linux: most probably comes with the system, otherwise `sudo apt install python3`
