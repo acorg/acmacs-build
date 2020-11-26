@@ -97,6 +97,7 @@ install-dependencies: rapidjson fmt std_date range-v3 pybind11 websocketpp asio 
 	$(MAKE) -f Makefile.mongocxx
 .PHONY: install-dependencies
 
+#----------------------------------------------------------------------
 PYBIND11_PREFIX = $(BUILD)
 PYBIND11_DIR = $(BUILD)/pybind11
 
@@ -104,6 +105,7 @@ pybind11: $(AD_INCLUDE)
 	$(call git_clone_or_pull,$(PYBIND11_DIR),https://github.com/pybind)
 	$(call symbolic_link,$(PYBIND11_DIR)/include/pybind11,$(AD_INCLUDE)/pybind11)
 
+#----------------------------------------------------------------------
 WEBSOCKETPP_PREFIX = $(BUILD)
 WEBSOCKETPP_DIR = $(BUILD)/websocketpp
 
@@ -111,6 +113,7 @@ websocketpp: $(AD_INCLUDE)
 	$(call git_clone_or_pull,$(WEBSOCKETPP_DIR),https://github.com/zaphoyd)
 	$(call symbolic_link,$(WEBSOCKETPP_DIR)/websocketpp,$(AD_INCLUDE)/websocketpp)
 
+#----------------------------------------------------------------------
 # https://think-async.com/Asio/AsioStandalone.html
 # https://github.com/chriskohlhoff/asio/
 ASIO_TAG = asio-1-12-2
@@ -122,6 +125,7 @@ asio: $(AD_INCLUDE)
 	$(call symbolic_link,$(ASIO_DIR)/asio/include/asio,$(AD_INCLUDE)/asio)
 	$(call symbolic_link,$(ASIO_DIR)/asio/include/asio.hpp,$(AD_INCLUDE)/asio.hpp)
 
+#----------------------------------------------------------------------
 RAPIDJSON_PREFIX = $(BUILD)
 RAPIDJSON_DIR = $(BUILD)/rapidjson
 
@@ -129,15 +133,17 @@ rapidjson: $(AD_INCLUDE)
 	$(call git_clone_or_pull,$(RAPIDJSON_DIR),https://github.com/Tencent)
 	$(call symbolic_link,$(RAPIDJSON_DIR)/include/rapidjson,$(AD_INCLUDE)/rapidjson)
 
+#----------------------------------------------------------------------
 FMT_PREFIX = $(BUILD)
 FMT_DIR = $(BUILD)/fmt
 FMT_VERSION = 7.1.3
 FMT_URL = "https://github.com/fmtlib/fmt/releases/download/$(FMT_VERSION)/fmt-$(FMT_VERSION).zip"
+FMT_LIB_PATHNAME = $(FMT_PREFIX)/lib/$(call shared_lib_name,libfmt,$(FMT_VERSION))
 
 # https://github.com/fmtlib/fmt
-fmt: $(FMT_PREFIX)/lib/libfmt.$(FMT_VERSION).dylib
+fmt: $(FMT_LIB_PATHNAME)
 
-$(FMT_PREFIX)/lib/libfmt.$(FMT_VERSION).dylib: $(FMT_DIR)/include/fmt
+$(FMT_LIB_PATHNAME):
 	rm -rf $(BUILD)/*fmt*
 	curl -sL -o $(BUILD)/release-fmt.zip "$(FMT_URL)"
 	cd $(BUILD) && unzip release-fmt.zip && ln -s fmt-* $(FMT_DIR)
@@ -146,17 +152,14 @@ $(FMT_PREFIX)/lib/libfmt.$(FMT_VERSION).dylib: $(FMT_DIR)/include/fmt
 	  cd $(FMT_DIR)/build && \
 	  cmake -DFMT_TEST=OFF -DFMT_DOC=OFF -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=TRUE -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DCMAKE_INSTALL_PREFIX="$(FMT_PREFIX)" -DCMAKE_PREFIX_PATH="$(FMT_PREFIX)" .. && \
 	  $(MAKE) install
-	$(call symbolic_link,$(BUILD)/lib/libfmt.a,$(AD_LIB))
+	if [ "$$(uname)" = "Darwin" ]; then \
+	  cd "$(FMT_PREFIX)/lib" || exit 1; \
+	  for library in libfmt.$(FMT_VERSION)$(shared_lib_suffix); do \
+	    /usr/bin/install_name_tool -id "$(FMT_PREFIX)/lib/$$library" "$$library" || exit 1; \
+	  done; \
+	fi
 
-# fmt-master: $(AD_INCLUDE) $(AD_LIB)
-# 	$(call git_clone_or_pull,$(FMT_DIR),https://github.com/fmtlib)
-# 	$(call symbolic_link,$(FMT_DIR)/include/fmt,$(AD_INCLUDE)/fmt)
-# 	mkdir -p $(BUILD)/fmt/build && \
-# 	  cd $(BUILD)/fmt/build && \
-# 	  cmake -DFMT_TEST=OFF -DFMT_DOC=OFF -DCMAKE_BUILD_TYPE=Release -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DCMAKE_INSTALL_PREFIX="$(FMT_PREFIX)" -DCMAKE_PREFIX_PATH="$(FMT_PREFIX)" .. && \
-# 	  $(MAKE) install
-# 	$(call symbolic_link,$(BUILD)/lib/libfmt.a,$(AD_LIB))
-
+#----------------------------------------------------------------------
 STD_DATE_PREFIX = $(BUILD)
 STD_DATE_DIR = $(BUILD)/date
 
@@ -164,6 +167,7 @@ std_date: $(AD_INCLUDE)
 	$(call git_clone_or_pull,$(STD_DATE_DIR),https://github.com/HowardHinnant)
 	$(call symbolic_link,$(STD_DATE_DIR)/include/date,$(AD_INCLUDE)/date)
 
+#----------------------------------------------------------------------
 # RANGEV3_BRANCH = v1.0-beta
 RANGEV3_DIR = $(BUILD)/range-v3
 
@@ -171,6 +175,7 @@ range-v3: $(AD_INCLUDE)
 	$(call git_clone_or_pull,$(RANGEV3_DIR),https://github.com/ericniebler)
 	for dd in $(RANGEV3_DIR)/include/*; do if [ ! -d $(AD_INCLUDE)/$$(basename $$dd) ]; then ln -sfv $$dd $(AD_INCLUDE); fi; done
 
+#----------------------------------------------------------------------
 # https://github.com/kthohr/optim
 OPTIM_PREFIX = $(BUILD)
 OPTIM_DIR = $(BUILD)/optim
@@ -181,6 +186,7 @@ optim: $(AD_INCLUDE)
 	cd $(OPTIM_DIR) && ./configure --header-only-version
 	$(call symbolic_link,$(OPTIM_DIR)/header_only_version,$(AD_INCLUDE)/optim)
 
+#----------------------------------------------------------------------
 # https://github.com/tfussell/xlnt
 XLNT_RELEASE = 1.5.0
 XLNT_TAG = v$(XLNT_RELEASE)
@@ -203,6 +209,7 @@ ifeq ($(PLATFORM),darwin)
 	/usr/bin/install_name_tool -id "$(AD_LIB)/libxlnt.$(XLNT_RELEASE).dylib" $(AD_LIB)/libxlnt.$(XLNT_RELEASE).dylib
 endif
 
+#----------------------------------------------------------------------
 # https://github.com/troldal/OpenXLSX
 OPENXLSX_PREFIX = $(BUILD)
 OPENXLSX_DIR = $(BUILD)/openxlsx
@@ -225,6 +232,7 @@ endif
 	sed 's/headers/OpenXLSX/g' $(OPENXLSX_DIR)/library/OpenXLSX.hpp >$(AD_INCLUDE)/OpenXLSX/OpenXLSX.hpp
 	printf "#pragma once\n#define OPENXLSX_EXPORT __attribute__((visibility(\"default\")))\n" >$(AD_INCLUDE)/OpenXLSX/OpenXLSX-Exports.hpp
 
+#----------------------------------------------------------------------
 test:
 	$(MAKE) TEST=1
 
