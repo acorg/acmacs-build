@@ -57,8 +57,12 @@ update-packages: $(patsubst %,$(AD_SOURCES)/%,$(PACKAGES))
 
 build-packages: make-dirs update-packages install-makefiles install-dependencies
 	for package in $(PACKAGES); do \
-	  echo Building $$package; \
-	  $(MAKE) -C $(AD_SOURCES)/$$package $(PACKAGE_TARGET) || exit 1; \
+	  echo Building $$package $(PACKAGE_TARGET); \
+	  if [ $$package == "acmacs.r" ]; then \
+	    $(MAKE) -C $(AD_SOURCES)/$$package MAKEFLAGS= $(PACKAGE_TARGET) || exit 1; \
+	  else \
+	    $(MAKE) -C $(AD_SOURCES)/$$package $(PACKAGE_TARGET) || exit 1; \
+	  fi; \
 	done
 	$(MAKE) ccls
 
