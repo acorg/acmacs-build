@@ -192,13 +192,16 @@ XLNT_RELEASE = 1.5.0
 XLNT_TAG = v$(XLNT_RELEASE)
 XLNT_PREFIX = $(AD_BUILD)
 XLNT_DIR = $(BUILD)/xlnt
+FMT_LIB_PATHNAME = $(XLNT_PREFIX)/lib/$(call shared_lib_name,libfmt,$(XLNT_RELEASE))
 ifeq ($(C),CLANG)
   XLNT_CXX_FLAGS = -Wno-suggest-override -Wno-suggest-destructor-override -Wno-extra-semi-stmt -Wno-implicit-int-float-conversion -Wno-missing-field-initializers
 else
   XLNT_CXX_FLAGS = -Wno-missing-field-initializers
 endif
 
-xlnt: $(AD_INCLUDE)
+xlnt: $(XLNT_LIB_PATHNAME)
+
+$(XLNT_LIB_PATHNAME):
 	$(call git_clone_tag,$(XLNT_DIR),https://github.com/tfussell,$(XLNT_TAG))
 	if [ -f $(XLNT_DIR)/third-party/libstudxml/version ]; then mv $(XLNT_DIR)/third-party/libstudxml/version $(XLNT_DIR)/third-party/libstudxml/version.orig; fi
 	mkdir -p $(XLNT_DIR)/build && \
