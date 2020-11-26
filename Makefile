@@ -97,6 +97,7 @@ rtags:
 	  $(MAKE) -C $(AD_SOURCES)/$$package rtags || exit 1; \
 	done
 
+#  chaiscript
 install-dependencies: rapidjson fmt std_date range-v3 pybind11 websocketpp asio optim xlnt
 	$(MAKE) -f Makefile.mongocxx
 .PHONY: install-dependencies
@@ -238,6 +239,21 @@ endif
 	$(call symbolic_link_wildcard,$(OPENXLSX_DIR)/library/headers/*.hpp,$(AD_INCLUDE)/OpenXLSX)
 	sed 's/headers/OpenXLSX/g' $(OPENXLSX_DIR)/library/OpenXLSX.hpp >$(AD_INCLUDE)/OpenXLSX/OpenXLSX.hpp
 	printf "#pragma once\n#define OPENXLSX_EXPORT __attribute__((visibility(\"default\")))\n" >$(AD_INCLUDE)/OpenXLSX/OpenXLSX-Exports.hpp
+
+#----------------------------------------------------------------------
+CHAISCRIPT_PREFIX = $(BUILD)
+CHAISCRIPT_DIR = $(BUILD)/chaiscript
+CHAISCRIPT_VERSION = 6.1.0
+CHAISCRIPT_URL = "https://github.com/ChaiScript/ChaiScript/archive/v$(CHAISCRIPT_VERSION).tar.gz"
+
+# https://github.com/chaiscriptlib/chaiscript
+chaiscript: $(CHAISCRIPT_DIR)/include/chaiscript/chaiscript.hpp
+
+$(CHAISCRIPT_DIR)/include/chaiscript/chaiscript.hpp:
+	rm -rf $(BUILD)/*chaiscript*
+	curl -sL -o $(BUILD)/release-chaiscript.tar.gz "$(CHAISCRIPT_URL)"
+	cd $(BUILD) && tar xzf release-chaiscript.tar.gz && ln -s ChaiScript-* "$(CHAISCRIPT_DIR)"
+	$(call symbolic_link,$(CHAISCRIPT_DIR)/include/chaiscript,$(AD_INCLUDE)/chaiscript)
 
 #----------------------------------------------------------------------
 test:
