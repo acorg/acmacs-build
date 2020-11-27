@@ -50,15 +50,17 @@ ifneq ($(dir $(CURDIR)),$(realpath $(AD_SOURCES))/)
 endif
 
 update-and-build: build-packages
+.PHONY: update-and-build
 
 install-makefiles: $(AD_SHARE)/Makefile.config
+.PHONY: install-makefiles
 
 update-packages: $(patsubst %,$(AD_SOURCES)/%,$(PACKAGES))
 
-build-packages: make-dirs update-packages install-makefiles install-dependencies
+build-packages: make-installation-dirs update-packages install-makefiles install-dependencies
 	for package in $(PACKAGES); do \
 	  echo Building $$package $(PACKAGE_TARGET); \
-	  if [ $$package == "acmacs.r" ]; then \
+	  if [ $$package = "acmacs.r" ]; then \
 	    $(MAKE) -C $(AD_SOURCES)/$$package MAKEFLAGS= $(PACKAGE_TARGET) || exit 1; \
 	  else \
 	    $(MAKE) -C $(AD_SOURCES)/$$package $(PACKAGE_TARGET) || exit 1; \
@@ -97,10 +99,14 @@ rtags:
 	  $(MAKE) -C $(AD_SOURCES)/$$package rtags || exit 1; \
 	done
 
+install-dependencies: mongocxx rapidjson range-v3 std_date fmt xlnt pybind11 websocketpp asio optim
 #  chaiscript
-install-dependencies: rapidjson fmt std_date range-v3 pybind11 websocketpp asio optim xlnt
-	$(MAKE) -f Makefile.mongocxx
 .PHONY: install-dependencies
+
+#----------------------------------------------------------------------
+mongocxx:
+	$(MAKE) -f Makefile.mongocxx
+.PHONY: mongocxx
 
 #----------------------------------------------------------------------
 PYBIND11_PREFIX = $(BUILD)
@@ -274,7 +280,6 @@ $(patsubst %,$(AD_SOURCES)/%,$(PACKAGES)):
 $(AD_SHARE)/Makefile.%: | $(AD_SHARE)
 	ln -svf $(abspath $(@F)) $@
 
-.PHONY: update-and-build git-update make-dirs install-dependencies install-makefiles
 .PHONY: $(patsubst %,$(AD_SOURCES)/%,$(PACKAGES))
 
 # ======================================================================
