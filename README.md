@@ -69,6 +69,11 @@ Scripts to build Acmacs-D.
   * macOS: `brew install make`
   * Ubuntu Linux: comes with the system
 
+- GNU Guile 3.0
+
+  * macOS: `brew install guile`
+  * Ubuntu Linux: sudo apt install guile-3.0-dev
+
 - CMake 3.2 or later
 
   * macOS: `brew install cmake`
