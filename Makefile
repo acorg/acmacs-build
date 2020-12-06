@@ -118,8 +118,8 @@ pybind11: $(PYBIND11_DIR)/include/pybind11/pybind11.h
 .PHONY: pybind11
 
 $(PYBIND11_DIR)/include/pybind11/pybind11.h:
-	curl -sL -o $(BUILD)/release-pybind11.tar.gz "$(PYBIND11_URL)"
-	cd $(BUILD) && tar xzf release-pybind11.tar.gz && ln -sf pybind11-* $(PYBIND11_DIR)
+	curl -sL -o $(BUILD)/pybind11-$(PYBIND11_RELEASE).tar.gz "$(PYBIND11_URL)"
+	cd $(BUILD) && tar xzf pybind11-$(PYBIND11_RELEASE).tar.gz && ln -sf pybind11-$(PYBIND11_RELEASE) $(PYBIND11_DIR)
 	$(call symbolic_link,$(PYBIND11_DIR)/include/pybind11,$(AD_INCLUDE)/pybind11)
 
 #----------------------------------------------------------------------
@@ -167,7 +167,7 @@ $(FMT_LIB_PATHNAME):
 	$(call symbolic_link,$(FMT_DIR)/include/fmt,$(AD_INCLUDE)/fmt)
 	mkdir -p $(FMT_DIR)/build && \
 	  cd $(FMT_DIR)/build && \
-	  cmake -DFMT_TEST=OFF -DFMT_DOC=OFF -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=TRUE -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DCMAKE_INSTALL_PREFIX="$(FMT_PREFIX)" -DCMAKE_PREFIX_PATH="$(FMT_PREFIX)" .. && \
+	  cmake -D CMAKE_COLOR_MAKEFILE=OFF -DFMT_TEST=OFF -DFMT_DOC=OFF -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=TRUE -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DCMAKE_INSTALL_PREFIX="$(FMT_PREFIX)" -DCMAKE_PREFIX_PATH="$(FMT_PREFIX)" .. && \
 	  $(MAKE) install
 	if [ "$$(uname)" = "Darwin" ]; then \
 	  cd "$(FMT_PREFIX)/lib" || exit 1; \
@@ -206,27 +206,30 @@ optim: $(AD_INCLUDE)
 #----------------------------------------------------------------------
 # https://github.com/tfussell/xlnt
 XLNT_RELEASE = 1.5.0
-XLNT_TAG = v$(XLNT_RELEASE)
 XLNT_PREFIX = $(AD_BUILD)
 XLNT_DIR = $(BUILD)/xlnt
-XLNT_LIB_PATHNAME = $(XLNT_PREFIX)/lib/$(call shared_lib_name,libfmt,$(XLNT_RELEASE))
+XLNT_URL = https://github.com/tfussell/xlnt/archive/v$(XLNT_RELEASE).tar.gz
+XLNT_LIB_PATHNAME = $(AD_LIB)/libxlnt.$(XLNT_RELEASE).dylib
+XLNT_INCLUDE_PATHNAME = $(XLNT_DIR)/include/xlnt/xlnt.hpp
 ifeq ($(C),CLANG)
   XLNT_CXX_FLAGS = -Wno-suggest-override -Wno-suggest-destructor-override -Wno-extra-semi-stmt -Wno-implicit-int-float-conversion -Wno-missing-field-initializers
 else
   XLNT_CXX_FLAGS = -Wno-missing-field-initializers
 endif
 
-xlnt: $(XLNT_LIB_PATHNAME)
+xlnt: $(XLNT_LIB_PATHNAME) $(XLNT_INCLUDE_PATHNAME)
+.PHONY: xlnt
 
-$(XLNT_LIB_PATHNAME):
-	$(call git_clone_tag,$(XLNT_DIR),https://github.com/tfussell,$(XLNT_TAG))
+$(XLNT_LIB_PATHNAME) $(XLNT_INCLUDE_PATHNAME):
+	curl -sL -o $(BUILD)/xlnt-$(XLNT_RELEASE).tar.gz "$(XLNT_URL)"
+	cd $(BUILD) && tar xzf xlnt-$(XLNT_RELEASE).tar.gz && ln -sf xlnt-$(XLNT_RELEASE) $(XLNT_DIR)
 	if [ -f $(XLNT_DIR)/third-party/libstudxml/version ]; then mv $(XLNT_DIR)/third-party/libstudxml/version $(XLNT_DIR)/third-party/libstudxml/version.orig; fi
 	mkdir -p $(XLNT_DIR)/build && \
 	  cd $(XLNT_DIR)/build && \
-	  cmake -D CMAKE_BUILD_TYPE=Release -D TESTS=OFF -D CMAKE_CXX_FLAGS_RELEASE="$(OPT) $(XLNT_CXX_FLAGS)" -D CMAKE_CXX_COMPILER="$(CXX)" -DCMAKE_INSTALL_PREFIX="$(XLNT_PREFIX)" -DCMAKE_PREFIX_PATH="$(XLNT_PREFIX)" .. && \
+	  cmake -D CMAKE_COLOR_MAKEFILE=OFF -D CMAKE_BUILD_TYPE=Release -D TESTS=OFF -D CMAKE_CXX_FLAGS_RELEASE="$(OPT) $(XLNT_CXX_FLAGS)" -D CMAKE_CXX_COMPILER="$(CXX)" -DCMAKE_INSTALL_PREFIX="$(XLNT_PREFIX)" -DCMAKE_PREFIX_PATH="$(XLNT_PREFIX)" .. && \
 	  $(MAKE) install
 ifeq ($(PLATFORM),darwin)
-	/usr/bin/install_name_tool -id "$(AD_LIB)/libxlnt.$(XLNT_RELEASE).dylib" $(AD_LIB)/libxlnt.$(XLNT_RELEASE).dylib
+	/usr/bin/install_name_tool -id $(XLNT_LIB_PATHNAME) $(XLNT_LIB_PATHNAME)
 endif
 
 #----------------------------------------------------------------------
@@ -239,7 +242,7 @@ openxlsx: $(AD_INCLUDE)
 	$(call git_clone_or_pull,$(OPENXLSX_DIR),https://github.com/troldal)
 	mkdir -p $(OPENXLSX_DIR)/build && \
 	  cd $(OPENXLSX_DIR)/build && \
-	  cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DCMAKE_INSTALL_PREFIX="$(OPENXLSX_PREFIX)" -DCMAKE_PREFIX_PATH="$(OPENXLSX_PREFIX)" .. && \
+	  cmake -D CMAKE_COLOR_MAKEFILE=OFF -DCMAKE_BUILD_TYPE=Release -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DCMAKE_INSTALL_PREFIX="$(OPENXLSX_PREFIX)" -DCMAKE_PREFIX_PATH="$(OPENXLSX_PREFIX)" .. && \
 	  $(MAKE)
 ifeq ($(PLATFORM),darwin)
 	cp $(OPENXLSX_DIR)/build/output/libOpenXLSX-shared.dylib $(AD_LIB)/libOpenXLSX.dylib && \
