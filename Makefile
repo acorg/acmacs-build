@@ -109,11 +109,17 @@ mongocxx:
 .PHONY: mongocxx
 
 #----------------------------------------------------------------------
+PYBIND11_RELEASE = 2.6.1
 PYBIND11_PREFIX = $(BUILD)
 PYBIND11_DIR = $(BUILD)/pybind11
+PYBIND11_URL = "https://github.com/pybind/pybind11/archive/v$(PYBIND11_RELEASE).tar.gz"
 
-pybind11: $(AD_INCLUDE)
-	$(call git_clone_or_pull,$(PYBIND11_DIR),https://github.com/pybind)
+pybind11: $(PYBIND11_DIR)/include/pybind11/pybind11.h
+.PHONY: pybind11
+
+$(PYBIND11_DIR)/include/pybind11/pybind11.h:
+	curl -sL -o $(BUILD)/release-pybind11.tar.gz "$(PYBIND11_URL)"
+	cd $(BUILD) && tar xzf release-pybind11.tar.gz && ln -sf pybind11-* $(PYBIND11_DIR)
 	$(call symbolic_link,$(PYBIND11_DIR)/include/pybind11,$(AD_INCLUDE)/pybind11)
 
 #----------------------------------------------------------------------
