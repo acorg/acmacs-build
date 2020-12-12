@@ -33,7 +33,7 @@ Scripts to build Acmacs-D.
 
 - All dependencies
 
-  * macOS: `brew install armadillo cairo xz apache2 openssl`
+  * macOS: `brew install armadillo cairo xz apache2 openssl r`
   
   
 - Python
@@ -48,7 +48,7 @@ Scripts to build Acmacs-D.
 
   acmacs.r requires R 4.0+ (https://www.r-project.org) with Rcpp, testthat, roxygen2 packages.
 
-  * macOS: `brew cask install r`
+  * macOS: `brew install r`
   * Ubuntu Linux: `sudo apt install r-base-core`
 
   `Rscript --no-save -e 'install.packages(c("Rcpp", "testthat", "roxygen2"),repos="http://cran.r-project.org")'`
