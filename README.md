@@ -18,7 +18,7 @@ Scripts to build Acmacs-D.
 
      llvm 11.0 can be installed using [homebrew](https://brew.sh):
 
-     `brew install llvm`
+     `brew install llvm libomp`
 
      Executables are expected to be in /usr/local/opt/llvm/bin
 
