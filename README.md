@@ -4,7 +4,7 @@ Scripts to build Acmacs-D.
 
 # Supported platforms
 
- - macOS 10.12+
+ - macOS 10.14.6 (with xcode 11.3.1) or later
  - Ubuntu Linux 20.04 (earlier versions are most probably good enough too)
  - Theoretcially any Linux distribution fulfilled requirements below.
 
@@ -21,6 +21,11 @@ Scripts to build Acmacs-D.
      `brew install llvm`
 
      Executables are expected to be in /usr/local/opt/llvm/bin
+
+     Note for macOS 10.14 (Mojave): if building fails with an error "ld: unknown option: -platform_version",
+     use the following command to enable newer ld (from xcode 11.3.1):
+
+     `sudo xcode-select -s /Applications/Xcode.app/Contents/Developer`
 
   * Ubuntu Linux
 
@@ -66,7 +71,7 @@ Scripts to build Acmacs-D.
 
 - GNU make 4.2
 
-  * macOS: `brew install make`
+  * macOS: `brew install make` then use gmake
   * Ubuntu Linux: comes with the system
 
 - GNU Guile 3.0
