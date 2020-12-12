@@ -31,6 +31,11 @@ Scripts to build Acmacs-D.
 
     g++ 10.x can be installed using `apt-get install g++-10`
 
+- All dependencies
+
+  * macOS: `brew install armadillo cairo xz apache2 openssl`
+  
+  
 - Python
 
   Some of the Acmacs-D modules have python interface, Python 3.8 or later is required.
@@ -74,7 +79,7 @@ Scripts to build Acmacs-D.
   * macOS: `brew install make` then use gmake
   * Ubuntu Linux: comes with the system
 
-- GNU Guile 3.0
+- [Unsued] GNU Guile 3.0
 
   * macOS: `brew install guile`
   * Ubuntu Linux: sudo apt install guile-3.0-dev
@@ -105,6 +110,10 @@ Scripts to build Acmacs-D.
   * macOS: `brew install sassc`
   * Ubuntu Linux: install manually
 
+- Other dependencies
+
+  * macOS: `brew install libomp armadillo`
+  
 # Installation
 
 Choose a directory where all the sources will be downloaded to and
