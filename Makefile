@@ -232,7 +232,7 @@ $(XLNT_LIB_PATHNAME) $(XLNT_INCLUDE_PATHNAME):
 	mkdir -p $(XLNT_DIR)/build && \
 	  cd $(XLNT_DIR)/build && \
 	  $(XLNT_CMAKE_CMD) && \
-	  $(MAKE) install
+	  $(MAKE) MAKEFLAGS= install
 ifeq ($(PLATFORM),darwin)
 	/usr/bin/install_name_tool -id $(XLNT_LIB_PATHNAME) $(XLNT_LIB_PATHNAME)
 endif
