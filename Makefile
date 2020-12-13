@@ -99,7 +99,7 @@ rtags:
 	  $(MAKE) -C $(AD_SOURCES)/$$package rtags || exit 1; \
 	done
 
-install-dependencies: mongocxx rapidjson range-v3 std_date fmt xlnt pybind11 websocketpp asio optim
+install-dependencies: mongocxx rapidjson range-v3 std_date fmt xlnt pybind11 websocketpp asio
 #  chaiscript
 .PHONY: install-dependencies
 
