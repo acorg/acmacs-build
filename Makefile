@@ -222,17 +222,17 @@ xlnt: $(XLNT_LIB_PATHNAME) $(XLNT_INCLUDE_PATHNAME)
 .PHONY: xlnt
 
 # 2020-12-13: cmake 3.16 on ubuntu 20.4 focal fails when make is with -j
-# with -DCMAKE_C_COMPILER_FORCED=TRUE --debug-trycompile it starts working (not clear why)
-XLNT_CMAKE_CMD = cmake -D CMAKE_COLOR_MAKEFILE=OFF -D CMAKE_BUILD_TYPE=Release -D TESTS=OFF -D CMAKE_CXX_FLAGS_RELEASE="$(OPT) $(XLNT_CXX_FLAGS)" -D CMAKE_CXX_COMPILER="$(CXX)" -DCMAKE_INSTALL_PREFIX="$(XLNT_PREFIX)" -DCMAKE_PREFIX_PATH="$(XLNT_PREFIX)" -DCMAKE_C_COMPILER_FORCED=TRUE --debug-trycompile ..
+XLNT_CMAKE_CMD = cmake -D CMAKE_COLOR_MAKEFILE=OFF -D CMAKE_BUILD_TYPE=Release -D TESTS=OFF -D CMAKE_CXX_FLAGS_RELEASE="$(OPT) $(XLNT_CXX_FLAGS)" -D CMAKE_CXX_COMPILER="$(CXX)" -DCMAKE_INSTALL_PREFIX="$(XLNT_PREFIX)" -DCMAKE_PREFIX_PATH="$(XLNT_PREFIX)" ..
 
 $(XLNT_LIB_PATHNAME) $(XLNT_INCLUDE_PATHNAME):
 	curl -sL -o $(BUILD)/xlnt-$(XLNT_RELEASE).tar.gz "$(XLNT_URL)"
 	cd $(BUILD) && tar xzf xlnt-$(XLNT_RELEASE).tar.gz && ln -sf xlnt-$(XLNT_RELEASE) $(XLNT_DIR)
-	# if [ -f $(XLNT_DIR)/third-party/libstudxml/version ]; then mv $(XLNT_DIR)/third-party/libstudxml/version $(XLNT_DIR)/third-party/libstudxml/version.orig; fi
+	@# third-party/libstudxml/version leads to build failure on macOS 10.14
+	if [ -f $(XLNT_DIR)/third-party/libstudxml/version ]; then mv $(XLNT_DIR)/third-party/libstudxml/version $(XLNT_DIR)/third-party/libstudxml/version.orig; fi
 	mkdir -p $(XLNT_DIR)/build && \
 	  cd $(XLNT_DIR)/build && \
 	  $(XLNT_CMAKE_CMD) && \
-	  $(MAKE) MAKEFLAGS= install
+	  $(MAKE) install
 ifeq ($(PLATFORM),darwin)
 	/usr/bin/install_name_tool -id $(XLNT_LIB_PATHNAME) $(XLNT_LIB_PATHNAME)
 endif
