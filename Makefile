@@ -49,7 +49,10 @@ ifneq ($(dir $(CURDIR)),$(realpath $(AD_SOURCES))/)
   $(error acmacs-build must be placed in $(realpath $(AD_SOURCES)) (currently in $(CURDIR)))
 endif
 
-update-and-build: build-packages
+# 2020-12-18 xlnt building fails when trying to build in parallel mode (unclear cmake problem)
+update-and-build:
+	MAKEFLAGS= $(MAKE) xlnt
+	$(MAKE) build-packages
 .PHONY: update-and-build
 
 install-makefiles: $(AD_SHARE)/Makefile.config
@@ -99,13 +102,11 @@ rtags:
 	  $(MAKE) -C $(AD_SOURCES)/$$package rtags || exit 1; \
 	done
 
-install-dependencies: mongocxx rapidjson range-v3 std_date fmt xlnt pybind11 websocketpp asio
-#  chaiscript
+install-dependencies: mongocxx rapidjson range-v3 std_date fmt pybind11 websocketpp asio
 .PHONY: install-dependencies
 
 #----------------------------------------------------------------------
-# 2020-12-13 avoid building mongocxx and xlnt in parallel (strange conflict, see also comments for xlnt cmake command)
-mongocxx: xlnt
+mongocxx:
 	$(MAKE) -f Makefile.mongocxx
 .PHONY: mongocxx
 
@@ -221,7 +222,6 @@ endif
 xlnt: $(XLNT_LIB_PATHNAME) $(XLNT_INCLUDE_PATHNAME)
 .PHONY: xlnt
 
-# 2020-12-13: cmake 3.16 on ubuntu 20.4 focal fails when make is with -j
 XLNT_CMAKE_CMD = cmake -D CMAKE_COLOR_MAKEFILE=OFF -D CMAKE_BUILD_TYPE=Release -D TESTS=OFF -D CMAKE_CXX_FLAGS_RELEASE="$(OPT) $(XLNT_CXX_FLAGS)" -D CMAKE_CXX_COMPILER="$(CXX)" -DCMAKE_INSTALL_PREFIX="$(XLNT_PREFIX)" -DCMAKE_PREFIX_PATH="$(XLNT_PREFIX)" ..
 
 $(XLNT_LIB_PATHNAME) $(XLNT_INCLUDE_PATHNAME):
