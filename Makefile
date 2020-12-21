@@ -50,7 +50,7 @@ ifneq ($(dir $(CURDIR)),$(realpath $(AD_SOURCES))/)
 endif
 
 # 2020-12-18 xlnt building fails when trying to build in parallel mode (unclear cmake problem)
-update-and-build:
+update-and-build: make-installation-dirs
 	MAKEFLAGS= $(MAKE) xlnt
 	$(MAKE) build-packages
 .PHONY: update-and-build
@@ -218,13 +218,14 @@ ifeq ($(C),CLANG)
 else
   XLNT_CXX_FLAGS = -Wno-missing-field-initializers
 endif
+XLNT_CXX_FLAGS += -O3 $(MAVX) -mtune=intel
 
 xlnt: $(XLNT_LIB_PATHNAME) $(XLNT_INCLUDE_PATHNAME)
 .PHONY: xlnt
 
-XLNT_CMAKE_CMD = cmake -D CMAKE_COLOR_MAKEFILE=OFF -D CMAKE_BUILD_TYPE=Release -D TESTS=OFF -D CMAKE_CXX_FLAGS_RELEASE="$(OPT) $(XLNT_CXX_FLAGS)" -D CMAKE_CXX_COMPILER="$(CXX)" -DCMAKE_INSTALL_PREFIX="$(XLNT_PREFIX)" -DCMAKE_PREFIX_PATH="$(XLNT_PREFIX)" ..
+XLNT_CMAKE_CMD = cmake -D CMAKE_COLOR_MAKEFILE=OFF -D CMAKE_BUILD_TYPE=Release -D TESTS=OFF -D CMAKE_CXX_FLAGS_RELEASE="$(XLNT_CXX_FLAGS)" -D CMAKE_CXX_COMPILER="$(CXX)" -DCMAKE_INSTALL_PREFIX="$(XLNT_PREFIX)" -DCMAKE_PREFIX_PATH="$(XLNT_PREFIX)" ..
 
-$(XLNT_LIB_PATHNAME) $(XLNT_INCLUDE_PATHNAME):
+$(XLNT_LIB_PATHNAME) $(XLNT_INCLUDE_PATHNAME): $(BUILD)
 	curl -sL -o $(BUILD)/xlnt-$(XLNT_RELEASE).tar.gz "$(XLNT_URL)"
 	cd $(BUILD) && tar xzf xlnt-$(XLNT_RELEASE).tar.gz && ln -sf xlnt-$(XLNT_RELEASE) $(XLNT_DIR)
 	@# third-party/libstudxml/version leads to build failure on macOS 10.14
