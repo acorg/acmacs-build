@@ -158,15 +158,15 @@ FMT_DIR = $(BUILD)/fmt
 FMT_VERSION = 7.1.3
 FMT_URL = "https://github.com/fmtlib/fmt/releases/download/$(FMT_VERSION)/fmt-$(FMT_VERSION).zip"
 FMT_LIB_PATHNAME = $(FMT_PREFIX)/lib/$(call shared_lib_name,libfmt,$(FMT_VERSION))
+FMT_INCLUDE_PATHNAME = $(AD_INCLUDE)/fmt/format.h
 
 # https://github.com/fmtlib/fmt
-fmt: $(FMT_LIB_PATHNAME)
+fmt: $(FMT_LIB_PATHNAME) $(FMT_INCLUDE_PATHNAME)
 
 $(FMT_LIB_PATHNAME):
 	rm -rf $(BUILD)/*fmt*
 	curl -sL -o $(BUILD)/release-fmt.zip "$(FMT_URL)"
 	cd $(BUILD) && unzip release-fmt.zip && ln -s fmt-* $(FMT_DIR)
-	$(call symbolic_link,$(FMT_DIR)/include/fmt,$(AD_INCLUDE)/fmt)
 	mkdir -p $(FMT_DIR)/build && \
 	  cd $(FMT_DIR)/build && \
 	  cmake -D CMAKE_COLOR_MAKEFILE=OFF -DFMT_TEST=OFF -DFMT_DOC=OFF -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=TRUE -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DCMAKE_INSTALL_PREFIX="$(FMT_PREFIX)" -DCMAKE_PREFIX_PATH="$(FMT_PREFIX)" .. && \
@@ -177,6 +177,9 @@ $(FMT_LIB_PATHNAME):
 	    /usr/bin/install_name_tool -id "$(FMT_PREFIX)/lib/$$library" "$$library" || exit 1; \
 	  done; \
 	fi
+
+$(FMT_INCLUDE_PATHNAME): $(FMT_LIB_PATHNAME)
+	$(call symbolic_link,$(FMT_DIR)/include/fmt,$(AD_INCLUDE)/fmt)
 
 #----------------------------------------------------------------------
 STD_DATE_PREFIX = $(BUILD)
