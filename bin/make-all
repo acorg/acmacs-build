@@ -1,4 +1,4 @@
 #! /bin/bash
 MAKE=$(if command -v gmake >/dev/null 2>&1; then echo gmake; else echo make; fi)
 NPROC=$(if [ "$(uname -s)" = "Darwin" ]; then /usr/sbin/sysctl -n hw.logicalcpu; else /usr/bin/nproc; fi)
-exec ${MAKE} -C "${ACMACSD_ROOT}/sources/acmacs-build" -j${NPROC} -k --output-sync=line "$@"
+exec ${MAKE} -C "$(dirname $0)/.." -j${NPROC} -k --output-sync=line "$@"
