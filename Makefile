@@ -45,9 +45,9 @@ endif
 
 # ----------------------------------------------------------------------
 
-ifneq ($(dir $(CURDIR)),$(realpath $(AD_SOURCES))/)
-  $(error acmacs-build must be placed in $(realpath $(AD_SOURCES)) (currently in $(CURDIR)))
-endif
+# ifneq ($(dir $(CURDIR)),$(realpath $(AD_SOURCES))/)
+#   $(error acmacs-build must be placed in $(realpath $(AD_SOURCES)) (currently in $(CURDIR)))
+# endif
 
 # 2020-12-18 xlnt building fails when trying to build in parallel mode (unclear cmake problem)
 update-and-build: make-installation-dirs
