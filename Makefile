@@ -113,7 +113,6 @@ mongocxx:
 
 #----------------------------------------------------------------------
 PYBIND11_RELEASE = 2.6.1
-PYBIND11_PREFIX = $(BUILD)
 PYBIND11_DIR = $(BUILD)/pybind11
 PYBIND11_URL = "https://github.com/pybind/pybind11/archive/v$(PYBIND11_RELEASE).tar.gz"
 
@@ -137,7 +136,6 @@ websocketpp: $(AD_INCLUDE)
 # https://think-async.com/Asio/AsioStandalone.html
 # https://github.com/chriskohlhoff/asio/
 ASIO_TAG = asio-1-12-2
-ASIO_PREFIX = $(BUILD)
 ASIO_DIR = $(BUILD)/asio
 
 asio: $(AD_INCLUDE)
@@ -146,7 +144,6 @@ asio: $(AD_INCLUDE)
 	$(call symbolic_link,$(ASIO_DIR)/asio/include/asio.hpp,$(AD_INCLUDE)/asio.hpp)
 
 #----------------------------------------------------------------------
-RAPIDJSON_PREFIX = $(BUILD)
 RAPIDJSON_DIR = $(BUILD)/rapidjson
 
 rapidjson: $(AD_INCLUDE)
@@ -154,7 +151,7 @@ rapidjson: $(AD_INCLUDE)
 	$(call symbolic_link,$(RAPIDJSON_DIR)/include/rapidjson,$(AD_INCLUDE)/rapidjson)
 
 #----------------------------------------------------------------------
-FMT_PREFIX = $(BUILD)
+FMT_PREFIX = $(AD_ROOT)
 FMT_DIR = $(BUILD)/fmt
 FMT_VERSION = 7.1.3
 FMT_URL = "https://github.com/fmtlib/fmt/releases/download/$(FMT_VERSION)/fmt-$(FMT_VERSION).zip"
@@ -183,7 +180,6 @@ $(FMT_INCLUDE_PATHNAME): $(FMT_LIB_PATHNAME)
 	$(call symbolic_link,$(FMT_DIR)/include/fmt,$(AD_INCLUDE)/fmt)
 
 #----------------------------------------------------------------------
-STD_DATE_PREFIX = $(BUILD)
 STD_DATE_DIR = $(BUILD)/date
 
 std_date: $(AD_INCLUDE)
@@ -200,7 +196,6 @@ range-v3: $(AD_INCLUDE)
 
 #----------------------------------------------------------------------
 # https://github.com/kthohr/optim
-OPTIM_PREFIX = $(BUILD)
 OPTIM_DIR = $(BUILD)/optim
 OPTIM_INCLUDES = -I$(AD_INCLUDE)/optim
 
@@ -240,11 +235,13 @@ $(XLNT_LIB_PATHNAME) $(XLNT_INCLUDE_PATHNAME): $(BUILD)
 	  $(MAKE) install
 ifeq ($(PLATFORM),darwin)
 	/usr/bin/install_name_tool -id $(XLNT_LIB_PATHNAME) $(XLNT_LIB_PATHNAME)
+else
+	ln -sf $(XLNT_PREFIX)/include/xlnt $(AD_INCLUDE)
 endif
 
 #----------------------------------------------------------------------
 # https://github.com/troldal/OpenXLSX
-OPENXLSX_PREFIX = $(BUILD)
+OPENXLSX_PREFIX = $(AD_ROOT)
 OPENXLSX_DIR = $(BUILD)/openxlsx
 # OPENXLSX_INCLUDES = -I$(AD_INCLUDE)/openxlsx
 
@@ -255,10 +252,10 @@ openxlsx: $(AD_INCLUDE)
 	  cmake -D CMAKE_COLOR_MAKEFILE=OFF -DCMAKE_BUILD_TYPE=Release -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DCMAKE_INSTALL_PREFIX="$(OPENXLSX_PREFIX)" -DCMAKE_PREFIX_PATH="$(OPENXLSX_PREFIX)" .. && \
 	  $(MAKE)
 ifeq ($(PLATFORM),darwin)
-	cp $(OPENXLSX_DIR)/build/output/libOpenXLSX-shared.dylib $(AD_LIB)/libOpenXLSX.dylib && \
-	  /usr/bin/install_name_tool -id "$(AD_LIB)/libOpenXLSX.dylib" $(AD_LIB)/libOpenXLSX.dylib
+	$(call install_program,$(OPENXLSX_DIR)/build/output/libOpenXLSX-shared.dylib,$(AD_LIB)/libOpenXLSX.dylib)
+	/usr/bin/install_name_tool -id "$(AD_LIB)/libOpenXLSX.dylib" $(AD_LIB)/libOpenXLSX.dylib
 else
-	$(call symbolic_link,$(OPENXLSX_DIR)/build/output/libOpenXLSX-shared.so,$(AD_LIB)/libOpenXLSX.so)
+	$(call install_program,$(OPENXLSX_DIR)/build/output/libOpenXLSX-shared.so,$(AD_LIB)/libOpenXLSX.so)
 endif
 	mkdir -p $(AD_INCLUDE)/OpenXLSX
 	$(call symbolic_link_wildcard,$(OPENXLSX_DIR)/library/headers/*.hpp,$(AD_INCLUDE)/OpenXLSX)
@@ -266,19 +263,18 @@ endif
 	printf "#pragma once\n#define OPENXLSX_EXPORT __attribute__((visibility(\"default\")))\n" >$(AD_INCLUDE)/OpenXLSX/OpenXLSX-Exports.hpp
 
 #----------------------------------------------------------------------
-CHAISCRIPT_PREFIX = $(BUILD)
-CHAISCRIPT_DIR = $(BUILD)/chaiscript
-CHAISCRIPT_VERSION = 6.1.0
-CHAISCRIPT_URL = "https://github.com/ChaiScript/ChaiScript/archive/v$(CHAISCRIPT_VERSION).tar.gz"
+# CHAISCRIPT_DIR = $(BUILD)/chaiscript
+# CHAISCRIPT_VERSION = 6.1.0
+# CHAISCRIPT_URL = "https://github.com/ChaiScript/ChaiScript/archive/v$(CHAISCRIPT_VERSION).tar.gz"
 
-# https://github.com/chaiscriptlib/chaiscript
-chaiscript: $(CHAISCRIPT_DIR)/include/chaiscript/chaiscript.hpp
+# # https://github.com/chaiscriptlib/chaiscript
+# chaiscript: $(CHAISCRIPT_DIR)/include/chaiscript/chaiscript.hpp
 
-$(CHAISCRIPT_DIR)/include/chaiscript/chaiscript.hpp:
-	rm -rf $(BUILD)/*chaiscript*
-	curl -sL -o $(BUILD)/release-chaiscript.tar.gz "$(CHAISCRIPT_URL)"
-	cd $(BUILD) && tar xzf release-chaiscript.tar.gz && ln -s ChaiScript-* "$(CHAISCRIPT_DIR)"
-	$(call symbolic_link,$(CHAISCRIPT_DIR)/include/chaiscript,$(AD_INCLUDE)/chaiscript)
+# $(CHAISCRIPT_DIR)/include/chaiscript/chaiscript.hpp:
+# 	rm -rf $(BUILD)/*chaiscript*
+# 	curl -sL -o $(BUILD)/release-chaiscript.tar.gz "$(CHAISCRIPT_URL)"
+# 	cd $(BUILD) && tar xzf release-chaiscript.tar.gz && ln -s ChaiScript-* "$(CHAISCRIPT_DIR)"
+# 	$(call symbolic_link,$(CHAISCRIPT_DIR)/include/chaiscript,$(AD_INCLUDE)/chaiscript)
 
 #----------------------------------------------------------------------
 test:

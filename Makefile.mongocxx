@@ -16,7 +16,7 @@ else
   SHARED_LIB_SUFFIX = so
 endif
 
-MONGO_PREFIX = $(BUILD)
+MONGO_PREFIX = $(AD_ROOT)
 MONGOC_DRIVER_LIB = $(MONGO_PREFIX)/lib/libmongoc-1.0.$(SHARED_LIB_SUFFIX)
 MONGOCXX_DRIVER_LIB = $(MONGO_PREFIX)/lib/libmongocxx._noabi.$(SHARED_LIB_SUFFIX)
 
@@ -59,8 +59,9 @@ $(MONGOCXX_DRIVER_LIB): $(MONGOCXX_DRIVER_DIR)/CMakeLists.txt $(MONGOC_DRIVER_LI
 	  done; \
 	  /usr/bin/install_name_tool -change "@rpath/libbsoncxx._noabi.dylib" "$(MONGO_PREFIX)/lib/libbsoncxx._noabi.dylib" "libmongocxx._noabi.dylib" || exit 1; \
 	fi && \
-	if [ ! -d $(AD_BUILD)/include/bsoncxx ]; then ln -sv $(BUILD)/include/bsoncxx $(AD_BUILD)/include/bsoncxx; fi && \
-	if [ ! -d $(AD_BUILD)/include/mongocxx ]; then ln -sv $(BUILD)/include/mongocxx $(AD_BUILD)/include/mongocxx; fi
+	mkdir -p $(AD_BUILD)/include && \
+	if [ ! -d $(AD_BUILD)/include/bsoncxx ]; then ln -sv $(MONGO_PREFIX)/include/bsoncxx $(AD_BUILD)/include/bsoncxx; fi && \
+	if [ ! -d $(AD_BUILD)/include/mongocxx ]; then ln -sv $(MONGO_PREFIX)/include/mongocxx $(AD_BUILD)/include/mongocxx; fi
 
 $(MONGOCXX_DRIVER_DIR)/CMakeLists.txt:
 	$(call git_clone_or_pull,$(MONGOCXX_DRIVER_DIR),https://github.com/mongodb,$(MONGOCXX_DRIVER_BRANCH))
