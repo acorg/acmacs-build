@@ -1,3 +1,4 @@
 #! /bin/bash
-${ACMACSD_ROOT}/sources/acmacs-build/bin/clean-all
-exec ${ACMACSD_ROOT}/sources/acmacs-build/bin/make-all "$@"
+BIN_DIR=$(dirname $0)
+${BIN_DIR}/clean-all
+exec ${BIN_DIR}/make-all "$@"
