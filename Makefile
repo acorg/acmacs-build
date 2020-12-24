@@ -212,7 +212,7 @@ optim: $(AD_INCLUDE)
 #----------------------------------------------------------------------
 # https://github.com/tfussell/xlnt
 XLNT_RELEASE = 1.5.0
-XLNT_PREFIX = $(AD_BUILD)
+XLNT_PREFIX = $(AD_ROOT)
 XLNT_DIR = $(BUILD)/xlnt
 XLNT_URL = https://github.com/tfussell/xlnt/archive/v$(XLNT_RELEASE).tar.gz
 XLNT_LIB_PATHNAME = $(AD_LIB)/libxlnt.$(XLNT_RELEASE).dylib
