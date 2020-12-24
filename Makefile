@@ -12,11 +12,12 @@ PACKAGES_CXX = \
   acmacs-draw \
   acmacs-map-draw \
   acmacs-tree-maker \
-  signature-page \
   acmacs-tal \
   acmacs-whocc \
   acmacs-webserver \
   acmacs-api
+
+#   signature-page
 
 PACKAGES = \
   $(PACKAGES_CXX) \
