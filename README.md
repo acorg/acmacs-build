@@ -25,6 +25,10 @@ Scripts to build Acmacs-D.
      Note for macOS 11.1 (Big Sur): if building fails with an error "clang++ is not able to compile a simple test program.",
      make a link MacOSX11.0.sdk to MacOSX11.1.sdk in /Library/Developer/CommandLineTools/SDKs
 
+     If compilation failes at #include_next <stdlib.h>, download command line tools from
+     https://developer.apple.com/download/more/
+     Check: /Library/Developer/CommandLineTools/SDKs/
+     
      Note for macOS 10.14 (Mojave): if building fails with an error "ld: unknown option: -platform_version",
      use the following command to enable newer ld (from xcode 11.3.1):
 
