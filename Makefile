@@ -161,7 +161,7 @@ FMT_INCLUDE_PATHNAME = $(AD_INCLUDE)/fmt/format.h
 # https://github.com/fmtlib/fmt
 fmt: $(FMT_LIB_PATHNAME) $(FMT_INCLUDE_PATHNAME)
 
-$(FMT_LIB_PATHNAME):
+$(FMT_LIB_PATHNAME) $(FMT_INCLUDE_PATHNAME):
 	rm -rf $(BUILD)/*fmt*
 	curl -sL -o $(BUILD)/release-fmt.zip "$(FMT_URL)"
 	cd $(BUILD) && unzip release-fmt.zip && ln -s fmt-* $(FMT_DIR)
@@ -175,8 +175,6 @@ $(FMT_LIB_PATHNAME):
 	    /usr/bin/install_name_tool -id "$(FMT_PREFIX)/lib/$$library" "$$library" || exit 1; \
 	  done; \
 	fi
-
-$(FMT_INCLUDE_PATHNAME): $(FMT_LIB_PATHNAME)
 	$(call symbolic_link,$(FMT_DIR)/include/fmt,$(AD_INCLUDE)/fmt)
 
 #----------------------------------------------------------------------
