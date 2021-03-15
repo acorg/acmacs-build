@@ -13,6 +13,7 @@ PACKAGES_CXX = \
   acmacs-map-draw \
   acmacs-tree-maker \
   acmacs-tal \
+  acmacs-py \
   acmacs-whocc \
   acmacs-webserver \
   acmacs-api
