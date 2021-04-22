@@ -280,7 +280,7 @@ test:
 	$(MAKE) TEST=1
 
 clean:
-	rm -rf $(ACMACSD_ROOT)/build
+	rm -rf $(AD_BUILD)
 
 help: help-vars
 	printf "\nVariables:\n"
