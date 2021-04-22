@@ -11,9 +11,9 @@ PACKAGES_CXX = \
   seqdb-3 \
   acmacs-draw \
   acmacs-map-draw \
-  acmacs-tree-maker \
   acmacs-tal \
   acmacs-py \
+  acmacs-tree-maker \
   acmacs-whocc \
   acmacs-webserver \
   acmacs-api
