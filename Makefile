@@ -216,7 +216,7 @@ ifeq ($(C),CLANG)
 else
   XLNT_CXX_FLAGS = -Wno-missing-field-initializers
 endif
-XLNT_CXX_FLAGS += -O3 $(MAVX) -mtune=intel
+XLNT_CXX_FLAGS += -O3 $(MAVX) $(MTUNE)
 
 xlnt: $(XLNT_LIB_PATHNAME) $(XLNT_INCLUDE_PATHNAME)
 .PHONY: xlnt
