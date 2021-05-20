@@ -28,7 +28,7 @@ Scripts to build Acmacs-D.
      If compilation failes at #include_next <stdlib.h>, download command line tools from
      https://developer.apple.com/download/more/
      Check: /Library/Developer/CommandLineTools/SDKs/
-     
+
      Note for macOS 10.14 (Mojave): if building fails with an error "ld: unknown option: -platform_version",
      use the following command to enable newer ld (from xcode 11.3.1):
 
@@ -41,8 +41,8 @@ Scripts to build Acmacs-D.
 - All dependencies
 
   * macOS: `brew install armadillo cairo xz apache2 openssl r`
-  
-  
+
+
 - Python
 
   Some of the Acmacs-D modules have python interface, Python 3.8 or later is required.
@@ -52,6 +52,8 @@ Scripts to build Acmacs-D.
   * Ubuntu Linux: most probably comes with the system, otherwise `sudo apt install python3`
 
 - R
+
+  > ***acmacs.r discontinued on 2021-05-20***
 
   acmacs.r requires R 4.0+ (https://www.r-project.org) with Rcpp, testthat, roxygen2 packages.
 
@@ -120,7 +122,7 @@ Scripts to build Acmacs-D.
 - Other dependencies
 
   * macOS: `brew install libomp armadillo`
-  
+
 # Installation
 
 Choose a directory where all the sources will be downloaded to and

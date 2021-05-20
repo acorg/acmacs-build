@@ -22,8 +22,9 @@ PACKAGES_CXX = \
 
 PACKAGES = \
   $(PACKAGES_CXX) \
-  ssm-report \
-  acmacs.r
+  ssm-report
+
+#  acmacs.r discontinued on 2021-05-20
 
 all: update-and-build
 
