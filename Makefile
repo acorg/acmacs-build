@@ -216,6 +216,10 @@ ifeq ($(C),CLANG)
   XLNT_CXX_FLAGS = -Wno-suggest-override -Wno-suggest-destructor-override -Wno-extra-semi-stmt -Wno-implicit-int-float-conversion -Wno-missing-field-initializers
 else
   XLNT_CXX_FLAGS = -Wno-missing-field-initializers
+  # limits has to be included to compile xlnt/source/detail/number_format/number_formatter.cpp by g++-11 (xlnt 1.5.0 2021-05-27)
+  ifeq ($(C),GCC11)
+    XLNT_CXX_FLAGS += -include limits
+  endif
 endif
 XLNT_CXX_FLAGS += -O3 $(MAVX) $(MTUNE)
 
@@ -236,7 +240,9 @@ $(XLNT_LIB_PATHNAME) $(XLNT_INCLUDE_PATHNAME): $(BUILD)
 ifeq ($(PLATFORM),darwin)
 	/usr/bin/install_name_tool -id $(XLNT_LIB_PATHNAME) $(XLNT_LIB_PATHNAME)
 else
-	ln -sf $(XLNT_PREFIX)/include/xlnt $(AD_INCLUDE)
+	if [ ! -e $(AD_INCLUDE)/xlnt ] || [ -h $(AD_INCLUDE)/xlnt ]; then \
+	  ln -sf $(XLNT_PREFIX)/include/xlnt $(AD_INCLUDE); \
+	fi
 endif
 
 #----------------------------------------------------------------------
