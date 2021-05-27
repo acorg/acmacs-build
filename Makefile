@@ -132,6 +132,7 @@ WEBSOCKETPP_DIR = $(BUILD)/websocketpp
 
 websocketpp: $(AD_INCLUDE)
 	$(call git_clone_or_pull,$(WEBSOCKETPP_DIR),https://github.com/zaphoyd)
+	patch -d $(WEBSOCKETPP_DIR) -p1 <patches/websocketpp.diff
 	$(call symbolic_link,$(WEBSOCKETPP_DIR)/websocketpp,$(AD_INCLUDE)/websocketpp)
 
 #----------------------------------------------------------------------
