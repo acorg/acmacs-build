@@ -64,6 +64,9 @@ install-makefiles: $(AD_SHARE)/Makefile.config
 update-packages: $(patsubst %,$(AD_SOURCES)/%,$(PACKAGES))
 
 build-packages: make-installation-dirs update-packages install-makefiles install-dependencies
+	$(MAKE) acmacs
+
+acmacs:
 	for package in $(PACKAGES); do \
 	  echo Building $$package $(PACKAGE_TARGET); \
 	  if [ $$package = "acmacs.r" ]; then \
