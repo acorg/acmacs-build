@@ -1,13 +1,20 @@
 #! /bin/bash
 AD_ROOT=$(/usr/bin/python -c "import os; print os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(\"$0\")))))")
 cd "${AD_ROOT}"/sources
-TF=${T:-/tmp}/ad-status.$$
-for d in *; do
-    if [[ -d "$d"/.git ]]; then
-        echo $d
-        cd $d
-        git pull
-        cd ..
-        echo "======================================================================"
+# TF=${T:-/tmp}/ad-status.$$
+
+run_pull()
+{
+    in_dir="$1"
+    if [[ -d "${in_dir}"/.git ]]; then
+        pushd "${in_dir}" >/dev/null
+        log=$(git pull 2>&1)
+        popd >/dev/null
+        printf "======================================================================\n%s\n\n%s\n" "${in_dir}" "${log}"
     fi
+}
+
+for d in *; do
+    run_pull "${d}" &
 done
+wait
