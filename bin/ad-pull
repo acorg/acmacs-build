@@ -8,7 +8,7 @@ run_pull()
     in_dir="$1"
     if [[ -d "${in_dir}"/.git ]]; then
         pushd "${in_dir}" >/dev/null
-        log=$(git pull 2>&1)
+        log=$(git pull -vq 2>&1)
         popd >/dev/null
         printf "======================================================================\n%s\n\n%s\n" "${in_dir}" "${log}"
     fi
