@@ -117,7 +117,9 @@ mongocxx:
 .PHONY: mongocxx
 
 #----------------------------------------------------------------------
-PYBIND11_RELEASE = 2.6.1
+# 2021-08-03
+PYBIND11_RELEASE = 2.7.1
+# PYBIND11_RELEASE = 2.6.1 # 2020-11-12
 PYBIND11_DIR = $(BUILD)/pybind11
 PYBIND11_URL = "https://github.com/pybind/pybind11/archive/v$(PYBIND11_RELEASE).tar.gz"
 
@@ -130,11 +132,15 @@ $(PYBIND11_DIR)/include/pybind11/pybind11.h:
 	$(call symbolic_link,$(PYBIND11_DIR)/include/pybind11,$(AD_INCLUDE)/pybind11)
 
 #----------------------------------------------------------------------
+# 2020-04-19
+WEBSOCKETPP_RELEASE = 0.8.2
 WEBSOCKETPP_PREFIX = $(BUILD)
 WEBSOCKETPP_DIR = $(BUILD)/websocketpp
+WEBSOCKETPP_URL = "https://github.com/zaphoyd/websocketpp/archive/refs/tags/$(WEBSOCKETPP_RELEASE).tar.gz"
 
 websocketpp: $(AD_INCLUDE)
-	$(call git_clone_or_pull,$(WEBSOCKETPP_DIR),https://github.com/zaphoyd)
+	curl -sL -o $(BUILD)/websocketpp-$(WEBSOCKETPP_RELEASE).tar.gz "$(WEBSOCKETPP_URL)"
+	cd $(BUILD) && tar xzf websocketpp-$(WEBSOCKETPP_RELEASE).tar.gz && ln -sf websocketpp-$(WEBSOCKETPP_RELEASE) $(WEBSOCKETPP_DIR)
 	patch -d $(WEBSOCKETPP_DIR) -p1 <patches/websocketpp.diff
 	$(call symbolic_link,$(WEBSOCKETPP_DIR)/websocketpp,$(AD_INCLUDE)/websocketpp)
 
@@ -159,7 +165,9 @@ rapidjson: $(AD_INCLUDE)
 #----------------------------------------------------------------------
 FMT_PREFIX = $(AD_ROOT)
 FMT_DIR = $(BUILD)/fmt
-FMT_VERSION = 7.1.3
+# 2021-07-03
+FMT_VERSION = 8.0.1
+# FMT_VERSION = 7.1.3 # 2020-11-25
 FMT_URL = "https://github.com/fmtlib/fmt/releases/download/$(FMT_VERSION)/fmt-$(FMT_VERSION).zip"
 FMT_LIB_PATHNAME = $(FMT_PREFIX)/lib/$(call shared_lib_name,libfmt,$(FMT_VERSION))
 FMT_INCLUDE_PATHNAME = $(AD_INCLUDE)/fmt/format.h
@@ -167,6 +175,7 @@ FMT_INCLUDE_PATHNAME = $(AD_INCLUDE)/fmt/format.h
 # https://github.com/fmtlib/fmt
 fmt: $(FMT_LIB_PATHNAME) $(FMT_INCLUDE_PATHNAME)
 
+# $(info FMT_LIB_PATHNAME=$(FMT_LIB_PATHNAME) FMT_INCLUDE_PATHNAME=$(FMT_INCLUDE_PATHNAME))
 $(FMT_LIB_PATHNAME) $(FMT_INCLUDE_PATHNAME):
 	rm -rf $(BUILD)/*fmt*
 	curl -sL -o $(BUILD)/release-fmt.zip "$(FMT_URL)"
@@ -210,6 +219,7 @@ optim: $(AD_INCLUDE)
 
 #----------------------------------------------------------------------
 # https://github.com/tfussell/xlnt
+# 2020-03-21
 XLNT_RELEASE = 1.5.0
 XLNT_PREFIX = $(AD_ROOT)
 XLNT_DIR = $(BUILD)/xlnt
