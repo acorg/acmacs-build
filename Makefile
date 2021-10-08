@@ -145,7 +145,8 @@ websocketpp: $(AD_INCLUDE)
 #----------------------------------------------------------------------
 # https://think-async.com/Asio/AsioStandalone.html
 # https://github.com/chriskohlhoff/asio/
-ASIO_TAG = asio-1-12-2
+ASIO_TAG = asio-1-19-2			# 2021-10-08
+# ASIO_TAG = asio-1-12-2
 ASIO_DIR = $(BUILD)/asio
 
 asio: $(AD_INCLUDE)
