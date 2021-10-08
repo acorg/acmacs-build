@@ -52,9 +52,7 @@ endif
 #   $(error acmacs-build must be placed in $(realpath $(AD_SOURCES)) (currently in $(CURDIR)))
 # endif
 
-# 2020-12-18 xlnt building fails when trying to build in parallel mode (unclear cmake problem)
 update-and-build: make-installation-dirs
-	MAKEFLAGS= $(MAKE) xlnt
 	$(MAKE) build-packages
 .PHONY: update-and-build
 
@@ -108,7 +106,7 @@ rtags:
 	  $(MAKE) -C $(AD_SOURCES)/$$package rtags || exit 1; \
 	done
 
-install-dependencies: mongocxx rapidjson range-v3 std_date fmt pybind11 websocketpp asio
+install-dependencies: fmt xlnt mongocxx rapidjson range-v3 std_date pybind11 websocketpp asio
 .PHONY: install-dependencies
 
 #----------------------------------------------------------------------
@@ -173,10 +171,10 @@ FMT_LIB_PATHNAME = $(FMT_PREFIX)/lib/$(call shared_lib_name,libfmt,$(FMT_VERSION
 FMT_INCLUDE_PATHNAME = $(AD_INCLUDE)/fmt/format.h
 
 # https://github.com/fmtlib/fmt
-fmt: $(FMT_LIB_PATHNAME) $(FMT_INCLUDE_PATHNAME)
+fmt: $(FMT_LIB_PATHNAME)
+$(FMT_LIB_PATHNAME): $(FMT_INCLUDE_PATHNAME)
 
-# $(info FMT_LIB_PATHNAME=$(FMT_LIB_PATHNAME) FMT_INCLUDE_PATHNAME=$(FMT_INCLUDE_PATHNAME))
-$(FMT_LIB_PATHNAME) $(FMT_INCLUDE_PATHNAME):
+$(FMT_INCLUDE_PATHNAME):
 	rm -rf $(BUILD)/*fmt*
 	curl -sL -o $(BUILD)/release-fmt.zip "$(FMT_URL)"
 	cd $(BUILD) && unzip release-fmt.zip && ln -s fmt-* $(FMT_DIR)
@@ -237,12 +235,13 @@ else
 endif
 XLNT_CXX_FLAGS += -O3 $(MAVX) $(MTUNE)
 
-xlnt: $(XLNT_LIB_PATHNAME) $(XLNT_INCLUDE_PATHNAME)
+xlnt: $(XLNT_LIB_PATHNAME)
+$(XLNT_LIB_PATHNAME): $(XLNT_INCLUDE_PATHNAME)
 .PHONY: xlnt
 
 XLNT_CMAKE_CMD = cmake -D CMAKE_COLOR_MAKEFILE=OFF -D CMAKE_BUILD_TYPE=Release -D TESTS=OFF -D CMAKE_CXX_FLAGS_RELEASE="$(XLNT_CXX_FLAGS)" -D CMAKE_CXX_COMPILER="$(CXX)" -DCMAKE_INSTALL_PREFIX="$(XLNT_PREFIX)" -DCMAKE_PREFIX_PATH="$(XLNT_PREFIX)" ..
 
-$(XLNT_LIB_PATHNAME) $(XLNT_INCLUDE_PATHNAME): $(BUILD)
+$(XLNT_INCLUDE_PATHNAME): $(BUILD)
 	curl -sL -o $(BUILD)/xlnt-$(XLNT_RELEASE).tar.gz "$(XLNT_URL)"
 	cd $(BUILD) && tar xzf xlnt-$(XLNT_RELEASE).tar.gz && ln -sf xlnt-$(XLNT_RELEASE) $(XLNT_DIR)
 	@# third-party/libstudxml/version leads to build failure on macOS 10.14
