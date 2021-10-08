@@ -198,7 +198,6 @@ std_date: $(AD_INCLUDE)
 	$(call symbolic_link,$(STD_DATE_DIR)/include/date,$(AD_INCLUDE)/date)
 
 #----------------------------------------------------------------------
-# RANGEV3_BRANCH = v1.0-beta
 RANGEV3_DIR = $(BUILD)/range-v3
 
 range-v3: $(AD_INCLUDE)
