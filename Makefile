@@ -115,8 +115,9 @@ mongocxx:
 .PHONY: mongocxx
 
 #----------------------------------------------------------------------
-# 2021-08-03
-PYBIND11_RELEASE = 2.7.1
+# 2021-10-10
+PYBIND11_RELEASE = 2.8.0
+# PYBIND11_RELEASE = 2.7.1 # 2021-08-03
 # PYBIND11_RELEASE = 2.6.1 # 2020-11-12
 PYBIND11_DIR = $(BUILD)/pybind11
 PYBIND11_URL = "https://github.com/pybind/pybind11/archive/v$(PYBIND11_RELEASE).tar.gz"
@@ -241,7 +242,7 @@ $(XLNT_LIB_PATHNAME): $(XLNT_INCLUDE_PATHNAME)
 
 XLNT_CMAKE_CMD = cmake -D CMAKE_COLOR_MAKEFILE=OFF -D CMAKE_BUILD_TYPE=Release -D TESTS=OFF -D CMAKE_CXX_FLAGS_RELEASE="$(XLNT_CXX_FLAGS)" -D CMAKE_CXX_COMPILER="$(CXX)" -DCMAKE_INSTALL_PREFIX="$(XLNT_PREFIX)" -DCMAKE_PREFIX_PATH="$(XLNT_PREFIX)" ..
 
-$(XLNT_INCLUDE_PATHNAME): $(BUILD)
+$(XLNT_INCLUDE_PATHNAME):
 	curl -sL -o $(BUILD)/xlnt-$(XLNT_RELEASE).tar.gz "$(XLNT_URL)"
 	cd $(BUILD) && tar xzf xlnt-$(XLNT_RELEASE).tar.gz && ln -sf xlnt-$(XLNT_RELEASE) $(XLNT_DIR)
 	@# third-party/libstudxml/version leads to build failure on macOS 10.14
