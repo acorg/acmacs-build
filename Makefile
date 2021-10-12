@@ -61,7 +61,7 @@ install-makefiles: $(AD_SHARE)/Makefile.config
 
 update-packages: $(patsubst %,$(AD_SOURCES)/%,$(PACKAGES))
 
-build-packages: make-installation-dirs update-packages install-makefiles install-dependencies
+build-packages: make-installation-dirs install-dependencies update-packages install-makefiles
 	$(MAKE) acmacs
 
 acmacs:
@@ -143,6 +143,8 @@ websocketpp: $(AD_INCLUDE)
 	patch -d $(WEBSOCKETPP_DIR) -p1 <patches/websocketpp.diff
 	$(call symbolic_link,$(WEBSOCKETPP_DIR)/websocketpp,$(AD_INCLUDE)/websocketpp)
 
+.PHONY: websocketpp
+
 #----------------------------------------------------------------------
 # https://think-async.com/Asio/AsioStandalone.html
 # https://github.com/chriskohlhoff/asio/
@@ -155,12 +157,16 @@ asio: $(AD_INCLUDE)
 	$(call symbolic_link,$(ASIO_DIR)/asio/include/asio,$(AD_INCLUDE)/asio)
 	$(call symbolic_link,$(ASIO_DIR)/asio/include/asio.hpp,$(AD_INCLUDE)/asio.hpp)
 
+.PHONY: asio
+
 #----------------------------------------------------------------------
 RAPIDJSON_DIR = $(BUILD)/rapidjson
 
 rapidjson: $(AD_INCLUDE)
 	$(call git_clone_or_pull,$(RAPIDJSON_DIR),https://github.com/Tencent)
 	$(call symbolic_link,$(RAPIDJSON_DIR)/include/rapidjson,$(AD_INCLUDE)/rapidjson)
+
+.PHONY: rapidjson
 
 #----------------------------------------------------------------------
 FMT_PREFIX = $(AD_ROOT)
@@ -171,12 +177,16 @@ FMT_VERSION = 8.0.1
 FMT_URL = "https://github.com/fmtlib/fmt/releases/download/$(FMT_VERSION)/fmt-$(FMT_VERSION).zip"
 FMT_LIB_PATHNAME = $(FMT_PREFIX)/lib/$(call shared_lib_name,libfmt,$(FMT_VERSION))
 FMT_INCLUDE_PATHNAME = $(AD_INCLUDE)/fmt/format.h
+FMT_LOCAL_INCLUDE_PATHNAME = $(BUILD)/fmt/include/fmt/format.h
 
 # https://github.com/fmtlib/fmt
-fmt: $(FMT_LIB_PATHNAME)
-$(FMT_LIB_PATHNAME): $(FMT_INCLUDE_PATHNAME)
+fmt: $(FMT_LOCAL_INCLUDE_PATHNAME)
+.PHONY: fmt
+# $(FMT_LIB_PATHNAME): $(FMT_INCLUDE_PATHNAME)
+# $(FMT_INCLUDE_PATHNAME): $(FMT_LOCAL_INCLUDE_PATHNAME)
+# $(info > fmt $(FMT_LOCAL_INCLUDE_PATHNAME))
 
-$(FMT_INCLUDE_PATHNAME):
+$(FMT_LOCAL_INCLUDE_PATHNAME):
 	rm -rf $(BUILD)/*fmt*
 	curl -sL -o $(BUILD)/release-fmt.zip "$(FMT_URL)"
 	cd $(BUILD) && unzip release-fmt.zip && ln -s fmt-* $(FMT_DIR)
