@@ -328,6 +328,3 @@ $(AD_SHARE)/Makefile.%: | $(AD_SHARE)
 .PHONY: $(patsubst %,$(AD_SOURCES)/%,$(PACKAGES))
 
 # ======================================================================
-### Local Variables:
-### eval: (if (fboundp 'eu-rename-buffer) (eu-rename-buffer))
-### End:
