@@ -15,13 +15,19 @@ PACKAGES_CXX = \
   acmacs-py \
   acmacs-tree-maker \
   acmacs-whocc \
-  acmacs-webserver \
-  acmacs-api
+  acmacs-webserver
+
+ifneq ($(shell uname -m),arm64)
+  # mongodb interface is not build on M1
+  PACKAGES_CXX_X86 = \
+    acmacs-api
+endif
 
 #   signature-page
 
 PACKAGES = \
   $(PACKAGES_CXX) \
+  $(PACKAGES_CXX_X86) \
   ssm-report
 
 #  acmacs.r discontinued on 2021-05-20
@@ -111,7 +117,12 @@ install-dependencies: fmt xlnt mongocxx rapidjson range-v3 std_date pybind11 web
 
 #----------------------------------------------------------------------
 mongocxx:
+ifneq ($(shell uname -m),arm64)
 	$(MAKE) -f Makefile.mongocxx
+else
+	$(warning mongocxx is NOT built on arm64)
+endif
+
 .PHONY: mongocxx
 
 #----------------------------------------------------------------------
