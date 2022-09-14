@@ -135,9 +135,9 @@ Clone this repository:
 
 Build acmacs-d
 
-*Use GNU make*
+***Use GNU make 4.x***
 
-    make -C $ACMACSD_ROOT/sources/acmacs-build -j8
+    gmake -C $ACMACSD_ROOT/sources/acmacs-build -j8
 
 # Installation (OBSOLETE)
 
