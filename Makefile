@@ -136,7 +136,7 @@ PYBIND11_URL = "https://github.com/pybind/pybind11/archive/v$(PYBIND11_RELEASE).
 pybind11: $(PYBIND11_DIR)/include/pybind11/pybind11.h
 .PHONY: pybind11
 
-$(PYBIND11_DIR)/include/pybind11/pybind11.h:
+$(PYBIND11_DIR)/include/pybind11/pybind11.h: $(BUILD)
 	curl -sL -o $(BUILD)/pybind11-$(PYBIND11_RELEASE).tar.gz "$(PYBIND11_URL)"
 	cd $(BUILD) && tar xzf pybind11-$(PYBIND11_RELEASE).tar.gz && ln -sf pybind11-$(PYBIND11_RELEASE) $(PYBIND11_DIR)
 	$(call symbolic_link,$(PYBIND11_DIR)/include/pybind11,$(AD_INCLUDE)/pybind11)
@@ -148,7 +148,7 @@ WEBSOCKETPP_PREFIX = $(BUILD)
 WEBSOCKETPP_DIR = $(BUILD)/websocketpp
 WEBSOCKETPP_URL = "https://github.com/zaphoyd/websocketpp/archive/refs/tags/$(WEBSOCKETPP_RELEASE).tar.gz"
 
-websocketpp: $(AD_INCLUDE)
+websocketpp: $(AD_INCLUDE) $(BUILD)
 	curl -sL -o $(BUILD)/websocketpp-$(WEBSOCKETPP_RELEASE).tar.gz "$(WEBSOCKETPP_URL)"
 	cd $(BUILD) && tar xzf websocketpp-$(WEBSOCKETPP_RELEASE).tar.gz && ln -sf websocketpp-$(WEBSOCKETPP_RELEASE) $(WEBSOCKETPP_DIR)
 	patch -d $(WEBSOCKETPP_DIR) -p1 <patches/websocketpp.diff
@@ -197,7 +197,7 @@ fmt: $(FMT_LOCAL_INCLUDE_PATHNAME)
 # $(FMT_INCLUDE_PATHNAME): $(FMT_LOCAL_INCLUDE_PATHNAME)
 # $(info > fmt $(FMT_LOCAL_INCLUDE_PATHNAME))
 
-$(FMT_LOCAL_INCLUDE_PATHNAME):
+$(FMT_LOCAL_INCLUDE_PATHNAME): $(BUILD)
 	rm -rf $(BUILD)/*fmt*
 	curl -sL -o $(BUILD)/release-fmt.zip "$(FMT_URL)"
 	cd $(BUILD) && unzip release-fmt.zip && ln -s fmt-* $(FMT_DIR)
@@ -263,7 +263,7 @@ $(XLNT_LIB_PATHNAME): $(XLNT_INCLUDE_PATHNAME)
 
 XLNT_CMAKE_CMD = cmake -D CMAKE_COLOR_MAKEFILE=OFF -D CMAKE_BUILD_TYPE=Release -D TESTS=OFF -D CMAKE_CXX_FLAGS_RELEASE="$(XLNT_CXX_FLAGS)" -D CMAKE_CXX_COMPILER="$(CXX)" -DCMAKE_INSTALL_PREFIX="$(XLNT_PREFIX)" -DCMAKE_PREFIX_PATH="$(XLNT_PREFIX)" ..
 
-$(XLNT_INCLUDE_PATHNAME):
+$(XLNT_INCLUDE_PATHNAME): $(BUILD)
 	curl -sL -o $(BUILD)/xlnt-$(XLNT_RELEASE).tar.gz "$(XLNT_URL)"
 	cd $(BUILD) && tar xzf xlnt-$(XLNT_RELEASE).tar.gz && ln -sf xlnt-$(XLNT_RELEASE) $(XLNT_DIR)
 	@# third-party/libstudxml/version leads to build failure on macOS 10.14
@@ -311,7 +311,7 @@ endif
 # # https://github.com/chaiscriptlib/chaiscript
 # chaiscript: $(CHAISCRIPT_DIR)/include/chaiscript/chaiscript.hpp
 
-# $(CHAISCRIPT_DIR)/include/chaiscript/chaiscript.hpp:
+# $(CHAISCRIPT_DIR)/include/chaiscript/chaiscript.hpp: $(BUILD)
 # 	rm -rf $(BUILD)/*chaiscript*
 # 	curl -sL -o $(BUILD)/release-chaiscript.tar.gz "$(CHAISCRIPT_URL)"
 # 	cd $(BUILD) && tar xzf release-chaiscript.tar.gz && ln -s ChaiScript-* "$(CHAISCRIPT_DIR)"
