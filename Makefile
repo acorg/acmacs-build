@@ -17,11 +17,12 @@ PACKAGES_CXX = \
   acmacs-whocc \
   acmacs-webserver
 
-ifneq ($(shell uname -m),arm64)
-  # mongodb interface is not build on M1
-  PACKAGES_CXX_X86 = \
-    acmacs-api
-endif
+# disabled for Sarah
+# ifneq ($(shell uname -m),arm64)
+#   # mongodb interface is not built on M1
+#   PACKAGES_CXX_X86 = \
+#     acmacs-api
+# endif
 
 #   signature-page
 
@@ -112,7 +113,8 @@ rtags:
 	  $(MAKE) -C $(AD_SOURCES)/$$package rtags || exit 1; \
 	done
 
-install-dependencies: fmt xlnt mongocxx rapidjson range-v3 std_date pybind11 websocketpp asio
+install-dependencies: fmt xlnt rapidjson range-v3 std_date pybind11 websocketpp asio
+# mongocxx  (disabled for Sarah)
 .PHONY: install-dependencies
 
 #----------------------------------------------------------------------
