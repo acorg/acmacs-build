@@ -1,6 +1,14 @@
 # -*- Makefile -*-
 # ======================================================================
 
+all: update-and-build
+
+NO_CLEAN_TARGET = 1
+NO_RTAGS_TARGET = 1
+include Makefile.config
+
+# ----------------------------------------------------------------------
+
 PACKAGES_CXX = \
   acmacs-base \
   locationdb \
@@ -31,12 +39,6 @@ PACKAGES = \
   ssm-report
 
 #  acmacs.r discontinued on 2021-05-20
-
-all: update-and-build
-
-NO_CLEAN_TARGET = 1
-NO_RTAGS_TARGET = 1
-include Makefile.config
 
 # ----------------------------------------------------------------------
 
