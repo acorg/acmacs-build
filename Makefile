@@ -128,12 +128,12 @@ endif
 .PHONY: mongocxx
 
 #----------------------------------------------------------------------
-# 2021-10-10
-PYBIND11_RELEASE = 2.8.0
-# PYBIND11_RELEASE = 2.7.1 # 2021-08-03
-# PYBIND11_RELEASE = 2.6.1 # 2020-11-12
+PYBIND11_RELEASE = 2.10.4# 2023-03-16
+# PYBIND11_RELEASE = 2.8.0# 2021-10-10
+# PYBIND11_RELEASE = 2.7.1# 2021-08-03
+# PYBIND11_RELEASE = 2.6.1# 2020-11-12
 PYBIND11_DIR = $(BUILD)/pybind11
-PYBIND11_URL = "https://github.com/pybind/pybind11/archive/v$(PYBIND11_RELEASE).tar.gz"
+PYBIND11_URL = "https://github.com/pybind/pybind11/archive/refs/tags/v$(PYBIND11_RELEASE).tar.gz"
 
 pybind11: $(PYBIND11_DIR)/include/pybind11/pybind11.h
 .PHONY: pybind11
