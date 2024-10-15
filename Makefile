@@ -22,8 +22,7 @@ PACKAGES_CXX = \
   acmacs-tal \
   acmacs-py \
   acmacs-tree-maker \
-  acmacs-whocc \
-  acmacs-webserver
+  acmacs-whocc
 
 ifneq ($(PLATFORM),darwin)
   # mongodb interface is not built on M1
