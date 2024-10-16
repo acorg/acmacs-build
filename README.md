@@ -2,11 +2,135 @@
 
 Scripts to build Acmacs-D.
 
-# Supported platforms
+# Installation 16/10/2024
+
+## Platform
+  - macOS 14.7 (ARM 64)
+
+## Requirements and their installation
+nb: The specified versions are known to work, on 16/10/24 these were the default brew install versions
+
+ - apache2 ~= 2.4
+ - armadillo ~= 14.0
+ - arpack ~= 3.9
+ - boost ~= 1.86
+ - cairo ~= 1.18
+ - cmake ~= 3.30
+ - libomp ~= 19.1
+ - lld ~= 19.1
+ - llvm ~= 19.1
+ - make ~= 4.4 (called as gmake)
+ - pyenv ~= 2.4
+ - python ~= 3.13
+ - sassc ~= 3.6
+ - xcode ~= 16.0 (commandline tools)
+ - xz ~= 5.6
+
+ NB: instructions use non-specific versions on Brew install, in future software versions may need to be specified
+
+ A number of these instructions involve modifying the .zshrc file, an example is included in the file "zshrc_info" in this directory
+
+ ### Brew
+
+To install brew follow the instructions on this page: [Homebrew installation page](https://brew.sh)
+
+To install all dependencies (nb: some may already come with the system, brew will automatically skip them):
+```
+brew install apache2 armadillo arpack boost cairo cmake libomp lld llvm make pyenv sassc xz
+```
+
+ ### Python
+This uses pyenv to install python.
+
+To install pyenv run the following in terminal (nb: previous step includes pyenv install so if that has been run you can skip installing it again):
+```
+brew install pyenv
+```
+To finish setting up pyenv you need to modify your .zshrc (macOS) (a copy of zshrc)
+
+To open .zshrc:
+```
+nano ~/.zshrc
+```
+Add the following lines then save and exit:
+```
+if command -v pyenv 1>/dev/null 2>&1; then
+    eval "$(pyenv init -)"
+fi
+```
+Then run:
+```
+source ~/.zshrc
+```
+
+To install and set python version:
+```
+pyenv install 3.13 && pyenv local 3.13
+```
+
+ ### .zshrc setup
+ This package requires modification of the ~/.zshrc file.
+
+ Run in command line:
+
+ ```
+ nano ~/.zshrc
+ ```
+
+ Add the lines from zshrc_info file, save and exit (nb. you may have already added pyenv ones above)
+
+Run in commandline:
+```
+source ~/.zshrc
+```
+
+## ACMACS install
+
+### Further set up
+Having followed the above setup steps ACMACS build can now be installed
+
+Choose a directory where all the sources will be downloaded to and programs will be built and installed and add it to your ~/.zshrc file as above
+
+e.g. the example as per the zshrc_info example file:
+```
+export ACMACSD_ROOT="/Users/${USER}/Desktop/pipeline/AD"
+```
+Save and exit then run
+```
+source ~/.zshrc
+```
+
+Clone this repository using one of the following in commandline:
+  If you have SSH set up for git:
+  ```
+  mkdir -p $ACMACSD_ROOT/sources && git clone git@github.com:acorg/acmacs-build.git $ACMACSD_ROOT/sources/acmacs-build
+  ```
+  if you do not have SSH set up for git:
+  ```
+  mkdir -p $ACMACSD_ROOT/sources && git clone https://github.com/acorg/acmacs-build $ACMACSD_ROOT/sources/acmacs-build
+  ```
+
+### Build with GNU make
+
+Run the following in commandline
+```
+gmake -C $ACMACSD_ROOT/sources/acmacs-build -j8
+```
+
+### If installation should fail
+
+Before rerunning the build script above, delete the following folders from AD (and empty them from the trashcan):
+- build
+- sources/acmacs-build/build
+ 
+
+
+# OLD INSTRUCTIONS - included for linux
+# Supported platforms (old)
 
  - macOS 10.14.6 (with xcode 11.3.1) or later
  - Ubuntu Linux 20.04 (earlier versions are most probably good enough too)
- - Theoretcially any Linux distribution fulfilled requirements below.
+ - Theoretically any Linux distribution fulfilled requirements below.
 
 # Requirements
 
