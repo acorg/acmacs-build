@@ -5,9 +5,9 @@
 # Using flags from homebrew LLVM rather than system LLVM may result in issues. These paths may require changing to local LLVM installs
 # export PATH="/opt/homebrew/opt/llvm/bin:$PATH"
 export LDFLAGS="-L/opt/homebrew/opt/libomp/lib"
-export LDFLAGS="-L/opt/homebrew/opt/llvm/lib":$LDFLAGS
+export LDFLAGS="$LDFLAGS -L/opt/homebrew/opt/llvm/lib"
 export CPPFLAGS="-I/opt/homebrew/opt/libomp/include"
-export CPPFLAGS="-I/opt/homebrew/opt/llvm/include":$CPPFLAGS
+export CPPFLAGS="$CPPFLAGS -I/opt/homebrew/opt/llvm/include"
 
 # python
 export PATH="/usr/local/opt/python/libexec/bin:$PATH"
