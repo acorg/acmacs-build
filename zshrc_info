@@ -19,3 +19,11 @@ fi
 
 # AD root directory
 export ACMACSD_ROOT="/Users/${USER}/Desktop/pipeline/AD"
+
+# Directing to python
+PYTHONPATH=/Users/${USER}/Desktop/pipeline/AD/lib:/Users/${USER}/Desktop/pipeline/AD/py:$PYTHONPATH
+export PYTHONPATH
+
+# Adding to path
+PATH=$ACMACSD_ROOT/bin:$PATH
+export $PATH

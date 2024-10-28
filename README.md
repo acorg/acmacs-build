@@ -23,6 +23,7 @@ nb: The specified versions are known to work, on 16/10/24 these were the default
  - pyenv ~= 2.4
  - python ~= 3.13
  - sassc ~= 3.6
+ - unidecode ~= 1.3
  - xcode ~= 16.0 (commandline tools)
  - xz ~= 5.6
 
@@ -39,7 +40,7 @@ To install all dependencies (nb: some may already come with the system, brew wil
 brew install apache2 armadillo arpack boost cairo cmake libomp lld llvm make pyenv sassc xz
 ```
 
- ### Python
+ ### Python and unidecode
 This uses pyenv to install python.
 
 To install pyenv run the following in terminal (nb: previous step includes pyenv install so if that has been run you can skip installing it again):
@@ -67,6 +68,9 @@ To install and set python version:
 ```
 pyenv install 3.13 && pyenv local 3.13
 ```
+
+To install unidecode
+'''pip3 install unidecode'''
 
  ### .zshrc setup
  This package requires modification of the ~/.zshrc file.
@@ -122,6 +126,18 @@ gmake -C $ACMACSD_ROOT/sources/acmacs-build -j8
 Before rerunning the build script above, delete the following folders from AD (and empty them from the trashcan):
 - build
 - sources/acmacs-build/build
+
+## Making python and system find AD
+
+- Add the following to your ~/.zshrc file and the run ```source ~/.zshrc```
+```
+PYTHONPATH=/Users/${USER}/Desktop/pipeline/AD/lib:/Users/${USER}/Desktop/pipeline/AD/py:$PYTHONPATH
+export PYTHONPATH
+
+PATH=$ACMACSD_ROOT/bin:$PATH
+export $PATH
+```
+nb: /Users/${USER}/Desktop/pipeline/AD/py may not be needed #TODO: TEST THIS
  
 
 
