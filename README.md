@@ -21,7 +21,7 @@ nb: The specified versions are known to work, on 16/10/24 these were the default
  - llvm ~= 19.1
  - make ~= 4.4 (called as gmake)
  - pyenv ~= 2.4
- - python ~= 3.13
+ - python ~= 3.12 # will build with 3.13
  - sassc ~= 3.6
  - unidecode ~= 1.3
  - xcode ~= 16.0 (commandline tools)
@@ -66,7 +66,7 @@ source ~/.zshrc
 
 To install and set python version:
 ```
-pyenv install 3.13 && pyenv local 3.13
+pyenv install 3.12 && pyenv local 3.12
 ```
 
 To install unidecode
